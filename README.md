@@ -6,70 +6,60 @@
 
 ## 🎮 Try It Now
 
-**[Download the latest release](https://github.com/dabirdwell/abyssal-cartographer/releases)** - Just double-click the HTML file to run in any browser!
-
-Or view the [source code](https://github.com/dabirdwell/abyssal-cartographer/blob/main/AbyssalCartographer.html) directly.
+**[Download AbyssalCartographer.html](https://raw.githubusercontent.com/dabirdwell/abyssal-cartographer/main/AbyssalCartographer.html)** - Just double-click to run!
 
 ## ✨ Features
 
 ### 🏘️ Town Generation
 - Named settlements with inns
-- Quest givers with full dialogue, hooks, and rewards  
-- Shops with inventories and prices
+- Quest givers with dialogue, hooks, and rewards
+- Shops with inventories
 - Rumors and plot hooks
 
 ### 🗺️ Dungeon Generation
-- **One-Shot Mode**: 8-12 rooms for a single session
-- **Campaign Mode**: 14-20 rooms for extended play
-- Interactive fog-of-war map
+- **One-Shot Mode**: 8-12 rooms
+- **Campaign Mode**: 14-20 rooms
+- Interactive fog-of-war map with room icons
 - Click-to-reveal exploration
-- Varied room shapes (rectangles, circles, octagons)
-- Corridor and door connections
+- Varied room shapes
 
-### ⚔️ Encounters
-- 20+ monsters with full 5e stat blocks
-- CR-appropriate scaling based on party level
-- Tactical suggestions for each encounter
-- Random encounter table (d6)
-
-### 💀 Boss Fights
-- 7 unique boss templates with enhancements
-- Lair actions and special features
-- Minion support
+### ⚔️ Encounters & Bosses
+- 20+ monsters with stat blocks
+- 7 unique boss templates
+- CR-appropriate scaling
+- Tactical suggestions
 
 ### 🧩 Puzzles & Riddles
-- 8 full puzzles with setup, solution, hints, and failure consequences
-- 8 riddles with answers
-- Naturally integrated into dungeon rooms
+- 6 puzzles with setup, solution, hints, and failure effects
+- 5 riddles with answers
 
-### ⚠️ Traps
-- 8 trap types with DCs and effects
-- Triggers, detection, and disarm mechanics
+### 🔊 Ambiance (NEW v1.2!)
+- Sound, light, smell, and feel suggestions per room
+- Helps DMs set the mood instantly
 
-### 💎 Treasure
-- Tiered loot (minor/moderate/major)
-- Magic items appropriate to level
+### 📄 Dual Export (NEW v1.2!)
+- **DM Guide**: Full details with solutions and stats
+- **Player Handout**: Puzzles without solutions, no trap reveals
 
-### 📄 PDF Export
-- Print-ready session document
-- Complete room key
-- Monster reference section
+## 📋 Version History
 
-## 🚀 How to Use
+### v1.2 (Current)
+- 🔊 Ambiance suggestions for every room type
+- 🗺️ Room type icons on map (⌂☠👑 etc.)
+- 📥 Separate DM/Player export options
+- 🎯 Map legend with combat/trap/puzzle/treasure indicators
 
-1. Download `AbyssalCartographer.html`
-2. Double-click to open in your browser
-3. Configure your session (party size, level, type)
-4. Click "Generate Session"
-5. Explore!
+### v1.1
+- 🧩 Puzzle and riddle system
+- 🗺️ Improved map with room shapes
+- 📚 Expanded monster database
+
+### v1.0
+- Initial release
 
 ## 📜 License
 
 MIT License
-
-## 🙏 Credits
-
-Created by Claude (Anthropic) as a Christmas gift for the D&D community.
 
 ---
 
