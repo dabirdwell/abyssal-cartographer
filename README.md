@@ -12,7 +12,7 @@
 
 ### 🏘️ Town Generation
 - Named settlements with inns
-- Quest givers with dialogue, hooks, and rewards
+- Quest givers with dialogue, hooks, and rewards  
 - Shops with inventories
 - Rumors and plot hooks
 
@@ -20,46 +20,52 @@
 - **One-Shot Mode**: 8-12 rooms
 - **Campaign Mode**: 14-20 rooms
 - Interactive fog-of-war map with room icons
-- Click-to-reveal exploration
-- Varied room shapes
+- Furniture icons inside rooms
+- Varied room shapes (rect, circle, octagon)
 
 ### ⚔️ Encounters & Bosses
-- 20+ monsters with stat blocks
-- 7 unique boss templates
+- 30 monsters with full stat blocks
+- 9 unique boss templates with lair actions
 - CR-appropriate scaling
-- Tactical suggestions
+- Tactical suggestions per encounter
 
 ### 🧩 Puzzles & Riddles
-- 6 puzzles with setup, solution, hints, and failure effects
-- 5 riddles with answers
+- 8 puzzles with setup, solution, hints, and failure effects
+- 7 riddles with answers and hints
 
-### 🔊 Ambiance (NEW v1.2!)
-- Sound, light, smell, and feel suggestions per room
-- Helps DMs set the mood instantly
+### 🔊 Ambient Sound (v1.3!)
+- Curated YouTube playlist links per room type
+- Sound, light, smell, and feel descriptions
+- One-click ambiance for immersion
 
-### 📄 Dual Export (NEW v1.2!)
-- **DM Guide**: Full details with solutions and stats
+### 📄 Dual Export
+- **DM Guide**: Full details with solutions, stats, and sound links
 - **Player Handout**: Puzzles without solutions, no trap reveals
 
 ## 📋 Version History
 
-### v1.2 (Current)
-- 🔊 Ambiance suggestions for every room type
-- 🗺️ Room type icons on map (⌂☠👑 etc.)
-- 📥 Separate DM/Player export options
-- 🎯 Map legend with combat/trap/puzzle/treasure indicators
+### v1.3 (Current)
+- 🐉 **30 monsters** (up from 20)
+- 🎵 **Ambient sound links** - YouTube playlists per room
+- 🪑 **Furniture icons** on map
+- 🎯 **9 boss templates** (up from 7)
+- 🧩 **8 puzzles, 7 riddles**
+
+### v1.2
+- Ambiance system (text descriptions)
+- Room type icons on map
+- Separate DM/Player exports
 
 ### v1.1
-- 🧩 Puzzle and riddle system
-- 🗺️ Improved map with room shapes
-- 📚 Expanded monster database
+- Puzzle and riddle system
+- Improved map with room shapes
 
 ### v1.0
 - Initial release
 
 ## 📜 License
 
-MIT License
+MIT License - Free for personal and commercial use.
 
 ---
 
