@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abyssal Cartographer v1.1 - D&D Dungeon Generator</title>
+  <title>Abyssal Cartographer v1.2 - D&D Dungeon Generator</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -20,7 +20,6 @@
   <script type="text/babel">
     const { useState, useCallback, useEffect, useMemo } = React;
 
-    // Icon component
     const Icon = ({ name, size = 16, color = "currentColor", className = "" }) => {
       const ref = React.useRef(null);
       useEffect(() => {
@@ -39,26 +38,26 @@
     // ===================== DATA =====================
     
     const MONSTERS = {
-      kobold: { name: 'Kobold', cr: '1/8', ac: 12, hp: 5, str: 7, dex: 15, con: 9, int: 8, wis: 7, cha: 8, speed: 30, atk: [{ n: 'Dagger', h: 4, d: '1d4+2 piercing' }, { n: 'Sling', h: 4, d: '1d4+2 bludgeoning', r: '30/120' }], traits: ['Pack Tactics', 'Sunlight Sensitivity'], desc: 'Cowardly reptilians attacking in swarms' },
-      giant_rat: { name: 'Giant Rat', cr: '1/8', ac: 12, hp: 7, str: 7, dex: 15, con: 11, int: 2, wis: 10, cha: 4, speed: 30, atk: [{ n: 'Bite', h: 4, d: '1d4+2 piercing' }], traits: ['Pack Tactics', 'Keen Smell'], desc: 'Disease-carrying vermin the size of dogs' },
-      goblin: { name: 'Goblin', cr: '1/4', ac: 15, hp: 7, str: 8, dex: 14, con: 10, int: 10, wis: 8, cha: 8, speed: 30, atk: [{ n: 'Scimitar', h: 4, d: '1d6+2 slashing' }, { n: 'Shortbow', h: 4, d: '1d6+2 piercing', r: '80/320' }], traits: ['Nimble Escape'], desc: 'Cunning, cruel raiders' },
-      skeleton: { name: 'Skeleton', cr: '1/4', ac: 13, hp: 13, str: 10, dex: 14, con: 15, int: 6, wis: 8, cha: 5, speed: 30, atk: [{ n: 'Shortsword', h: 4, d: '1d6+2 piercing' }, { n: 'Shortbow', h: 4, d: '1d6+2 piercing', r: '80/320' }], traits: ['Vulnerable: bludgeoning', 'Immune: poison'], desc: 'Animated bones bound by dark magic' },
+      kobold: { name: 'Kobold', cr: '1/8', ac: 12, hp: 5, str: 7, dex: 15, con: 9, int: 8, wis: 7, cha: 8, speed: 30, atk: [{ n: 'Dagger', h: 4, d: '1d4+2 piercing' }, { n: 'Sling', h: 4, d: '1d4+2 bludgeoning', r: '30/120' }], traits: ['Pack Tactics', 'Sunlight Sensitivity'], desc: 'Cowardly reptilians' },
+      giant_rat: { name: 'Giant Rat', cr: '1/8', ac: 12, hp: 7, str: 7, dex: 15, con: 11, int: 2, wis: 10, cha: 4, speed: 30, atk: [{ n: 'Bite', h: 4, d: '1d4+2 piercing' }], traits: ['Pack Tactics', 'Keen Smell'], desc: 'Disease-carrying vermin' },
+      goblin: { name: 'Goblin', cr: '1/4', ac: 15, hp: 7, str: 8, dex: 14, con: 10, int: 10, wis: 8, cha: 8, speed: 30, atk: [{ n: 'Scimitar', h: 4, d: '1d6+2 slashing' }, { n: 'Shortbow', h: 4, d: '1d6+2 piercing', r: '80/320' }], traits: ['Nimble Escape'], desc: 'Cunning raiders' },
+      skeleton: { name: 'Skeleton', cr: '1/4', ac: 13, hp: 13, str: 10, dex: 14, con: 15, int: 6, wis: 8, cha: 5, speed: 30, atk: [{ n: 'Shortsword', h: 4, d: '1d6+2 piercing' }, { n: 'Shortbow', h: 4, d: '1d6+2 piercing', r: '80/320' }], traits: ['Vulnerable: bludgeoning', 'Immune: poison'], desc: 'Animated bones' },
       zombie: { name: 'Zombie', cr: '1/4', ac: 8, hp: 22, str: 13, dex: 6, con: 16, int: 3, wis: 6, cha: 5, speed: 20, atk: [{ n: 'Slam', h: 3, d: '1d6+1 bludgeoning' }], traits: ['Undead Fortitude'], desc: 'Shambling corpses' },
-      orc: { name: 'Orc', cr: '1/2', ac: 13, hp: 15, str: 16, dex: 12, con: 16, int: 7, wis: 11, cha: 10, speed: 30, atk: [{ n: 'Greataxe', h: 5, d: '1d12+3 slashing' }, { n: 'Javelin', h: 5, d: '1d6+3 piercing', r: '30/120' }], traits: ['Aggressive'], desc: 'Brutal tribal warriors' },
-      shadow: { name: 'Shadow', cr: '1/2', ac: 12, hp: 16, str: 6, dex: 14, con: 13, int: 6, wis: 10, cha: 8, speed: 40, atk: [{ n: 'Strength Drain', h: 4, d: '2d6+2 necrotic', s: 'STR reduced by 1d4' }], traits: ['Amorphous', 'Shadow Stealth'], desc: 'Living darkness' },
-      hobgoblin: { name: 'Hobgoblin', cr: '1/2', ac: 18, hp: 11, str: 13, dex: 12, con: 12, int: 10, wis: 10, cha: 9, speed: 30, atk: [{ n: 'Longsword', h: 3, d: '1d8+1 slashing' }, { n: 'Longbow', h: 3, d: '1d8+1 piercing', r: '150/600' }], traits: ['Martial Advantage (+2d6)'], desc: 'Disciplined soldiers' },
-      ghoul: { name: 'Ghoul', cr: '1', ac: 12, hp: 22, str: 13, dex: 15, con: 10, int: 7, wis: 10, cha: 6, speed: 30, atk: [{ n: 'Bite', h: 2, d: '2d6+2 piercing' }, { n: 'Claws', h: 4, d: '2d4+2 slashing', s: 'DC 10 CON or paralyzed' }], traits: ['Immune: poison'], desc: 'Paralyzing undead' },
-      bugbear: { name: 'Bugbear', cr: '1', ac: 16, hp: 27, str: 15, dex: 14, con: 13, int: 8, wis: 11, cha: 9, speed: 30, atk: [{ n: 'Morningstar', h: 4, d: '2d8+2 piercing' }], traits: ['Brute', 'Surprise Attack (+2d6)'], desc: 'Ambush predators' },
-      specter: { name: 'Specter', cr: '1', ac: 12, hp: 22, str: 1, dex: 14, con: 11, int: 10, wis: 10, cha: 11, speed: '0, fly 50', atk: [{ n: 'Life Drain', h: 4, d: '3d6 necrotic', s: 'DC 10 or HP max reduced' }], traits: ['Incorporeal'], desc: 'Vengeful spirits' },
-      dire_wolf: { name: 'Dire Wolf', cr: '1', ac: 14, hp: 37, str: 17, dex: 15, con: 15, int: 3, wis: 12, cha: 7, speed: 50, atk: [{ n: 'Bite', h: 5, d: '2d6+3 piercing', s: 'DC 13 STR or prone' }], traits: ['Pack Tactics'], desc: 'Massive pack hunters' },
+      orc: { name: 'Orc', cr: '1/2', ac: 13, hp: 15, str: 16, dex: 12, con: 16, int: 7, wis: 11, cha: 10, speed: 30, atk: [{ n: 'Greataxe', h: 5, d: '1d12+3 slashing' }], traits: ['Aggressive'], desc: 'Brutal warriors' },
+      shadow: { name: 'Shadow', cr: '1/2', ac: 12, hp: 16, str: 6, dex: 14, con: 13, int: 6, wis: 10, cha: 8, speed: 40, atk: [{ n: 'Strength Drain', h: 4, d: '2d6+2 necrotic', s: 'STR -1d4' }], traits: ['Amorphous', 'Shadow Stealth'], desc: 'Living darkness' },
+      hobgoblin: { name: 'Hobgoblin', cr: '1/2', ac: 18, hp: 11, str: 13, dex: 12, con: 12, int: 10, wis: 10, cha: 9, speed: 30, atk: [{ n: 'Longsword', h: 3, d: '1d8+1 slashing' }], traits: ['Martial Advantage (+2d6)'], desc: 'Disciplined soldiers' },
+      ghoul: { name: 'Ghoul', cr: '1', ac: 12, hp: 22, str: 13, dex: 15, con: 10, int: 7, wis: 10, cha: 6, speed: 30, atk: [{ n: 'Claws', h: 4, d: '2d4+2 slashing', s: 'DC 10 paralysis' }], traits: ['Immune: poison'], desc: 'Paralyzing undead' },
+      bugbear: { name: 'Bugbear', cr: '1', ac: 16, hp: 27, str: 15, dex: 14, con: 13, int: 8, wis: 11, cha: 9, speed: 30, atk: [{ n: 'Morningstar', h: 4, d: '2d8+2 piercing' }], traits: ['Brute', 'Surprise Attack'], desc: 'Ambush predators' },
+      specter: { name: 'Specter', cr: '1', ac: 12, hp: 22, str: 1, dex: 14, con: 11, int: 10, wis: 10, cha: 11, speed: '0, fly 50', atk: [{ n: 'Life Drain', h: 4, d: '3d6 necrotic', s: 'HP max -' }], traits: ['Incorporeal'], desc: 'Vengeful spirits' },
+      dire_wolf: { name: 'Dire Wolf', cr: '1', ac: 14, hp: 37, str: 17, dex: 15, con: 15, int: 3, wis: 12, cha: 7, speed: 50, atk: [{ n: 'Bite', h: 5, d: '2d6+3', s: 'DC 13 prone' }], traits: ['Pack Tactics'], desc: 'Massive hunters' },
       ogre: { name: 'Ogre', cr: '2', ac: 11, hp: 59, str: 19, dex: 8, con: 16, int: 5, wis: 7, cha: 7, speed: 40, atk: [{ n: 'Greatclub', h: 6, d: '2d8+4 bludgeoning' }], traits: [], desc: 'Dim-witted giants' },
-      mimic: { name: 'Mimic', cr: '2', ac: 12, hp: 58, str: 17, dex: 12, con: 15, int: 5, wis: 13, cha: 8, speed: 15, atk: [{ n: 'Pseudopod', h: 5, d: '1d8+3', s: 'Grappled DC 13' }, { n: 'Bite', h: 5, d: '1d8+3 + 1d8 acid' }], traits: ['Shapechanger', 'Adhesive'], desc: 'Treasure chest predator' },
-      ghast: { name: 'Ghast', cr: '2', ac: 13, hp: 36, str: 16, dex: 17, con: 10, int: 11, wis: 10, cha: 8, speed: 30, atk: [{ n: 'Claws', h: 5, d: '2d6+3 slashing', s: 'DC 10 or paralyzed' }], traits: ['Stench DC 10'], desc: 'Elite ghouls' },
-      gargoyle: { name: 'Gargoyle', cr: '2', ac: 15, hp: 52, str: 15, dex: 11, con: 16, int: 6, wis: 11, cha: 7, speed: '30, fly 60', atk: [{ n: 'Bite', h: 4, d: '1d6+2' }, { n: 'Claws', h: 4, d: '1d6+2' }], traits: ['False Appearance', 'Resist nonmagical'], desc: 'Stone guardians' },
-      wight: { name: 'Wight', cr: '3', ac: 14, hp: 45, str: 15, dex: 14, con: 16, int: 10, wis: 13, cha: 15, speed: 30, atk: [{ n: 'Life Drain', h: 4, d: '1d6+2 necrotic', s: 'DC 13 or HP max reduced' }, { n: 'Longsword', h: 4, d: '1d8+2' }], traits: ['Creates zombies'], desc: 'Undead commanders' },
-      owlbear: { name: 'Owlbear', cr: '3', ac: 13, hp: 59, str: 20, dex: 12, con: 17, int: 3, wis: 12, cha: 7, speed: 40, atk: [{ n: 'Beak', h: 7, d: '1d10+5' }, { n: 'Claws', h: 7, d: '2d8+5' }], traits: ['Keen Sight/Smell', 'Multiattack'], desc: 'Ferocious hybrids' },
-      flameskull: { name: 'Flameskull', cr: '4', ac: 13, hp: 40, str: 1, dex: 17, con: 14, int: 16, wis: 10, cha: 11, speed: '0, fly 40', atk: [{ n: 'Fire Ray', h: 5, d: '3d6 fire', r: '30' }], traits: ['Magic Resistance', 'Spells: fireball 1/day'], desc: 'Burning sentinels' },
-      wraith: { name: 'Wraith', cr: '5', ac: 13, hp: 67, str: 6, dex: 16, con: 16, int: 12, wis: 14, cha: 15, speed: '0, fly 60', atk: [{ n: 'Life Drain', h: 6, d: '4d8+3 necrotic', s: 'DC 14 or HP max reduced' }], traits: ['Incorporeal', 'Create Specter'], desc: 'Malevolent spirits' },
+      mimic: { name: 'Mimic', cr: '2', ac: 12, hp: 58, str: 17, dex: 12, con: 15, int: 5, wis: 13, cha: 8, speed: 15, atk: [{ n: 'Bite', h: 5, d: '1d8+3 + 1d8 acid' }], traits: ['Shapechanger', 'Adhesive'], desc: 'Treasure predator' },
+      ghast: { name: 'Ghast', cr: '2', ac: 13, hp: 36, str: 16, dex: 17, con: 10, int: 11, wis: 10, cha: 8, speed: 30, atk: [{ n: 'Claws', h: 5, d: '2d6+3', s: 'DC 10 paralysis' }], traits: ['Stench DC 10'], desc: 'Elite ghouls' },
+      gargoyle: { name: 'Gargoyle', cr: '2', ac: 15, hp: 52, str: 15, dex: 11, con: 16, int: 6, wis: 11, cha: 7, speed: '30, fly 60', atk: [{ n: 'Claws', h: 4, d: '1d6+2' }], traits: ['False Appearance'], desc: 'Stone guardians' },
+      wight: { name: 'Wight', cr: '3', ac: 14, hp: 45, str: 15, dex: 14, con: 16, int: 10, wis: 13, cha: 15, speed: 30, atk: [{ n: 'Life Drain', h: 4, d: '1d6+2 necrotic' }], traits: ['Creates zombies'], desc: 'Undead commanders' },
+      owlbear: { name: 'Owlbear', cr: '3', ac: 13, hp: 59, str: 20, dex: 12, con: 17, int: 3, wis: 12, cha: 7, speed: 40, atk: [{ n: 'Claws', h: 7, d: '2d8+5' }], traits: ['Keen Senses', 'Multiattack'], desc: 'Ferocious hybrids' },
+      flameskull: { name: 'Flameskull', cr: '4', ac: 13, hp: 40, str: 1, dex: 17, con: 14, int: 16, wis: 10, cha: 11, speed: '0, fly 40', atk: [{ n: 'Fire Ray', h: 5, d: '3d6 fire' }], traits: ['Magic Resistance', 'Fireball 1/day'], desc: 'Burning sentinels' },
+      wraith: { name: 'Wraith', cr: '5', ac: 13, hp: 67, str: 6, dex: 16, con: 16, int: 12, wis: 14, cha: 15, speed: '0, fly 60', atk: [{ n: 'Life Drain', h: 6, d: '4d8+3 necrotic' }], traits: ['Incorporeal', 'Create Specter'], desc: 'Malevolent spirits' },
     };
 
     const BOSSES = [
@@ -72,94 +71,108 @@
     ];
 
     const TRAPS = [
-      { name: 'Pit Trap', det: 12, dis: 10, trigger: 'Pressure plate', eff: '1d6 fall, DC 10 Athletics to climb out', desc: 'Concealed pit' },
+      { name: 'Pit Trap', det: 12, dis: 10, trigger: 'Pressure plate', eff: '1d6 fall, DC 10 Athletics out', desc: 'Concealed pit' },
       { name: 'Poison Darts', det: 15, dis: 13, trigger: 'Tripwire', eff: '1d4 + DC 13 CON or 2d6 poison', desc: 'Darts from wall' },
       { name: 'Swinging Blade', det: 14, dis: 15, trigger: 'Pressure plate', eff: '3d6 slash, DC 13 DEX half', desc: 'Pendulum blade' },
-      { name: 'Fire Glyph', det: 15, dis: 15, trigger: 'Proximity 5ft', eff: '4d6 fire, DC 14 DEX half, 10ft radius', desc: 'Arcane runes' },
-      { name: 'Sleep Gas', det: 14, dis: 12, trigger: 'Opening door/chest', eff: 'DC 13 CON or unconscious 1 min', desc: 'Sedative gas' },
-      { name: 'Collapsing Ceiling', det: 16, dis: 14, trigger: 'Removing treasure', eff: '4d6 bludgeoning, may block exit', desc: 'Weakened supports' },
-      { name: 'Spectral Chains', det: 14, dis: 15, trigger: 'Stepping on runes', eff: 'DC 14 WIS or restrained + 2d6/round', desc: 'Ghostly chains' },
-      { name: 'Symbol of Pain', det: 16, dis: 16, trigger: 'Reading inscription', eff: 'DC 15 CON or incapacitated 1 min', desc: 'Magical suffering' },
+      { name: 'Fire Glyph', det: 15, dis: 15, trigger: 'Proximity 5ft', eff: '4d6 fire, DC 14 DEX half', desc: 'Arcane runes' },
+      { name: 'Sleep Gas', det: 14, dis: 12, trigger: 'Opening door', eff: 'DC 13 CON or sleep 1 min', desc: 'Sedative gas' },
+      { name: 'Collapsing Ceiling', det: 16, dis: 14, trigger: 'Removing treasure', eff: '4d6 bludgeoning', desc: 'Weakened supports' },
+      { name: 'Spectral Chains', det: 14, dis: 15, trigger: 'Stepping on runes', eff: 'DC 14 WIS or restrained', desc: 'Ghostly chains' },
+      { name: 'Symbol of Pain', det: 16, dis: 16, trigger: 'Reading inscription', eff: 'DC 15 CON or incapacitated', desc: 'Magical suffering' },
     ];
 
     const TREASURE = {
-      minor: ['2d6 gp', '1d4 gems (10gp)', 'Potion of Healing', 'Silvered dagger', 'Spell scroll (1st)', "Healer's kit"],
-      moderate: ['4d6 gp', '2d4 gems (50gp)', 'Potion of Greater Healing', '+1 ammo (5)', 'Spell scroll (2nd)', 'Wand of Magic Detection'],
-      major: ['8d6 gp + 2d6 pp', '+1 weapon', 'Cloak of Protection', 'Ring of Protection', 'Bag of Holding', 'Boots of Elvenkind'],
+      minor: ['2d6 gp', '1d4 gems (10gp)', 'Potion of Healing', 'Silvered dagger', 'Spell scroll (1st)'],
+      moderate: ['4d6 gp', '2d4 gems (50gp)', 'Potion of Greater Healing', '+1 ammo (5)', 'Spell scroll (2nd)'],
+      major: ['8d6 gp + 2d6 pp', '+1 weapon', 'Cloak of Protection', 'Ring of Protection', 'Bag of Holding'],
     };
 
     const FEATURES = [
-      { name: 'Crumbling Pillars', effect: 'Half cover. DC 12 Athletics to topple (5ft, 2d6 bludgeoning).' },
-      { name: 'Shallow Water', effect: 'Difficult terrain. Splashing alerts nearby.' },
-      { name: 'Elevated Platform', effect: '10ft high. DC 12 Athletics to climb. +2 AC vs melee from below.' },
-      { name: 'Hanging Chains', effect: 'Climbable. DC 10 DEX or prone on landing.' },
-      { name: 'Unstable Floor', effect: 'Dashing requires DC 12 DEX or fall prone.' },
-      { name: 'Magical Darkness', effect: 'Corners in darkness darkvision can\'t penetrate.' },
-      { name: 'Braziers', effect: 'Dim light 20ft. DC 10 STR to tip, 1d6 fire in 5ft.' },
-      { name: 'Thick Webs', effect: 'Difficult terrain. Flammable (2d4 fire to creatures inside).' },
-      { name: 'Statues', effect: 'DC 14 Investigation: one is hollow (treasure or trap).' },
-      { name: 'Fungal Growth', effect: 'Dim light. DC 12 Nature: edible (1 HP) or poison (1d4).' },
+      { name: 'Crumbling Pillars', effect: 'Half cover. DC 12 to topple (5ft, 2d6).' },
+      { name: 'Shallow Water', effect: 'Difficult terrain. Splashing alerts.' },
+      { name: 'Elevated Platform', effect: '10ft high. DC 12 to climb. +2 AC vs melee.' },
+      { name: 'Hanging Chains', effect: 'Climbable. DC 10 DEX or prone.' },
+      { name: 'Unstable Floor', effect: 'Dashing: DC 12 DEX or prone.' },
+      { name: 'Magical Darkness', effect: 'Darkvision fails in corners.' },
+      { name: 'Braziers', effect: 'Dim 20ft. DC 10 to tip, 1d6 fire.' },
+      { name: 'Thick Webs', effect: 'Difficult terrain. Flammable (2d4).' },
+      { name: 'Statues', effect: 'DC 14: one hollow (treasure/trap).' },
+      { name: 'Fungal Growth', effect: 'DC 12 Nature: edible or poison.' },
     ];
 
     const PUZZLES = [
-      { name: 'The Three Statues', setup: 'Three statues face a locked door: Warrior (sword), Mage (staff), Rogue (daggers). Plaques: "Truth speaks first. Wisdom follows. Cunning acts last."', solution: 'Press plaques in order: Warrior, Mage, Rogue.', hint: 'The virtues match their classes.', trap: 'Wrong order: 2d6 fire (DC 13 DEX half).' },
-      { name: 'The Weighted Scales', setup: 'Large scale with two platforms. "Balance life and death." Pile of skulls and golden apples nearby (5 lbs each).', solution: 'Equal weight of skulls and apples (3 each).', hint: 'True balance, not choosing one.', trap: 'Unbalanced: Floor tilts to pit (DC 14 DEX or 2d6 fall).' },
-      { name: 'The Elemental Braziers', setup: 'Four unlit braziers. Central pedestal with red, blue, white, green stones. Murals show volcano, ocean, mountain, forest.', solution: 'Red→volcano, Blue→ocean, White→mountain, Green→forest.', hint: 'The murals are a map.', trap: 'Wrong: 3d6 elemental damage (DC 14 save).' },
-      { name: 'The Blood Door', setup: 'Door with bowl. "Only the willing may pass. Give freely what you would protect."', solution: 'Willingly give blood (1 HP). Coerced blood fails.', hint: '"Willing" and "freely" are key. It costs less than you think.', trap: 'Forced blood: Door seals 24 hours.' },
-      { name: 'The Musical Lock', setup: 'Door with carved birds on a staff (musical bars). Different heights. Nearby chimes.', solution: 'Play the notes the birds sit on. It\'s sheet music.', hint: 'Look WHERE the birds sit on the lines.', trap: 'Wrong notes: 2d8 thunder, DC 13 CON, pushed 10ft.' },
-      { name: 'The Mirror Maze', setup: 'Room of mirrors. True exit only visible as reflection. "Trust not your eyes, but their echo."', solution: 'Walk backward toward reflected door, or navigate by touch.', hint: 'Echoes are reflections. What reflects sight?', trap: 'Wrong mirror: DC 12 WIS or frightened 1 min.' },
+      { name: 'The Three Statues', setup: 'Three statues face door: Warrior, Mage, Rogue. Plaques read: "Truth speaks first. Wisdom follows. Cunning acts last."', solution: 'Press: Warrior, Mage, Rogue.', hint: 'Virtues match classes.', trap: '2d6 fire (DC 13 DEX)' },
+      { name: 'The Weighted Scales', setup: 'Scale with two platforms. "Balance life and death." Skulls and golden apples nearby.', solution: 'Equal skulls and apples (3 each).', hint: 'True balance, not choosing one.', trap: 'Floor tilts to pit (2d6)' },
+      { name: 'The Elemental Braziers', setup: 'Four unlit braziers. Red, blue, white, green stones. Murals: volcano, ocean, mountain, forest.', solution: 'Match colors to murals.', hint: 'The murals are a map.', trap: '3d6 elemental (DC 14)' },
+      { name: 'The Blood Door', setup: 'Door with bowl. "Only the willing may pass."', solution: 'Willingly give blood (1 HP).', hint: '"Willing" is key.', trap: 'Door seals 24 hours' },
+      { name: 'The Musical Lock', setup: 'Birds on a staff (musical bars). Nearby chimes.', solution: 'Play the notes birds sit on.', hint: 'It\'s sheet music.', trap: '2d8 thunder (DC 13)' },
+      { name: 'The Mirror Maze', setup: 'Mirrors everywhere. True exit only in reflection.', solution: 'Walk backward toward reflected door.', hint: 'Trust the echo of sight.', trap: 'DC 12 WIS or frightened' },
     ];
 
     const RIDDLES = [
-      { q: "I have cities, but no houses. Mountains, but no trees. Water, but no fish. What am I?", a: "A map", hint: "Representations, not reality." },
-      { q: "The more you take, the more you leave behind. What am I?", a: "Footsteps", hint: "Consider your journey here." },
-      { q: "I speak without a mouth and hear without ears. I have no body, but come alive with wind. What am I?", a: "An echo", hint: "Your voice returns in these halls." },
-      { q: "What can fill a room but takes up no space?", a: "Light (or darkness)", hint: "You brought it, or drove it away." },
-      { q: "Forward I am heavy, backward I am not. What am I?", a: "Ton (not)", hint: "Play with letters, not meaning." },
+      { q: "I have cities, but no houses. Mountains, but no trees. Water, but no fish.", a: "A map", hint: "Representations." },
+      { q: "The more you take, the more you leave behind.", a: "Footsteps", hint: "Your journey here." },
+      { q: "I speak without a mouth and hear without ears.", a: "An echo", hint: "In these halls." },
+      { q: "What fills a room but takes no space?", a: "Light", hint: "You brought it." },
+      { q: "Forward I am heavy, backward I am not.", a: "Ton", hint: "Play with letters." },
     ];
+
+    // NEW: Ambiance suggestions per room type
+    const AMBIANCE = {
+      entrance: { sound: 'Wind howling through cracks, distant dripping', light: 'Dim (torchlight from outside)', smell: 'Musty air, old stone', feel: 'Cool draft, sense of crossing a threshold' },
+      guard: { sound: 'Settling dust, creaking leather', light: 'Dark (extinguished torches)', smell: 'Old sweat, rusted metal', feel: 'Watchful silence, strategic positioning' },
+      storage: { sound: 'Scurrying, wood groaning', light: 'Pitch dark', smell: 'Rot, mildew, dust', feel: 'Claustrophobic, things shifting in darkness' },
+      shrine: { sound: 'Low hum, whispered prayers', light: 'Flickering candles (no source)', smell: 'Incense, blood, wax', feel: 'Sacred dread, being watched' },
+      crypt: { sound: 'Scraping stone, distant moans', light: 'Pale phosphorescence', smell: 'Decay, grave dust', feel: 'Cold spots, weight of death' },
+      treasury: { sound: 'Coins settling, metallic echoes', light: 'Glittering reflections', smell: 'Gold, ancient cloth', feel: 'Greed rising, too-good-to-be-true' },
+      library: { sound: 'Pages rustling, whispers', light: 'Reading lamps (magical)', smell: 'Old paper, leather, dust', feel: 'Knowledge pressing in, watched' },
+      prison: { sound: 'Chains rattling, distant sobbing', light: 'Dark with narrow light shafts', smell: 'Fear, desperation, filth', feel: 'Trapped, hopeless, haunted' },
+      lair: { sound: 'Heavy breathing, bones crunching', light: 'Ominous glow or total dark', smell: 'Predator musk, old blood', feel: 'Primal fear, final confrontation' },
+    };
 
     const NPCS = {
       quest: [
-        { name: 'Aldric the Weary', role: 'Retired Adventurer', look: 'Gray beard, missing hand', hook: '"I was there when the tomb was sealed. Someone must finish what we started."', info: '"Take silver. Take fire. Don\'t read inscriptions aloud."', reward: '150 gp + map' },
-        { name: 'Sister Merewyn', role: 'Temple Healer', look: 'Scarred half-elf', hook: '"The Sunblade was taken. Without it, darkness spreads."', info: '"The cult fears true faith. I can bless your weapons."', reward: 'Blessed weapons + 100 gp' },
-        { name: 'Vex', role: 'Info Broker', look: 'Hooded tiefling', hook: '"Someone set up in the ruins. Bad for business. Make them relocate."', info: '"Watch for traps. Previous owners were paranoid."', reward: '200 gp + safe path' },
+        { name: 'Aldric the Weary', role: 'Retired Adventurer', look: 'Gray beard, missing hand', hook: '"I was there when the tomb was sealed."', info: '"Take silver. Take fire."', reward: '150 gp + map' },
+        { name: 'Sister Merewyn', role: 'Temple Healer', look: 'Scarred half-elf', hook: '"The Sunblade was taken."', info: '"The cult fears true faith."', reward: 'Blessed weapons + 100 gp' },
+        { name: 'Vex', role: 'Info Broker', look: 'Hooded tiefling', hook: '"Someone set up in the ruins."', info: '"Watch for traps."', reward: '200 gp + safe path' },
       ],
       shop: [
-        { name: "Durnan's Provisions", keeper: 'Gruff dwarf', items: ['Torch ×10 (1gp)', 'Rope 50ft (1gp)', 'Holy Water (25gp)', "Healer's Kit (5gp)", 'Crowbar (2gp)'] },
-        { name: 'Steel & Shadow', keeper: 'Quiet half-orc', items: ['Silvered Weapon (+100gp)', 'Arrows ×20 (1gp)', 'Shield (10gp)', 'Manacles (2gp)'] },
+        { name: "Durnan's Provisions", keeper: 'Gruff dwarf', items: ['Torch ×10 (1gp)', 'Rope 50ft (1gp)', 'Holy Water (25gp)', "Healer's Kit (5gp)"] },
+        { name: 'Steel & Shadow', keeper: 'Quiet half-orc', items: ['Silvered Weapon (+100gp)', 'Arrows ×20 (1gp)', 'Shield (10gp)'] },
       ],
       rumors: [
         '"The dungeon changes. Rooms appear that weren\'t there..."',
-        '"A rival party went in last week. Haven\'t been seen since."',
-        '"Don\'t trust anything down there. Even the treasure."',
+        '"A rival party went in last week. Haven\'t been seen."',
+        '"Don\'t trust anything. Even the treasure."',
         '"There\'s a back entrance through the old well."',
-        '"Something big moved in recently. The small things are scared now."',
+        '"Something big moved in recently."',
       ],
     };
 
     const ROOMS = [
-      { type: 'entrance', name: 'Entrance Hall', icon: 'DoorOpen', shape: 'rect', w: 3, h: 2 },
-      { type: 'guard', name: 'Guard Post', icon: 'Shield', shape: 'rect', w: 2, h: 2 },
-      { type: 'storage', name: 'Storage', icon: 'Archive', shape: 'rect', w: 2, h: 3 },
-      { type: 'shrine', name: 'Shrine', icon: 'Church', shape: 'circle', w: 3, h: 3 },
-      { type: 'crypt', name: 'Crypt', icon: 'Skull', shape: 'rect', w: 4, h: 2 },
-      { type: 'treasury', name: 'Treasury', icon: 'Coins', shape: 'octagon', w: 2, h: 2 },
-      { type: 'library', name: 'Archives', icon: 'Library', shape: 'rect', w: 3, h: 3 },
-      { type: 'prison', name: 'Cells', icon: 'Lock', shape: 'rect', w: 2, h: 4 },
-      { type: 'lair', name: 'Boss Lair', icon: 'Crown', shape: 'rect', w: 4, h: 4 },
+      { type: 'entrance', name: 'Entrance Hall', icon: 'DoorOpen', shape: 'rect', w: 3, h: 2, mapIcon: '⌂' },
+      { type: 'guard', name: 'Guard Post', icon: 'Shield', shape: 'rect', w: 2, h: 2, mapIcon: '⚔' },
+      { type: 'storage', name: 'Storage', icon: 'Archive', shape: 'rect', w: 2, h: 3, mapIcon: '☐' },
+      { type: 'shrine', name: 'Shrine', icon: 'Church', shape: 'circle', w: 3, h: 3, mapIcon: '✟' },
+      { type: 'crypt', name: 'Crypt', icon: 'Skull', shape: 'rect', w: 4, h: 2, mapIcon: '☠' },
+      { type: 'treasury', name: 'Treasury', icon: 'Coins', shape: 'octagon', w: 2, h: 2, mapIcon: '◆' },
+      { type: 'library', name: 'Archives', icon: 'Library', shape: 'rect', w: 3, h: 3, mapIcon: '📖' },
+      { type: 'prison', name: 'Cells', icon: 'Lock', shape: 'rect', w: 2, h: 4, mapIcon: '⛓' },
+      { type: 'lair', name: 'Boss Lair', icon: 'Crown', shape: 'rect', w: 4, h: 4, mapIcon: '👑' },
     ];
 
     const DESCS = {
-      entrance: ['Worn steps descend into shadow.', 'Ancient doors hang askew.', 'The threshold between worlds.'],
-      guard: ['Signs of a violent last stand.', 'Arrow slits line the walls.', 'Rusted weapons among old bones.'],
-      storage: ['Collapsed shelves, rotting crates.', 'Something moved recently.', 'Supplies for a siege that ended badly.'],
-      shrine: ['Altar stained with blood.', 'Candles burn without source.', 'Defaced icons stare accusingly.'],
-      crypt: ['Stone coffins line the walls.', 'Names scratched from tombs.', 'The dead were not buried with respect.'],
-      treasury: ['Empty pedestals hint at stolen glory.', 'A single chest, suspiciously pristine.', 'Gold coins carpet the floor—why?'],
-      library: ['Books crumble at touch.', 'Something rustles above.', 'Forbidden texts stained with blood.'],
-      prison: ['Chains rattle in empty cells.', 'Scratch marks inside doors.', 'Something is still imprisoned here.'],
-      lair: ['This is where it waits.', 'Trophies of victims on walls.', 'The air thrums with malevolence.'],
+      entrance: ['Worn steps descend into shadow.', 'Ancient doors hang askew.'],
+      guard: ['Signs of a violent last stand.', 'Arrow slits line the walls.'],
+      storage: ['Collapsed shelves, rotting crates.', 'Something moved recently.'],
+      shrine: ['Altar stained with blood.', 'Candles burn without source.'],
+      crypt: ['Stone coffins line the walls.', 'Names scratched from tombs.'],
+      treasury: ['Empty pedestals hint at stolen glory.', 'A single chest, suspiciously pristine.'],
+      library: ['Books crumble at touch.', 'Something rustles above.'],
+      prison: ['Chains rattle in empty cells.', 'Scratch marks inside doors.'],
+      lair: ['This is where it waits.', 'Trophies of victims on walls.'],
     };
+
 
     // ===================== GENERATOR =====================
     
@@ -181,7 +194,7 @@
         return true;
       };
 
-      const entrance = { ...ROOMS[0], id: 0, x: Math.floor(GRID/2) - 1, y: 0, conn: [], desc: pick(DESCS.entrance), enc: null, boss: null, trap: null, treasure: null, feat: null, secret: false, puzzle: null };
+      const entrance = { ...ROOMS[0], id: 0, x: Math.floor(GRID/2) - 1, y: 0, conn: [], desc: pick(DESCS.entrance), enc: null, boss: null, trap: null, treasure: null, feat: null, secret: false, puzzle: null, ambiance: AMBIANCE.entrance };
       rooms.push(entrance);
       markCells(entrance.x, entrance.y, entrance.w, entrance.h);
 
@@ -212,7 +225,7 @@
               });
               if (possible.length) {
                 const mon = pick(possible);
-                enc = { mon, count: Math.max(1, Math.min(6, Math.floor(cfg.partySize * 0.5 + rng() * 2))), tac: pick(['Aggressive', 'Defensive', 'Ambush', 'Flee if bloodied', 'Protect objective']) };
+                enc = { mon, count: Math.max(1, Math.min(6, Math.floor(cfg.partySize * 0.5 + rng() * 2))), tac: pick(['Aggressive', 'Defensive', 'Ambush', 'Flee if bloodied']) };
               }
             }
 
@@ -231,6 +244,7 @@
               feat: rng() > 0.5 ? pick(FEATURES) : null,
               secret: rng() > 0.85,
               puzzle: !isLast && rng() > 0.75 ? (rng() > 0.5 ? pick(PUZZLES) : { riddle: pick(RIDDLES) }) : null,
+              ambiance: AMBIANCE[rt.type] || AMBIANCE.entrance,
             });
             markCells(nx, ny, rt.w, rt.h);
             parent.conn.push(i);
@@ -253,7 +267,7 @@
       if (cfg.includeTown) {
         town = {
           name: pick(['Thornhaven', 'Millbrook', 'Ravenshollow', 'Duskwall', 'Ironford', 'Ashwick']),
-          inn: pick(['The Rusty Nail', "The Wanderer's Rest", 'The Broken Crown', 'The Last Lantern']),
+          inn: pick(['The Rusty Nail', "Wanderer's Rest", 'The Broken Crown', 'The Last Lantern']),
           quest: pick(NPCS.quest), shop: pick(NPCS.shop),
           rumors: [pick(NPCS.rumors), pick(NPCS.rumors)].filter((v, i, a) => a.indexOf(v) === i),
         };
@@ -262,24 +276,25 @@
       return { rooms, seed: s, encTable, town, cfg, gridSize: GRID };
     };
 
-    // ===================== EXPORT =====================
+    // ===================== EXPORT FUNCTIONS =====================
     
-    const exportPDF = (d) => {
-      let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dungeon ${d.seed}</title>
-<style>body{font-family:system-ui;max-width:850px;margin:0 auto;padding:24px;line-height:1.6;font-size:13px}
-h1{text-align:center;border-bottom:3px solid #161616;padding-bottom:12px}h2{background:#161616;color:#fff;padding:8px 16px;margin:24px 0 12px}
-.room{border:1px solid #ccc;padding:16px;margin:16px 0;page-break-inside:avoid;background:#fafafa}
-.stat{background:#f0f0f0;border:1px solid #aaa;padding:12px;margin:8px 0;font-size:12px}
-.trap{background:#f6f0ff;border-left:4px solid #8a3ffc;padding:12px;margin:8px 0}
-.enc{background:#fff0f0;border-left:4px solid #da1e28;padding:12px;margin:8px 0}
-.boss{background:#1a0505;color:#fff;padding:16px;margin:12px 0}
-.treasure{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px;margin:8px 0}
-.puzzle{background:#fdf4ff;border-left:4px solid #d946ef;padding:12px;margin:8px 0}
-.town{background:#f0fdf4;border:2px solid #22c55e;padding:16px;margin:16px 0}
-.desc{font-style:italic;color:#525252;background:#f5f5f5;padding:10px;border-left:4px solid #888;margin:8px 0}
-table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px}
+    const exportDM = (d) => {
+      let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>DM Guide - Dungeon ${d.seed}</title>
+<style>body{font-family:system-ui;max-width:850px;margin:0 auto;padding:20px;line-height:1.5;font-size:12px}
+h1{text-align:center;border-bottom:3px solid #161616;padding-bottom:10px}h2{background:#161616;color:#fff;padding:6px 12px;margin:20px 0 10px}
+.room{border:1px solid #ccc;padding:12px;margin:12px 0;page-break-inside:avoid;background:#fafafa}
+.stat{background:#f0f0f0;padding:10px;margin:6px 0;font-size:11px;border-left:3px solid #666}
+.trap{background:#f6f0ff;border-left:4px solid #8a3ffc;padding:10px;margin:6px 0}
+.enc{background:#fff0f0;border-left:4px solid #da1e28;padding:10px;margin:6px 0}
+.boss{background:#1a0505;color:#fff;padding:12px;margin:10px 0}
+.treasure{background:#fffbeb;border-left:4px solid #f59e0b;padding:10px;margin:6px 0}
+.puzzle{background:#fdf4ff;border-left:4px solid #d946ef;padding:10px;margin:6px 0}
+.ambiance{background:#e0f2fe;border-left:4px solid #0284c7;padding:10px;margin:6px 0;font-style:italic}
+.town{background:#f0fdf4;border:2px solid #22c55e;padding:14px;margin:14px 0}
+.desc{font-style:italic;color:#525252;background:#f5f5f5;padding:8px;border-left:4px solid #888;margin:6px 0}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px}
 @media print{.page-break{page-break-before:always}}</style></head><body>`;
-      h += `<h1>🏰 Dungeon Session</h1><p style="text-align:center">${d.cfg.sessionType} | Party: ${d.cfg.partySize}×L${d.cfg.partyLevel} | ${d.rooms.length} rooms | Seed: ${d.seed}</p>`;
+      h += `<h1>🏰 DM Guide - Dungeon Session</h1><p style="text-align:center">${d.cfg.sessionType} | Party: ${d.cfg.partySize}×L${d.cfg.partyLevel} | ${d.rooms.length} rooms | Seed: ${d.seed}</p>`;
       
       if (d.town) {
         h += `<div class="town"><h2>🏘️ ${d.town.name}</h2><p>🍺 ${d.town.inn}</p>`;
@@ -294,13 +309,14 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
       h += `</table><h2 class="page-break">🗺️ Room Key</h2>`;
 
       d.rooms.forEach(r => {
-        h += `<div class="room"><strong>Room ${r.id + 1}: ${r.name}</strong>${r.secret ? ' 🔒' : ''}${r.boss ? ' 💀' : ''}<div class="desc">"${r.desc}"</div>`;
+        h += `<div class="room"><strong>Room ${r.id + 1}: ${r.name}</strong>${r.secret ? ' 🔒 SECRET' : ''}${r.boss ? ' 💀 BOSS' : ''}<div class="desc">"${r.desc}"</div>`;
         h += `<p><strong>Exits:</strong> ${r.conn.map(c => `Room ${c + 1}`).join(', ')}</p>`;
+        if (r.ambiance) h += `<div class="ambiance">🔊 <strong>Sound:</strong> ${r.ambiance.sound}<br/>💡 <strong>Light:</strong> ${r.ambiance.light}<br/>👃 <strong>Smell:</strong> ${r.ambiance.smell}<br/>✋ <strong>Feel:</strong> ${r.ambiance.feel}</div>`;
         if (r.feat) h += `<p><strong>⚙️ ${r.feat.name}:</strong> ${r.feat.effect}</p>`;
-        if (r.trap) h += `<div class="trap"><strong>⚠️ ${r.trap.name}</strong> — ${r.trap.desc}<br/>Trigger: ${r.trap.trigger} | Detect DC ${r.trap.det} | Disarm DC ${r.trap.dis}<br/><strong>Effect:</strong> ${r.trap.eff}</div>`;
+        if (r.trap) h += `<div class="trap"><strong>⚠️ TRAP: ${r.trap.name}</strong> — ${r.trap.desc}<br/>Trigger: ${r.trap.trigger} | Detect DC ${r.trap.det} | Disarm DC ${r.trap.dis}<br/><strong>Effect:</strong> ${r.trap.eff}</div>`;
         if (r.puzzle) {
-          if (r.puzzle.riddle) h += `<div class="puzzle"><strong>❓ RIDDLE:</strong> "${r.puzzle.riddle.q}"<br/>Answer: ${r.puzzle.riddle.a} | Hint: ${r.puzzle.riddle.hint}</div>`;
-          else h += `<div class="puzzle"><strong>🧩 ${r.puzzle.name}</strong><br/>${r.puzzle.setup}<br/><strong>Solution:</strong> ${r.puzzle.solution}<br/><strong>Hint:</strong> ${r.puzzle.hint}<br/><strong>Failure:</strong> ${r.puzzle.trap}</div>`;
+          if (r.puzzle.riddle) h += `<div class="puzzle"><strong>❓ RIDDLE:</strong> "${r.puzzle.riddle.q}"<br/><strong>Answer:</strong> ${r.puzzle.riddle.a} | <strong>Hint:</strong> ${r.puzzle.riddle.hint}</div>`;
+          else h += `<div class="puzzle"><strong>🧩 PUZZLE: ${r.puzzle.name}</strong><br/>${r.puzzle.setup}<br/><strong>Solution:</strong> ${r.puzzle.solution}<br/><strong>Hint:</strong> ${r.puzzle.hint}<br/><strong>Fail:</strong> ${r.puzzle.trap}</div>`;
         }
         if (r.enc) h += `<div class="enc"><strong>⚔️ ${r.enc.count}× ${r.enc.mon.name}</strong> (CR ${r.enc.mon.cr}) — AC ${r.enc.mon.ac}, HP ${r.enc.mon.hp}<br/>${r.enc.mon.atk.map(a=>`${a.n} +${a.h} (${a.d})`).join('; ')}<br/><em>Tactics: ${r.enc.tac}</em></div>`;
         if (r.boss) h += `<div class="boss"><h4>💀 ${r.boss.title}</h4><p>AC ${r.boss.ac} | HP ${r.boss.hp} | CR ${r.boss.cr}</p><p><strong>Mod:</strong> ${r.boss.mod}</p><p><strong>Lair:</strong> ${r.boss.lair}</p></div>`;
@@ -311,16 +327,57 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
       h += `<h2 class="page-break">📖 Monster Reference</h2>`;
       const used = new Set(); d.rooms.forEach(r => { if(r.enc)used.add(r.enc.mon.name); if(r.boss)used.add(r.boss.name); }); d.encTable.forEach(e=>used.add(e.mon.name));
       Object.values(MONSTERS).filter(m=>used.has(m.name)).forEach(m => {
-        h += `<div class="stat"><strong>${m.name}</strong> (CR ${m.cr}) — <em>${m.desc}</em><br/>AC ${m.ac} | HP ${m.hp} | Speed ${m.speed}<br/>STR ${m.str} DEX ${m.dex} CON ${m.con} INT ${m.int} WIS ${m.wis} CHA ${m.cha}<br/>`;
-        h += `<strong>Attacks:</strong> ${m.atk.map(a=>`${a.n} +${a.h}${a.r?' ('+a.r+')':''}: ${a.d}${a.s?' — '+a.s:''}`).join('; ')}<br/>`;
+        h += `<div class="stat"><strong>${m.name}</strong> (CR ${m.cr}) — <em>${m.desc}</em><br/>AC ${m.ac} | HP ${m.hp} | Speed ${m.speed}<br/>`;
+        h += `<strong>Attacks:</strong> ${m.atk.map(a=>`${a.n} +${a.h}: ${a.d}${a.s?' — '+a.s:''}`).join('; ')}<br/>`;
         if(m.traits.length) h += `<strong>Traits:</strong> ${m.traits.join(' • ')}`;
         h += `</div>`;
       });
       h += `</body></html>`;
       
       const blob = new Blob([h], { type: 'text/html' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `dungeon-${d.seed}.html`; a.click();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `dm-guide-${d.seed}.html`; a.click();
     };
+
+    // NEW: Player Handout Export (no secrets!)
+    const exportPlayer = (d) => {
+      let h = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Player Map - Dungeon ${d.seed}</title>
+<style>body{font-family:system-ui;max-width:850px;margin:0 auto;padding:20px;line-height:1.5}
+h1{text-align:center;border-bottom:3px solid #161616;padding-bottom:10px}h2{background:#161616;color:#fff;padding:6px 12px;margin:20px 0 10px}
+.room{border:1px solid #ccc;padding:12px;margin:12px 0;background:#fafafa}
+.desc{font-style:italic;color:#525252;background:#f5f5f5;padding:8px;border-left:4px solid #888}
+.puzzle{background:#fdf4ff;border-left:4px solid #d946ef;padding:10px;margin:6px 0}
+.ambiance{background:#e0f2fe;border-left:4px solid #0284c7;padding:10px;margin:6px 0;font-style:italic}
+.secret{opacity:0.3;border:2px dashed #666}
+@media print{.page-break{page-break-before:always}}</style></head><body>`;
+      h += `<h1>🗺️ Dungeon Explorer's Map</h1><p style="text-align:center">Party: ${d.cfg.partySize}×L${d.cfg.partyLevel} | ${d.rooms.length} rooms</p>`;
+      h += `<p style="text-align:center;font-style:italic;color:#666">This handout contains what your characters can observe. Secret rooms and trap solutions are hidden.</p>`;
+      
+      h += `<h2>📍 Known Rooms</h2>`;
+      d.rooms.filter(r => !r.secret).forEach(r => {
+        h += `<div class="room"><strong>Room ${r.id + 1}: ${r.name}</strong><div class="desc">"${r.desc}"</div>`;
+        h += `<p><strong>Exits:</strong> ${r.conn.filter(c => !d.rooms[c]?.secret).map(c => `Room ${c + 1}`).join(', ') || 'Unknown'}</p>`;
+        if (r.ambiance) h += `<div class="ambiance">🔊 ${r.ambiance.sound}<br/>💡 ${r.ambiance.light}</div>`;
+        // Show puzzle/riddle WITHOUT solution
+        if (r.puzzle) {
+          if (r.puzzle.riddle) h += `<div class="puzzle"><strong>❓ A riddle is inscribed here:</strong><br/><em>"${r.puzzle.riddle.q}"</em></div>`;
+          else h += `<div class="puzzle"><strong>🧩 ${r.puzzle.name}</strong><br/>${r.puzzle.setup}</div>`;
+        }
+        // Don't show: traps, trap solutions, encounter details, treasure, boss stats
+        h += `</div>`;
+      });
+      
+      // Show secret rooms as "???" 
+      const secretRooms = d.rooms.filter(r => r.secret);
+      if (secretRooms.length > 0) {
+        h += `<h2>❓ Unexplored Areas</h2><p><em>Your party senses there may be ${secretRooms.length} hidden area(s) in this dungeon...</em></p>`;
+      }
+      
+      h += `</body></html>`;
+      
+      const blob = new Blob([h], { type: 'text/html' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `player-map-${d.seed}.html`; a.click();
+    };
+
 
     // ===================== COMPONENTS =====================
     
@@ -335,7 +392,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
         </div>
         <div className="text-xs text-zinc-300 space-y-1">
           <p><Icon name="Shield" size={12}/> AC {monster.ac} <Icon name="Heart" size={12}/> HP {monster.hp}{count>1?' each':''} <Icon name="Footprints" size={12}/> {monster.speed}</p>
-          {monster.atk.map((a,i) => <p key={i}><Icon name="Sword" size={12}/> <strong>{a.n}:</strong> +{a.h}{a.r?` (${a.r})`:''}, {a.d}{a.s && <span className="text-red-400"> ({a.s})</span>}</p>)}
+          {monster.atk.map((a,i) => <p key={i}><Icon name="Sword" size={12}/> <strong>{a.n}:</strong> +{a.h}, {a.d}{a.s && <span className="text-red-400"> ({a.s})</span>}</p>)}
           {monster.traits.length > 0 && <p className="text-zinc-400"><Icon name="Zap" size={12}/> {monster.traits.join(' • ')}</p>}
         </div>
       </div>
@@ -352,6 +409,8 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
         <svg width={width} height={height} className="mx-auto block bg-zinc-900 rounded-lg">
           <defs><pattern id="grid" width={scale} height={scale} patternUnits="userSpaceOnUse"><path d={`M ${scale} 0 L 0 0 0 ${scale}`} fill="none" stroke="#27272a" strokeWidth="0.5"/></pattern></defs>
           <rect width={width} height={height} fill="#18181b"/><rect width={width} height={height} fill="url(#grid)"/>
+          
+          {/* Corridors */}
           {dungeon.rooms.map(r => r.conn.map(tid => {
             if (tid > r.id) return null;
             const t = dungeon.rooms.find(rm => rm.id === tid);
@@ -360,32 +419,47 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
             if (!vis) return null;
             const rx = r.x * scale + offsetX + (r.w * scale) / 2, ry = r.y * scale + offsetY + (r.h * scale) / 2;
             const tx = t.x * scale + offsetX + (t.w * scale) / 2, ty = t.y * scale + offsetY + (t.h * scale) / 2;
-            return <g key={`${r.id}-${tid}`}><line x1={rx} y1={ry} x2={tx} y2={ty} stroke="#52525b" strokeWidth={6} strokeLinecap="round"/><rect x={(rx+tx)/2-3} y={(ry+ty)/2-3} width={6} height={6} fill="#71717a" stroke="#a1a1aa"/></g>;
+            return <g key={`${r.id}-${tid}`}><line x1={rx} y1={ry} x2={tx} y2={ty} stroke="#52525b" strokeWidth={6}/><rect x={(rx+tx)/2-3} y={(ry+ty)/2-3} width={6} height={6} fill="#71717a" stroke="#a1a1aa"/></g>;
           }))}
+          
+          {/* Rooms */}
           {dungeon.rooms.map(r => {
             const vis = revealed.has(r.id) || showAll, sel = selected?.id === r.id, isBoss = r.boss != null;
             const x = r.x * scale + offsetX, y = r.y * scale + offsetY, w = r.w * scale, h = r.h * scale;
-            const fill = vis ? (isBoss ? '#450a0a' : '#3f3f46') : '#1f1f23';
-            const stroke = sel ? '#60a5fa' : vis ? (isBoss ? '#dc2626' : '#71717a') : '#27272a';
-            let shape = <rect x={x} y={y} width={w} height={h} rx={2} fill={fill} stroke={stroke} strokeWidth={sel ? 2 : 1}/>;
+            const fill = vis ? (isBoss ? '#450a0a' : r.secret ? '#1a2e1a' : '#3f3f46') : '#1f1f23';
+            const stroke = sel ? '#60a5fa' : vis ? (isBoss ? '#dc2626' : r.secret ? '#22c55e' : '#71717a') : '#27272a';
+            
+            let shape = <rect x={x} y={y} width={w} height={h} rx={2} fill={fill} stroke={stroke} strokeWidth={sel ? 2 : 1} strokeDasharray={r.secret ? '4,2' : 'none'}/>;
             if (r.shape === 'circle') shape = <circle cx={x + w/2} cy={y + h/2} r={Math.min(w, h) / 2} fill={fill} stroke={stroke} strokeWidth={sel ? 2 : 1}/>;
             else if (r.shape === 'octagon') {
               const ins = Math.min(w, h) * 0.25;
               const pts = [[x+ins,y],[x+w-ins,y],[x+w,y+ins],[x+w,y+h-ins],[x+w-ins,y+h],[x+ins,y+h],[x,y+h-ins],[x,y+ins]].map(p=>p.join(',')).join(' ');
               shape = <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={sel ? 2 : 1}/>;
             }
+            
             return (
               <g key={r.id} onClick={() => onSelect(r)} style={{ cursor: 'pointer' }}>
                 {shape}
-                {vis ? <><text x={x+w/2} y={y+h/2+3} textAnchor="middle" fontSize={10} fill={isBoss ? '#fca5a5' : '#d4d4d8'}>{r.id+1}</text>
-                  {r.trap && <circle cx={x+w-4} cy={y+4} r={3} fill="#a855f7"/>}{r.secret && <circle cx={x+4} cy={y+4} r={3} fill="#22c55e"/>}{r.puzzle && <circle cx={x+w/2} cy={y+4} r={3} fill="#ec4899"/>}</>
-                  : <text x={x+w/2} y={y+h/2+3} textAnchor="middle" fontSize={10} fill="#52525b">?</text>}
+                {vis ? (
+                  <>
+                    {/* Room number */}
+                    <text x={x+w/2} y={y+h/2-2} textAnchor="middle" fontSize={9} fill={isBoss ? '#fca5a5' : '#d4d4d8'}>{r.id+1}</text>
+                    {/* Room type icon */}
+                    <text x={x+w/2} y={y+h/2+8} textAnchor="middle" fontSize={8} fill={isBoss ? '#fca5a5' : '#a1a1aa'}>{r.mapIcon}</text>
+                    {/* Status indicators */}
+                    {r.trap && <circle cx={x+w-4} cy={y+4} r={3} fill="#a855f7"/>}
+                    {r.puzzle && <circle cx={x+w/2} cy={y+4} r={3} fill="#ec4899"/>}
+                    {r.enc && !r.boss && <circle cx={x+4} cy={y+4} r={3} fill="#ef4444"/>}
+                    {r.treasure && <circle cx={x+4} cy={y+h-4} r={3} fill="#eab308"/>}
+                  </>
+                ) : <text x={x+w/2} y={y+h/2+3} textAnchor="middle" fontSize={10} fill="#52525b">?</text>}
               </g>
             );
           })}
         </svg>
       );
     };
+
 
     // ===================== MAIN APP =====================
     
@@ -407,7 +481,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
           <div className="max-w-lg mx-auto">
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 mb-2"><Icon name="Map" size={32} color="#60a5fa"/><h1 className="text-2xl font-bold">Abyssal Cartographer</h1></div>
-              <p className="text-zinc-400 text-sm">Complete D&D Session Generator v1.1</p>
+              <p className="text-zinc-400 text-sm">Complete D&D Session Generator v1.2</p>
             </div>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-5">
               <div>
@@ -442,7 +516,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
               </div>
               <button onClick={gen} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2"><Icon name="Dices" size={20}/>Generate Session</button>
             </div>
-            <p className="text-center text-zinc-500 text-xs mt-4">Abyssal Cartographer v1.1 • Now with puzzles! 🎁</p>
+            <p className="text-center text-zinc-500 text-xs mt-4">v1.2 • Now with ambiance & player handouts! 🎁</p>
           </div>
         </div>
       );
@@ -461,7 +535,14 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
                 <button onClick={()=>setView('ref')} className={`px-2 py-1 text-xs rounded flex items-center gap-1 ${view==='ref'?'bg-blue-600 text-white':'text-zinc-400 hover:bg-zinc-700'}`}><Icon name="BookOpen" size={12}/>Ref</button>
               </nav>
               <div className="flex-1"/>
-              <button onClick={()=>exportPDF(dun)} className="p-1.5 text-zinc-400 hover:bg-zinc-700 rounded" title="Export"><Icon name="Download" size={16}/></button>
+              {/* Export dropdown */}
+              <div className="relative group">
+                <button className="p-1.5 text-zinc-400 hover:bg-zinc-700 rounded flex items-center gap-1" title="Export"><Icon name="Download" size={16}/><Icon name="ChevronDown" size={12}/></button>
+                <div className="absolute right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl hidden group-hover:block z-50 min-w-[160px]">
+                  <button onClick={()=>exportDM(dun)} className="w-full px-3 py-2 text-left text-sm hover:bg-zinc-700 flex items-center gap-2"><Icon name="Shield" size={14}/>DM Guide</button>
+                  <button onClick={()=>exportPlayer(dun)} className="w-full px-3 py-2 text-left text-sm hover:bg-zinc-700 flex items-center gap-2"><Icon name="Users" size={14}/>Player Handout</button>
+                </div>
+              </div>
               <button onClick={()=>setStep('config')} className="p-1.5 text-zinc-400 hover:bg-zinc-700 rounded" title="New"><Icon name="RotateCcw" size={16}/></button>
             </div>
           </header>
@@ -496,6 +577,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
               </div>
             )}
 
+
             {view === 'map' && (
               <div className="flex flex-col lg:flex-row gap-3">
                 <div className="flex-1">
@@ -506,27 +588,40 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
                   <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 overflow-auto">
                     <DungeonMap dungeon={dun} revealed={rev} selected={sel} onSelect={clickRoom} showAll={showAll}/>
                   </div>
-                  <div className="flex gap-4 justify-center mt-2 text-xs text-zinc-500">
+                  <div className="flex gap-3 justify-center mt-2 text-xs text-zinc-500 flex-wrap">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"/>Combat</span>
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500"/>Trap</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"/>Secret</span>
                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-pink-500"/>Puzzle</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"/>Boss</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500"/>Treasure</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 border border-green-500 border-dashed"/>Secret</span>
                   </div>
                 </div>
                 <div className="lg:w-96">
                   {sel ? (
                     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 space-y-2 max-h-[80vh] overflow-auto">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2"><div className="w-9 h-9 rounded bg-zinc-700 flex items-center justify-center"><Icon name={sel.icon} size={20} color={sel.boss?'#f87171':'#d4d4d8'}/></div><div><h3 className="font-semibold">{sel.name}</h3><span className="text-xs text-zinc-400">Room {sel.id+1}</span></div></div>
+                        <div className="flex items-center gap-2"><div className="w-9 h-9 rounded bg-zinc-700 flex items-center justify-center text-lg">{sel.mapIcon}</div><div><h3 className="font-semibold">{sel.name}</h3><span className="text-xs text-zinc-400">Room {sel.id+1}</span></div></div>
                         <div className="flex gap-1 flex-wrap justify-end">{sel.secret && <span className="bg-green-600 px-2 py-0.5 rounded text-xs">Secret</span>}{sel.boss && <span className="bg-red-600 px-2 py-0.5 rounded text-xs">Boss</span>}</div>
                       </div>
                       <div className="bg-zinc-900 rounded p-2 border-l-2 border-zinc-600"><p className="text-sm italic text-zinc-300">"{sel.desc}"</p></div>
                       <p className="text-xs text-zinc-400"><Icon name="Footprints" size={12}/> Exits: {sel.conn.map(c=>`Room ${c+1}`).join(', ')}</p>
+                      
+                      {/* Ambiance - NEW */}
+                      {sel.ambiance && (
+                        <div className="bg-sky-900/30 rounded p-2 border-l-2 border-sky-500 text-xs space-y-1">
+                          <h4 className="font-semibold text-sky-300 flex items-center gap-1"><Icon name="Volume2" size={12}/>Ambiance</h4>
+                          <p><span className="text-sky-400">🔊</span> {sel.ambiance.sound}</p>
+                          <p><span className="text-sky-400">💡</span> {sel.ambiance.light}</p>
+                          <p><span className="text-sky-400">👃</span> {sel.ambiance.smell}</p>
+                          <p><span className="text-sky-400">✋</span> {sel.ambiance.feel}</p>
+                        </div>
+                      )}
+                      
                       {sel.feat && <div className="bg-blue-900/30 rounded p-2 border-l-2 border-blue-500"><p className="text-xs text-blue-300"><Icon name="Info" size={12}/> <strong>{sel.feat.name}:</strong> {sel.feat.effect}</p></div>}
                       {sel.trap && <div className="bg-purple-900/30 rounded p-2 border-l-2 border-purple-500"><h4 className="text-xs font-semibold text-purple-300 flex items-center gap-1 mb-1"><Icon name="AlertTriangle" size={12}/>TRAP: {sel.trap.name}</h4><p className="text-xs text-zinc-400 italic mb-1">{sel.trap.desc}</p><p className="text-xs">Trigger: {sel.trap.trigger}<br/>Detect DC {sel.trap.det} | Disarm DC {sel.trap.dis}<br/><span className="text-red-300">Effect: {sel.trap.eff}</span></p></div>}
                       {sel.puzzle && (
                         <div className="bg-pink-900/30 rounded p-2 border-l-2 border-pink-500">
-                          {sel.puzzle.riddle ? (<><h4 className="text-xs font-semibold text-pink-300 flex items-center gap-1 mb-1"><Icon name="HelpCircle" size={12}/>RIDDLE</h4><p className="text-sm italic text-zinc-200 mb-1">"{sel.puzzle.riddle.q}"</p><p className="text-xs text-zinc-400">Answer: <span className="text-pink-300">{sel.puzzle.riddle.a}</span></p><p className="text-xs text-zinc-500">Hint: {sel.puzzle.riddle.hint}</p></>) : (<><h4 className="text-xs font-semibold text-pink-300 flex items-center gap-1 mb-1"><Icon name="Puzzle" size={12}/>PUZZLE: {sel.puzzle.name}</h4><p className="text-xs mb-1"><strong>Setup:</strong> {sel.puzzle.setup}</p><p className="text-xs mb-1"><strong>Solution:</strong> <span className="text-pink-300">{sel.puzzle.solution}</span></p><p className="text-xs text-zinc-500">Hint: {sel.puzzle.hint}</p><p className="text-xs text-red-300">Failure: {sel.puzzle.trap}</p></>)}
+                          {sel.puzzle.riddle ? (<><h4 className="text-xs font-semibold text-pink-300 flex items-center gap-1 mb-1"><Icon name="HelpCircle" size={12}/>RIDDLE</h4><p className="text-sm italic text-zinc-200 mb-1">"{sel.puzzle.riddle.q}"</p><p className="text-xs text-zinc-400">Answer: <span className="text-pink-300">{sel.puzzle.riddle.a}</span></p><p className="text-xs text-zinc-500">Hint: {sel.puzzle.riddle.hint}</p></>) : (<><h4 className="text-xs font-semibold text-pink-300 flex items-center gap-1 mb-1"><Icon name="Puzzle" size={12}/>PUZZLE: {sel.puzzle.name}</h4><p className="text-xs mb-1"><strong>Setup:</strong> {sel.puzzle.setup}</p><p className="text-xs mb-1"><strong>Solution:</strong> <span className="text-pink-300">{sel.puzzle.solution}</span></p><p className="text-xs text-zinc-500">Hint: {sel.puzzle.hint}</p><p className="text-xs text-red-300">Fail: {sel.puzzle.trap}</p></>)}
                         </div>
                       )}
                       {sel.enc && <div><h4 className="text-xs font-semibold text-red-400 flex items-center gap-1 mb-1"><Icon name="Sword" size={12}/>ENCOUNTER</h4><StatBlock monster={sel.enc.mon} count={sel.enc.count}/><p className="text-xs text-zinc-400 mt-1 italic">Tactics: {sel.enc.tac}</p></div>}
@@ -550,7 +645,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8p
                 <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
                   <h3 className="font-semibold flex items-center gap-2 mb-2"><Icon name="Flame" size={18} color="#f87171"/>Room Encounters</h3>
                   {dun.rooms.filter(r=>r.enc||r.boss).map(r=><div key={r.id} className="flex items-center justify-between py-1.5 border-b border-zinc-800">
-                    <span className="flex items-center gap-2"><Icon name={r.icon} size={14} color={r.boss?'#f87171':'#71717a'}/>Room {r.id+1}</span>
+                    <span className="flex items-center gap-2"><span>{r.mapIcon}</span>Room {r.id+1}</span>
                     <span className="text-sm text-zinc-400">{r.boss?`💀 ${r.boss.title}`:`${r.enc.count}× ${r.enc.mon.name}`}</span>
                   </div>)}
                 </div>
