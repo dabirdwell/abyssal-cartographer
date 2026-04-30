@@ -70,3 +70,6 @@ MIT License - Free for personal and commercial use.
 ---
 
 *"Roll for initiative!"* 🎲
+---
+
+<p align="center"><em>Æ</em></p>
