@@ -6,7 +6,7 @@ Abyssal Cartographer is a complete D&D session generator that runs entirely in y
 
 ## 🎮 Play It
 
-**Live:** _https://dabirdwell.github.io/abyssal-cartographer/_ ← _(GitHub Pages placeholder — goes live once Pages is switched on; see [Deploy](#-deploy))_
+**Live:** https://dabirdwell.github.io/abyssal-cartographer/ — play it in the browser, nothing to install.
 
 **Or run it locally:** [download `AbyssalCartographer.html`](https://raw.githubusercontent.com/dabirdwell/abyssal-cartographer/main/AbyssalCartographer.html) and double-click it. No install, no build.
 
