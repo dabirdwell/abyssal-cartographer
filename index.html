@@ -53,8 +53,14 @@ header{
 .brand .star{color:var(--accent); font-size:17px; transition:color .8s}
 .brand h1{font-size:17px; font-weight:600; letter-spacing:.04em; white-space:nowrap}
 .brand .ver{font-size:11px; color:var(--parch-deep)}
-.seedbox{display:flex; align-items:center; gap:6px}
+.seedbox{display:flex; align-items:center; gap:6px; position:relative}
 .seedbox input{width:190px; font-family:ui-monospace,monospace; font-size:12.5px}
+.seedbox .seedlab{font-size:11px; color:var(--parch-deep); letter-spacing:.06em}
+.seedhint{position:absolute; top:calc(100% + 7px); left:0; width:302px; max-width:78vw; z-index:45;
+  background:var(--panel2); border:1px solid var(--line); border-left:2px solid var(--ember);
+  border-radius:5px; padding:8px 10px; font-size:12px; line-height:1.55; color:var(--parch-dim);
+  box-shadow:0 8px 24px rgba(0,0,0,.45); display:none}
+.seedhint.show{display:block}
 .hgroup{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
 .toggle{display:flex; border:1px solid var(--line); border-radius:4px; overflow:hidden}
 .toggle button{border:none; border-radius:0; padding:5px 10px; font-size:12.5px}
@@ -264,11 +270,13 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.3</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.4</span></div>
   <div class="seedbox">
+    <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
     <button class="primary" id="btnGenerate">Generate</button>
     <button id="btnRandom" title="Roll a new fate">⚄ New</button>
+    <div class="seedhint" id="seedHint" role="status" aria-live="polite"></div>
   </div>
   <div class="hgroup">
     <div class="toggle" id="sysToggle" role="group" aria-label="Rules system">
@@ -338,7 +346,7 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
   <span class="xp" id="xpFoot"></span>
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
-  <span>MIT · works offline · build 2026-08-15 · <span id="footSeed"></span></span>
+  <span>MIT · works offline · v2.4 · build 2026-08-15 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -1382,9 +1390,33 @@ function descend(){
   const c={...S.model.cfg,seed:S.model.seed,depth:S.model.depth+1};
   newDungeon(c);toast("Depth "+c.depth+". The air is older here.");
 }
-$("#btnGenerate").addEventListener("click",()=>newDungeon(currentCfg()));
-$("#btnRandom").addEventListener("click",()=>{$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());});
-$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter")newDungeon(currentCfg());});
+/* ---- first-touch courtesy: Generate on an unchanged seed rebuilds the same place ---- */
+let SEEDHINT_T=null;
+function dungeonSig(c,depth){
+  return [c.seed,depth||1,+c.party,+c.level,c.size,c.mode,c.factions,c.origin||"",c.doom||""].join("|");
+}
+function sameAsOnScreen(cfg){
+  return !!S.model && dungeonSig(cfg,1)===dungeonSig(S.model.cfg,S.model.depth);
+}
+function seedHint(msg){
+  const h=$("#seedHint"); if(!h)return;
+  h.textContent=msg; h.classList.add("show");
+  clearTimeout(SEEDHINT_T); SEEDHINT_T=setTimeout(hideSeedHint,9000);
+}
+function hideSeedHint(){
+  const h=$("#seedHint"); if(!h)return;
+  clearTimeout(SEEDHINT_T); h.classList.remove("show");
+}
+$("#btnGenerate").addEventListener("click",()=>{
+  const cfg=currentCfg(), same=sameAsOnScreen(cfg);
+  newDungeon(cfg);
+  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");
+  else hideSeedHint();
+});
+$("#btnRandom").addEventListener("click",()=>{hideSeedHint();$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());});
+$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);
+  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");else hideSeedHint();}});
+$("#seedInput").addEventListener("input",hideSeedHint);
 $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sys=b.dataset.sys;
   $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderPanel();syncHash();});
 $("#viewToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.view=b.dataset.view;
@@ -1504,6 +1536,7 @@ var QTERMS={
  faction:["Factions","Two or three groups already live here and already have opinions about each other. Your delvers arrive as a fourth problem."],
  telltale:["The telltale","Every trap here comes with a tell. Describe the tell before they trip it. A trap nobody had a chance to notice is just arithmetic."],
  secret:["Secret doors","The map shows them to you and not to them. Nothing behind one is ever required. I have never built a place that punishes a party for missing a door."],
+ seed:["The seed","A dungeon's short identity code, its true name. Put the same code in and you get the same dungeon back, room for room, which is how a shared link hands somebody else this exact place."],
  fog:["The unlit map","The map remembers only what has been lit. What is grey has not been seen by anyone still breathing."],
  torch:["The light","One hour of torch is one hour of your table's actual life. When it goes, the dark is a rule and not a mood."],
  xp:["Treasure as experience","What they carry out is what they learn from; treasure left in the dark teaches nobody anything. Shadowdark counts hoards rather than coins: a fair haul is worth a point, a fabulous one more, and every delver receives the whole award rather than a divided share."]
@@ -1560,10 +1593,9 @@ function qMargin(key,text){
 function QLETTER(){
   return '<div class="qletter">'
    +'<p>To the new hand, whoever you are.</p>'
-   +'<p>They have given you the map of a place nobody has been. That is not an error. That is the work.</p>'
-   +'<p>I drew for the Guild thirty-one years and never once from standing in the room. You draw from rumour, from what a survivor\'s hands do while she talks, from the way water stains a floor. Then you hand it to people braver than you and find out what you got right.</p>'
-   +'<p>You are about to do the same thing at a table. You will describe a room you have never seen to friends who have never been there. Then, the part nobody warns you about, you will find out what they do about it.</p>'
-   +'<p>I have left notes in the margins. Ignore them the moment you stop needing them. Turn them off entirely if they crowd the page. The ink keeps.</p>'
+   +'<p>You are about to run this game for your friends. The whole job is this: you describe a room, they say what their people do about it, you say what happens next. Everything else is decoration.</p>'
+   +'<p>I drew maps for the Guild for thirty-one years and never once from standing in the room. You will do the same thing at this table: describe a place you have never seen to friends who have never been there, and then find out what they do about it. That is not an error. That is the work.</p>'
+   +'<p>I have left notes in the margins. Ignore them the moment you stop needing them; turn them off entirely if they crowd the page. The ink keeps.</p>'
    +'<p>Your first commission is on the table. I have marked it up.</p>'
    +'<p class="qsign">— Q.</p></div>';
 }
