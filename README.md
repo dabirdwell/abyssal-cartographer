@@ -1,55 +1,32 @@
 # 🏰 Abyssal Cartographer
 
-Abyssal Cartographer is a complete D&D session generator that runs entirely in your browser: one click produces a town, a mapped dungeon, encounters, traps, puzzles, treasure, and a boss lair. It exports two printable handouts — a full DM guide and a spoiler-free player map — so a table can be running in minutes.
+One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same seed always rebuilds the same dungeon, so the URL is the save file and the share link.
 
-*A Christmas gift for tabletop nerds* 🎁
+Shadowdark-native, with a 5e conversion toggle.
+
+*Started as a Christmas gift for tabletop nerds* 🎁
 
 ## 🎮 Play It
 
-**Live:** https://dabirdwell.github.io/abyssal-cartographer/ — play it in the browser, nothing to install.
+**Live:** https://dabirdwell.github.io/abyssal-cartographer/
 
-**Or run it locally:** [download `AbyssalCartographer.html`](https://raw.githubusercontent.com/dabirdwell/abyssal-cartographer/main/AbyssalCartographer.html) and double-click it. No install, no build.
+**Or run it locally:** download [`AbyssalCartographer.html`](https://raw.githubusercontent.com/dabirdwell/abyssal-cartographer/main/AbyssalCartographer.html) and double-click it. No install, no account, no network calls, nothing written to your machine. It works with the wifi off.
 
-## 📦 Single file, no build
+## 📦 One file, zero dependencies
 
-The whole app is **one HTML file** — `index.html` (the deploy copy) and `AbyssalCartographer.html` (the original filename, kept identical for existing inbound links). There is no `package.json`, no bundler, no backend, and nothing to compile: open the file and it runs.
+v2 is a ground-up rewrite. There are no frameworks, no CDN loads, no build step, and no backend: the entire app is one self-contained HTML file. Generation, the map, the real-time torch, and the exports all happen locally in your browser. The only outbound links are nine optional YouTube ambiance links, and nothing loads unless you click one.
 
-To stay a single file, it loads React, Tailwind, Babel-standalone, and lucide icons from public CDNs at runtime, so the **first** load needs a network connection. After that, everything — map generation, exports, ambiance — happens locally in your browser. Your generated content never leaves the page.
+## ✨ What it generates
 
-## ✨ Features
-
-### 🏘️ Town Generation
-- Named settlements with inns
-- Quest givers with dialogue, hooks, and rewards
-- Shops with inventories
-- Rumors and plot hooks
-
-### 🗺️ Dungeon Generation
-- **One-Shot Mode**: 8–12 rooms
-- **Campaign Mode**: 14–20 rooms
-- Interactive fog-of-war map with room icons
-- Furniture icons inside rooms
-- Varied room shapes (rect, circle, octagon)
-- Seeded generation — the seed is shown, so a dungeon is reproducible
-
-### ⚔️ Encounters & Bosses
-- 30 monsters with full stat blocks
-- 9 unique boss templates with lair actions
-- CR-appropriate scaling
-- Tactical suggestions per encounter
-
-### 🧩 Puzzles & Riddles
-- 8 puzzles with setup, solution, hints, and failure effects
-- 7 riddles with answers and hints
-
-### 🔊 Ambient Sound
-- Curated YouTube playlist links per room type
-- Sound, light, smell, and feel descriptions
-- One-click ambiance for immersion
-
-### 📄 Dual Export (take your content with you)
-- **DM Guide**: full details with solutions, stats, and sound links — downloads as a standalone, printable HTML file
-- **Player Handout**: puzzles without solutions, no trap reveals, secret rooms hidden — a separate HTML download
+- **A coherent dungeon**, not random rooms: a genome of origin and doom colors names, descriptions, creatures, and treasure throughout
+- **Factions**: two or three competing groups with goals, and a boss who leads one of them
+- **Solvable by construction**: every locked door has a reachable key, and secrets can always be found
+- **Shadowdark stat blocks** with a plain-language reading under each; the 5e toggle converts stats between systems
+- **Real-time light**: torch one hour, lantern four, candle one at close range only; the screen goes cold and dark when the light burns out
+- **Treasure as XP**, counted in hoard tiers, full award to every delver
+- **The Margins**: an optional guidance layer for first-time GMs. A letter from Quire, a retired Guild cartographer, opens into a nine-step first commission built from your own generated dungeon. One checkbox turns all of it off
+- **Town and rumors** in one-shot mode; endless descending levels in campaign mode
+- **Dual export**: a full DM guide and a spoiler-free player handout, both standalone printable HTML. Quire's letter rides along in the DM guide when the margins are on
 
 ## 🚀 Deploy
 
@@ -60,42 +37,28 @@ This repo is Pages-ready. Two steps flip it live:
 
 Pages serves `index.html` at the repository URL. The original `AbyssalCartographer.html` is preserved alongside it so older download links keep working.
 
-## 📸 Screenshot (for the README)
-
-To add a screenshot:
-
-1. Open `index.html` in a browser and click **Generate Session**.
-2. Open the **Map** view and click **Reveal** to show the whole dungeon.
-3. Capture the window (macOS: `⌘⇧4`, then space to grab the window).
-4. Save it to `docs/screenshot.png` and add it here:
-   ```markdown
-   ![Abyssal Cartographer — revealed dungeon map](docs/screenshot.png)
-   ```
-
 ## 📋 Version History
 
-### v1.3 (Current)
-- 🐉 **30 monsters** (up from 20)
-- 🎵 **Ambient sound links** — YouTube playlists per room
-- 🪑 **Furniture icons** on map
-- 🎯 **9 boss templates** (up from 7)
-- 🧩 **8 puzzles, 7 riddles**
+### v2.3 (Current)
+Ground-up rewrite: Shadowdark-native generation, faction and boss system, guaranteed-solvable locks, real-time torch timer, hoard-tier treasure XP, The Margins guidance layer, seed-as-URL saves and sharing, dual exports, zero external dependencies. 5e available as a conversion toggle.
+
+### v1.3
+30 monsters, ambient sound links, furniture icons, 9 boss templates, 8 puzzles and 7 riddles.
 
 ### v1.2
-- Ambiance system (text descriptions)
-- Room type icons on map
-- Separate DM/Player exports
+Ambiance system, room type icons, separate DM and Player exports.
 
 ### v1.1
-- Puzzle and riddle system
-- Improved map with room shapes
+Puzzle and riddle system, improved map with room shapes.
 
 ### v1.0
-- Initial release
+Initial release.
 
 ## 📜 License
 
-MIT License — free for personal and commercial use. See [`LICENSE`](LICENSE).
+The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](LICENSE).
+
+This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.
 
 ---
 
