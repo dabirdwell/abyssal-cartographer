@@ -7,6 +7,8 @@ node tests/regression.test.js     AbyssalCartographer.html out/   # roles, links
 node tests/game-master.test.js    AbyssalCartographer.html out/   # the in-page game master: a fake local server, Anthropic / Google / OpenAI request shapes, errors, phone
 node tests/torchlight.test.js     AbyssalCartographer.html out/   # the light on the map, hatching, print export, frame times
 node tests/player-display.test.js AbyssalCartographer.html out/   # the second-screen display: sync, no secrets, lights out, reconnect
+node tests/offline.test.js        AbyssalCartographer.html out/   # every outside connection blocked: the full game, then a local model
+node tests/save.test.js           AbyssalCartographer.html out/   # the save-for-offline link, served like GitHub Pages and from disk
 node hosted/test_hosted.mjs       AbyssalCartographer.html        # the hosted game master against a fake Claude
 ```
 

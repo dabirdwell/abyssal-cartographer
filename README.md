@@ -19,6 +19,19 @@ The first visit asks one question: **I want to play**, or **I am running it for 
 - **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and a game master that is an AI. Two ways to get one. The quick way: one button copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini, and you play in two tabs. The other way: play right here in the page, with your own API key (Claude, OpenAI or Gemini), a model running on your own computer (LM Studio or Ollama), or a hosted address you were given; the chat sits beside the map, rooms light themselves when the game master names them, and the conversation is kept per dungeon in your browser. Either way the dungeon stays fixed, so the AI cannot drift, and your screen never shows a secret. 5e rules by default on this path, because AI game masters know D&D best.
 - **Running it** opens the full game master's screen. From there, Export → *Link for a player* copies an address that drops anyone straight onto the player's table, first room lit, nothing spoiled.
 
+## 🔌 Playing without internet
+
+Everything except an online AI runs from the one file, with the wifi off.
+
+| You are | Without internet? | What it takes |
+|---|---|---|
+| Running the game for friends | Yes, all of it: dungeons, map, torch, the guide, exports, the player display | The file on your computer |
+| Playing alone, AI as game master | Yes, if the AI runs on your computer | The file, plus LM Studio or Ollama with a model (choose it under *Where the brain is*) |
+| Playing alone with Claude, ChatGPT or Gemini | No | An account you already have, or your own API key |
+| Playing with a hosted game master | No | An address and access code from whoever runs it |
+
+To get the file: **save it to play offline** at the bottom of the page (or Export → *Save the whole game for offline play*), then double-click the saved file.
+
 ## 🖥 A second screen for the table
 
 Running it for friends with a TV, a projector, or an iPad in Sidecar: Export → **Player display for a TV or iPad** opens a second window that shows only what the players may see (the fogged map, the room they are in, the torch), kept in step with the game master's window. Same computer, any screen you can drag a window onto.
@@ -55,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v3.0 (Current)
+### v3.0.1 (Current)
+Save the game for offline play from the page itself (the footer link, or Export). Opened from your computer, the page says it is the offline copy.
+
+### v3.0
 The game master inside the page: your own key (Claude, OpenAI, Gemini), a local model (LM Studio, Ollama) or a hosted address; streaming chat beside the map; rooms light themselves from the game master's tags; the torch state travels with each turn; conversations kept per dungeon. `hosted/`: a small Haiku 5.5 server with access codes.
 
 ### v2.7
