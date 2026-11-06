@@ -2,7 +2,7 @@
 
 One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same seed always rebuilds the same dungeon, so the URL is the save file and the share link.
 
-Shadowdark-native, with a 5e conversion toggle.
+Shadowdark-native, with a 5e conversion toggle. Run it for your friends, or play it yourself with an AI as game master.
 
 *Started as a Christmas gift for tabletop nerds* 🎁
 
@@ -11,6 +11,13 @@ Shadowdark-native, with a 5e conversion toggle.
 **Live:** https://dabirdwell.github.io/abyssal-cartographer/
 
 **Or run it locally:** download [`AbyssalCartographer.html`](https://raw.githubusercontent.com/dabirdwell/abyssal-cartographer/main/AbyssalCartographer.html) and double-click it. No install, no account, no network calls, nothing written to your machine. It works with the wifi off.
+
+## 🎲 Two ways in
+
+The first visit asks one question: **I want to play**, or **I am running it for friends**.
+
+- **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and one button that copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini. The AI runs the game; the dungeon stays fixed, so it cannot drift; your screen never shows a secret. 5e rules by default on this path, because AI game masters know D&D best.
+- **Running it** opens the full game master's screen. From there, Export → *Link for a player* copies an address that drops anyone straight onto the player's table, first room lit, nothing spoiled.
 
 ## 📦 One file, zero dependencies
 
@@ -40,7 +47,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v2.5 (Current)
+### v2.6 (Current)
+The player's table: a first-visit door (play, or run it), a secrets-free player mode with a fogged map that follows you, dice, and the AI game master hand-off front and centre. Export → Link for a player. In 5e mode the Shadowdark words step aside (adventurers, 5e experience rules) and the AI prompt tells the game master to use the official 5e monsters it already knows; in Shadowdark mode the prompt carries a short rules reminder. Pasting a different dungeon's link into the same tab now rebuilds the page. The same seed still builds the same dungeon.
+
+### v2.5
 Play with an AI game master (Export menu). Welcome letter rewritten in plain words: the dungeon is built for you, and the letter says so. Phone layout fixed. 5e mode no longer mixes in Shadowdark's experience rules. Dead ambiance links replaced with YouTube searches. Small fixes to the DM guide, the torch controls and generated text. The same seed still builds the same dungeon.
 
 ### v2.4
