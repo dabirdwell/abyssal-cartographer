@@ -118,6 +118,24 @@ main{flex:1; display:flex; min-height:0}
   radial-gradient(ellipse at 50% 30%, #171310 0%, var(--ink) 72%)}
 #mapSvg{width:100%; height:100%; display:block; cursor:grab; touch-action:none}
 #mapSvg.panning{cursor:grabbing}
+/* ---------- torchlight on the map ----------
+   The map svg carries a class for the torch's state (tl-none, tl-gutter, tl-out) and one for the view (tl-dm).
+   These variables set how strong the light and the dark are; the svg's own gradients do the rest. */
+#mapSvg{--tl-ink:#0f0d0b; --tl-glow:1; --tl-edge:.8; --tl-core:0}
+#mapSvg.tl-dm{--tl-glow:.7; --tl-edge:.24}
+body.dark #mapSvg{--tl-ink:#04060a; --tl-glow:0; --tl-edge:.93; --tl-core:.5}
+body.dark #mapSvg.tl-dm{--tl-edge:.42; --tl-core:.18}
+.tlL{pointer-events:none; transition:opacity 1.2s ease, transform .7s cubic-bezier(.4,0,.2,1)}
+#mapSvg.tl-none .tlL{opacity:0}
+.tlGlow{opacity:var(--tl-glow); transition:opacity 1.2s ease}
+.tlDark{opacity:var(--tl-edge); transition:opacity 1.2s ease}
+.tlStop{transition:stop-opacity 1.2s ease}
+.tlPulse{transform-origin:0 0; animation:tlbreathe 3.4s ease-in-out infinite}
+#mapSvg.tl-gutter .tlPulse{animation:tlgutter .64s ease-in-out infinite}
+#mapSvg.tl-out .tlPulse{animation:none}
+@keyframes tlbreathe{0%,100%{transform:scale(1)}17%{transform:scale(1.03)}36%{transform:scale(.988)}58%{transform:scale(1.018)}79%{transform:scale(.994)}}
+@keyframes tlgutter{0%,100%{transform:scale(1)}28%{transform:scale(.9)}52%{transform:scale(1.05)}74%{transform:scale(.93)}}
+@media (prefers-reduced-motion:reduce){.tlPulse{animation:none} .tlL{transition:opacity 1.2s ease}}
 #mapTools{position:absolute; top:10px; left:10px; display:flex; gap:6px; flex-wrap:wrap; z-index:3}
 #mapTools button{background:rgba(26,23,20,.88); font-size:12px; backdrop-filter:blur(3px)}
 #mapHint{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:var(--parch-deep);
@@ -190,13 +208,17 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
 .frow{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:11px 0}
 .frow label{font-size:13px}
 .frow .hint{display:block; font-size:11px; color:var(--parch-deep); margin-top:1px}
-.toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(8px);
+.toast{position:fixed; bottom:64px; left:50%; transform:translateX(-50%) translateY(8px);
   background:var(--panel2); border:1px solid var(--accent); color:var(--flame);
   padding:8px 16px; border-radius:6px; font-size:13px; opacity:0; pointer-events:none;
   transition:all .25s; z-index:60}
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){ .flame{animation:none} #torchTime.crit{animation:none} }
 /* ---------- the player's table ---------- */
+body.choosing #sidebar, body.choosing #mapTools, body.choosing #torchbar, body.choosing #mapHint, body.choosing footer .xp, body.choosing header > :not(.brand){visibility:hidden}
+body.choosing #mapSvg{filter:blur(2px) brightness(.7)}
+body.role-player #btnFog{display:none}
+#btnCopyGM.done{border-color:var(--flame); color:var(--flame)}
 .door{position:absolute; left:50%; top:44%; transform:translate(-50%,-50%); z-index:42;
   width:min(440px,calc(100% - 28px)); background:var(--panel); border:1px solid var(--accent);
   border-radius:8px; padding:18px 20px 14px; box-shadow:0 22px 64px rgba(0,0,0,.65)}
@@ -233,6 +255,20 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   #mapPane{flex:none; height:46vh}
   #sidebar{max-width:none; min-width:0; flex:1}
   .seedbox input{width:120px}
+}
+@media (max-width:700px){
+  html,body{height:auto; min-height:100%; overflow:auto}
+  body{display:block}
+  main{display:block}
+  #mapPane{height:44vh; min-height:280px}
+  #mapSvg{touch-action:none}
+  #sidebar{display:block; max-width:none; min-width:0; border-left:none; border-top:1px solid var(--line)}
+  #tabBody{overflow:visible; padding-bottom:28px}
+  #torchbar{padding:6px 10px; gap:6px 10px}
+  #torchState{font-size:11px; line-height:1.3}
+  #torchTime{font-size:19px; min-width:70px}
+  footer{position:static; font-size:11px}
+  .toast{bottom:14px; max-width:86vw}
 }
 @media print{ body{display:none} }
 
@@ -298,11 +334,57 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   color:var(--parch-dim); border-left:2px solid var(--torch); padding:6px 10px; margin:8px 0; line-height:1.55}
 .qmarg .qsig{font-variant:small-caps; font-style:normal; letter-spacing:.08em; color:var(--parch-deep)}
 @media(max-width:700px){.qsheet{padding:20px 18px}.qnote{width:200px}#torchbar{flex-wrap:wrap;gap:8px 12px}#torchbar .torchbtns{flex:1 1 220px;min-width:0}#lightSource{max-width:100%;min-width:0}#torchState{max-width:none;flex:1 1 100%}html,body{max-width:100%;overflow-x:hidden}.qstepnav{flex-wrap:wrap}}
+/* ---------- the player display: a second window the players watch ---------- */
+body.table{overflow:hidden;background:#080706}
+body.table header,body.table #sidebar,body.table #mapTools,body.table footer,body.table .torchbtns,
+body.table #mapHint,body.table #qNote,body.table .door,body.table .seedhint{display:none!important}
+body.table main{flex:1;min-height:0;flex-direction:row}
+body.table #mapPane{flex:1 1 auto;width:100%;height:auto;min-height:0;position:relative}
+body.table #mapSvg{width:100%;height:100%;pointer-events:none;cursor:default}
+body.table #torchbar{order:-1;padding:12px 28px;gap:8px 22px;flex-wrap:wrap}
+body.table #torchTime{font-size:42px;letter-spacing:.04em;min-width:auto}
+body.table #flameWrap{transform:scale(1.9);margin:0 18px 0 6px}
+body.table #torchState{flex:0 1 auto;font-size:19px;max-width:460px;line-height:1.3}
+body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0 auto;max-width:100%}
+#tableName{flex:1 1 auto;min-width:240px;font-size:clamp(20px,2.4vw,34px);color:var(--parch);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+@media(max-width:700px){#tableName{flex:1 1 100%;white-space:normal;font-size:22px;line-height:1.2}
+  body.table #torchbar{padding:10px 16px}body.table #torchTime{font-size:30px}body.table #flameWrap{transform:scale(1.3);margin:0 6px}
+  body.table #torchState{font-size:14px;max-width:none}}
+#tableIdle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:28;text-align:center;padding:6vw;
+  background:radial-gradient(ellipse at 50% 30%, #171310 0%, var(--ink) 72%)}
+#tableIdle.gone{display:none}
+#tableIdle h2{font-size:clamp(26px,4vw,54px);color:var(--parch);margin-bottom:14px}
+#tableIdle p{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:clamp(15px,1.6vw,22px);color:var(--parch-deep);max-width:640px;line-height:1.6}
+#tableStage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:5vh 6vw;z-index:30;
+  opacity:0;transition:opacity .7s ease;background:radial-gradient(ellipse at center,rgba(8,7,6,.86),rgba(8,7,6,.97))}
+#tableStage.on{opacity:1}
+.tcard{max-width:900px;width:100%;transform:translateY(14px) scale(.985);transition:transform .9s ease}
+#tableStage.on .tcard{transform:none}
+.tcard .tkick{font-variant:small-caps;letter-spacing:.22em;font-size:15px;color:var(--torch);text-align:center;margin-bottom:20px;opacity:.85}
+.tcard .tbody{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:clamp(21px,2.9vw,40px);line-height:1.55;color:var(--parch);text-align:center;text-wrap:balance}
+.tcard .tsig{text-align:center;margin-top:22px;font-variant:small-caps;letter-spacing:.16em;font-size:14px;color:var(--parch-deep)}
+#tableFlash{position:absolute;inset:0;background:var(--flame);opacity:0;pointer-events:none;z-index:35}
+#tableFlash.hit{animation:tflash 1.1s ease-out}
+@keyframes tflash{0%{opacity:0}12%{opacity:.2}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){ #tableFlash.hit{animation:none} .tcard,#tableStage{transition:none} }
+/* the game master's side of it */
+.pushrow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.pushrow button{font-size:11px;padding:3px 9px}
+.pushrow button.lit{border-color:var(--torch);color:var(--flame)}
+.tblsheet .tblp{font-size:13.5px;line-height:1.6;color:var(--parch-dim);margin:0 0 10px}
+.tbllink{display:block;text-align:center;padding:11px 14px;margin:14px 0 10px;border:1px solid var(--accent);background:var(--accent-soft);
+  color:var(--flame);border-radius:5px;text-decoration:none;font-weight:600;font-size:15px}
+.tbllink:hover{background:rgba(242,163,60,.24)}
+.tbladdr{font-family:ui-monospace,monospace;font-size:11.5px;word-break:break-all;background:var(--panel2);border:1px solid var(--line);
+  border-radius:4px;padding:8px 10px;color:var(--parch-dim);user-select:all;-webkit-user-select:all}
+.tblrow{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.tblstatus{margin-top:10px}
+.tblstatus.live{color:var(--flame)}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.6</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.7</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
@@ -313,11 +395,11 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   <button id="btnNewP" title="Roll a new dungeon">⚄ New dungeon</button>
   <div class="hgroup">
     <div class="toggle" id="sysToggle" role="group" aria-label="Rules system">
-      <button data-sys="sd" class="on">Shadowdark</button><button data-sys="5e" title="Approximate conversion. Shadowdark publishes no official 5e export.">5e (approx.)</button>
+      <button data-sys="sd" class="on" title="Shadowdark RPG, a fantasy game built for exactly this kind of dungeon crawl">Shadowdark</button><button data-sys="5e" title="Dungeons &amp; Dragons 5th edition. The creature numbers are a close conversion from Shadowdark, not the official books.">D&amp;D 5e</button>
     </div>
   </div>
   <div class="spacer"></div>
-  <button id="btnShare" title="Copy a link that rebuilds this exact dungeon">Share</button>
+  <button id="btnShare" title="Copy a link that opens this exact dungeon, with the rooms you have lit">Share</button>
   <div class="menuwrap">
     <button id="btnExport">Export ▾</button>
     <div class="menu" id="exportMenu">
@@ -325,6 +407,7 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
       <button data-x="player">Player handout</button>
       <button data-x="ai">Play with an AI game master</button>
       <button data-x="plink">Link for a player (no secrets shown)</button>
+      <button data-x="table">Player display for a TV or iPad</button>
       <button data-x="json">JSON (full data)</button>
     </div>
   </div>
@@ -369,7 +452,7 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   </div>
   <div id="sidebar">
     <div class="tabs" id="tabs">
-      <button data-tab="gm">Game master</button><button data-tab="room" class="on">Room</button>
+      <button data-tab="gm">How to play</button><button data-tab="room" class="on">Room</button>
       <button data-tab="over">Overview</button>
       <button data-tab="best">Bestiary</button>
       <button data-tab="loot">Treasure &amp; XP</button>
@@ -382,7 +465,8 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   <span class="xp" id="xpFoot"></span>
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
-  <span>MIT · works offline · v2.6 · build 2026-11-06 · <span id="footSeed"></span></span>
+  <span>Began as a Christmas gift. Pass it on.</span>
+  <span>MIT license · the map works offline · v2.7 · build 2026-11-06 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -1006,7 +1090,7 @@ function generate(cfg){
     const dd=bfs(0);let far=lairId;rooms.forEach((r,i)=>{if(i!==lairId&&dd[i]>=0&&dd[i]>=dd[far]-1&&i!==0)far=i;});
     stairsDown=far;rooms[far].stairsDown=true;}
 
-  return{seed:cfg.seed,seedFull,depth,cfg:{...cfg,level:lvl},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist},
+  return{seed:cfg.seed,seedFull,depth,cfg:{...cfg,level:lvl,baseLevel:(+cfg.level||1)},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist},
     rooms,edges,factions,boss,wander,town,stairsDown,grid:{w:GW,h:GH},lairId};
 }
 
@@ -1053,15 +1137,48 @@ function jitterMap(model){
     let h=0;const s=model.seedFull+":ink";for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),2654435761);}
     let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();
   const J={};const j=(x,y)=>{const k=x+","+y;if(!(k in J))J[k]=[(rng()-0.5)*3.2,(rng()-0.5)*3.2];return J[k];};
-  return(x,y)=>{const[dx,dy]=j(x,y);return[(x*CS+dx),(y*CS+dy)];};
+  return(x,y)=>{const[dx,dy]=j(x,y);return[Math.round((x*CS+dx)*10)/10,Math.round((y*CS+dy)*10)/10];};
+}
+/* ---------- deterministic ink: floor grain, wall hatching, torchlight gradients ----------
+   Everything here is drawn once, in <defs>, and reused by pattern or gradient fills.
+   The pen's jitter comes from a tiny generator seeded by the dungeon's seed string, so the same
+   seed always draws the same strokes. It never touches the dungeon generator's own random numbers. */
+function artInk(model){
+  const rng=(()=>{let h=0;const s=String(model.seed)+":art";for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),2654435761);}
+    let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();
+  const f=n=>(+n).toFixed(1), T=CS*2; /* one tile is two cells square */
+  /* floor grain: a scatter of fine stipple, repeated under every floor cell */
+  let grain="";
+  for(let i=0;i<22;i++)grain+='<circle cx="'+f(rng()*T)+'" cy="'+f(rng()*T)+'" r="'+f(0.3+rng()*0.5)+'" fill="var(--wallink)" opacity="'+f(0.05+rng()*0.09)+'"/>';
+  /* wall hatching: short pen strokes at one slightly tilted angle per map, each a little bent and uneven;
+     a third tile crosses them for the darkest shade right against the wall */
+  const tilt=(rng()-0.5)*16;
+  const strokes=(n,len,w,ang)=>{let s="";for(let i=0;i<n;i++){
+      const x=rng()*T,y=rng()*T,a=(ang+tilt+(rng()-0.5)*9)*Math.PI/180,L=len*(0.7+rng()*0.6);
+      const dx=Math.cos(a)*L/2,dy=Math.sin(a)*L/2,bx=(rng()-0.5)*0.5,by=(rng()-0.5)*0.5;
+      s+='<path d="M'+f(x-dx)+' '+f(y-dy)+'Q'+f(x+bx)+' '+f(y+by)+' '+f(x+dx)+' '+f(y+dy)+'" stroke="var(--wallink)" stroke-width="'+f(w*(0.75+rng()*0.5))+'" opacity="'+f(0.6+rng()*0.4)+'" fill="none" stroke-linecap="round"/>';}
+    return s;};
+  const pat=(id,inner)=>'<pattern id="'+id+'" width="'+T+'" height="'+T+'" patternUnits="userSpaceOnUse">'+inner+'</pattern>';
+  return pat("dots",grain)+pat("hatchA",strokes(62,5.2,0.5,44))+pat("hatchB",strokes(20,4.6,0.45,44))+pat("hatchX",strokes(28,4.2,0.42,-46));
+}
+/* torchlight gradients: a warm glow and a ring of dark, both centred on 0,0 of the group that uses them */
+function lightDefs(){
+  return '<radialGradient id="tlG" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="'+(9.5*CS)+'">'
+    +'<stop offset="0" stop-color="#ffd98a" stop-opacity=".38"/><stop offset=".28" stop-color="#f2a33c" stop-opacity=".22"/>'
+    +'<stop offset=".68" stop-color="#e0842a" stop-opacity=".07"/><stop offset="1" stop-color="#e0842a" stop-opacity="0"/></radialGradient>'
+    +'<radialGradient id="tlD" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="'+(11*CS)+'">'
+    +'<stop class="tlStop" offset="0" style="stop-color:var(--tl-ink);stop-opacity:var(--tl-core)"/>'
+    +'<stop class="tlStop" offset=".5" style="stop-color:var(--tl-ink);stop-opacity:calc(.12 + var(--tl-core)*.88)"/>'
+    +'<stop class="tlStop" offset=".8" style="stop-color:var(--tl-ink);stop-opacity:calc(.55 + var(--tl-core)*.45)"/>'
+    +'<stop offset="1" style="stop-color:var(--tl-ink);stop-opacity:1"/></radialGradient>';
 }
 /* ---------- map svg builder ---------- */
 function buildMap(model,opts){
   const jp=jitterMap(model);
   const rev=opts.revealed, view=opts.view, tints=opts.tints;
   const showAll=view==="dm";
-  const parts=[];
-  parts.push('<defs><pattern id="dots" width="'+CS+'" height="'+CS+'" patternUnits="userSpaceOnUse"><circle cx="'+(CS/2)+'" cy="'+(CS/2)+'" r="0.7" fill="rgba(217,203,166,0.13)"/></pattern></defs>');
+  const parts=[],hatch=[],wdefs=[];
+  parts.push(""); /* the <defs> block is written last, once every wall path is known */
   /* corridors */
   const corrVisible=e=>rev.has(e.a)||rev.has(e.b);
   parts.push('<g>');
@@ -1072,7 +1189,7 @@ function buildMap(model,opts){
     const dim=showAll&&!corrVisible(e);
     const pts=[e.da,...e.path,e.db].map(([x,y])=>((x+0.5)*CS)+","+((y+0.5)*CS)).join(" ");
     parts.push('<polyline points="'+pts+'" fill="none" stroke="var(--floor-lit)" stroke-width="'+(CS*0.56)+'" stroke-linecap="round" stroke-linejoin="round" opacity="'+(dim?0.22:1)+'"/>');
-    parts.push('<polyline points="'+pts+'" fill="none" stroke="rgba(217,203,166,0.28)" stroke-width="1" stroke-dasharray="'+(e.type==="secret"?"3 4":"none")+'" opacity="'+(dim?0.25:0.8)+'"/>');
+    parts.push('<polyline points="'+pts+'" fill="none" stroke="var(--wallink)" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="'+(e.type==="secret"?"3 4":"none")+'" opacity="'+(dim?0.25:0.8)+'"/>');
   }
   parts.push('</g>');
   /* rooms */
@@ -1105,7 +1222,15 @@ function buildMap(model,opts){
       if(!has(x-1,y)){const A=jp(x,y),B=jp(x,y+1);wp+="M"+A[0]+" "+A[1]+" L"+B[0]+" "+B[1]+" ";}
       if(!has(x+1,y)){const A=jp(x+1,y),B=jp(x+1,y+1);wp+="M"+A[0]+" "+A[1]+" L"+B[0]+" "+B[1]+" ";}
     }
-    parts.push('<path d="'+wp+'" stroke="'+wcol+'" stroke-width="'+ww+'" fill="none" stroke-linecap="round" opacity="'+(dim?0.5:1)+'"/>');
+    /* the wall path is written once, in <defs>, and drawn four times by reference: the wall itself, and three
+       hatch bands on a layer under the floors and corridors, so only the outside of the wall shows them.
+       The bands narrow toward the wall and shade it darker; the innermost crosses the strokes. */
+    const hop=dim?0.2:1,wid="wp"+r.id;
+    wdefs.push('<path id="'+wid+'" d="'+wp+'"/>');
+    hatch.push('<use href="#'+wid+'" stroke="url(#hatchB)" stroke-width="'+(CS*1.3)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.38)+'"/>'
+      +'<use href="#'+wid+'" stroke="url(#hatchA)" stroke-width="'+(CS*0.9)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.5)+'"/>'
+      +'<use href="#'+wid+'" stroke="url(#hatchX)" stroke-width="'+(CS*0.56)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.55)+'"/>');
+    parts.push('<use href="#'+wid+'" stroke="'+wcol+'" stroke-width="'+ww+'" fill="none" stroke-linecap="round" opacity="'+(dim?0.5:1)+'"/>');
     /* label */
     const cx=(r.bbox.x+r.bbox.w/2)*CS, cy=(r.bbox.y+r.bbox.h/2)*CS;
     parts.push('<circle cx="'+cx+'" cy="'+(cy-4)+'" r="7.2" fill="var(--panel)" stroke="'+(sel?"var(--accent)":"rgba(217,203,166,0.5)")+'" stroke-width="1"/>');
@@ -1136,6 +1261,12 @@ function buildMap(model,opts){
       parts.push('</g>');
     }
   }
+  /* torchlight: drawn only for the live map (opts.light holds the party's position); print exports leave it out */
+  if(opts.light){
+    const E=100000, box='x="-'+E+'" y="-'+E+'" width="'+(2*E)+'" height="'+(2*E)+'"';
+    parts.push('<g class="tlL" style="transform:translate('+opts.light.x+'px,'+opts.light.y+'px)"><g class="tlPulse">'
+      +'<rect class="tlGlow" '+box+' fill="url(#tlG)"/><rect class="tlDark" '+box+' fill="url(#tlD)"/></g></g>');
+  }
   /* frontier markers: doorways beyond the light */
   if(view!=="dm"||true){
     for(const e of model.edges){
@@ -1147,6 +1278,8 @@ function buildMap(model,opts){
       parts.push('<circle class="frontier" data-goto="'+far+'" cx="'+((dc[0]+0.5)*CS)+'" cy="'+((dc[1]+0.5)*CS)+'" r="4.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1" style="cursor:pointer"><animate attributeName="r" values="3.5;5;3.5" dur="2.2s" repeatCount="indefinite"/></circle>');
     }
   }
+  parts[0]='<defs>'+artInk(model)+(opts.light?lightDefs():'')+wdefs.join("")+'</defs>';
+  parts.splice(1,0,'<g class="hatchL">'+hatch.join("")+'</g>');
   return parts.join("");
 }
 function mapBounds(model,rev,showAll){
@@ -1161,12 +1294,20 @@ function mapBounds(model,rev,showAll){
     if(x1-x0<mw){x0=cx-mw/2;x1=cx+mw/2;} if(y1-y0<mh){y0=cy-mh/2;y1=cy+mh/2;}}
   return{x:(x0-2)*CS,y:(y0-2)*CS,w:(x1-x0+4)*CS,h:(y1-y0+4)*CS};
 }
-let VB=null;
+let VB=null,LPOS=null,LMODEL=null;
+function lightAt(){ /* the middle of the party's room, in map units */
+  const r=S.model&&S.model.rooms[S.sel];if(!r)return null;
+  let x=0,y=0;for(const c of r.cells){x+=c[0];y+=c[1];}
+  return{x:+((x/r.cells.length+0.5)*CS).toFixed(1),y:+((y/r.cells.length+0.5)*CS).toFixed(1)};
+}
 function renderMap(fit){
-  const svg=$("#mapSvg");
-  svg.innerHTML=buildMap(S.model,{revealed:S.revealed,view:S.view,tints:S.tints,sel:S.sel});
+  const svg=$("#mapSvg"),cur=lightAt();
+  if(LMODEL!==S.model){LMODEL=S.model;LPOS=null;}
+  /* the light is built where it last stood, then renderLight glides it to the new room */
+  svg.innerHTML=buildMap(S.model,{revealed:S.revealed,view:S.view,tints:S.tints,sel:S.sel,light:LPOS||cur});
   if(fit||!VB){VB=mapBounds(S.model,S.revealed,S.view==="dm");}
   svg.setAttribute("viewBox",VB.x+" "+VB.y+" "+VB.w+" "+VB.h);
+  renderLight(cur);
 }
 /* pan + zoom */
 (function(){
@@ -1187,17 +1328,18 @@ function renderMap(fit){
     VB={x:px-(px-VB.x)*f,y:py-(py-VB.y)*f,w:VB.w*f,h:VB.h*f};
     svg.setAttribute("viewBox",VB.x+" "+VB.y+" "+VB.w+" "+VB.h);},{passive:false});
   function click(e){
-    const fr=e.target.closest(".frontier");
+    const at=document.elementFromPoint(e.clientX,e.clientY)||e.target; /* under pointer capture e.target is the svg itself */
+    const fr=at.closest(".frontier");
     if(fr){reveal(+fr.dataset.goto);return;}
-    const g=e.target.closest(".roomG");
+    const g=at.closest(".roomG");
     if(g){const id=+g.dataset.room;
       if(S.revealed.has(id)||S.view==="dm"){select(id);}
       else{const adjRev=S.model.edges.some(x=>((x.a===id&&S.revealed.has(x.b))||(x.b===id&&S.revealed.has(x.a)))&&(x.type!=="secret"||S.view==="dm"));
         if(adjRev)reveal(id);}}
   }
 })();
-function reveal(id){S.revealed.add(id);select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");}
-function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();}
+function reveal(id){S.revealed.add(id);select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
+function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
 /* ---------- torch ---------- */
 const SRC={torch:3600,lantern:14400,candle:3600,spell:3600};
@@ -1215,7 +1357,7 @@ function torchTick(){
   if(t.remain<=600&&!t.warned.w10){t.warned.w10=true;chime(660);torchMsg("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");}
   if(t.remain<=300&&!t.warned.w5){t.warned.w5=true;chime(520);torchMsg("The flame shrinks to a knuckle of light. Five minutes.");}
   if(t.remain<=0){lightsOut();return;}
-  renderTorch();
+  renderTorch();renderLight();
 }
 function lightsOut(){
   const t=S.torch;t.running=false;t.remain=0;clearInterval(t.timer);t.timer=null;
@@ -1224,6 +1366,7 @@ function lightsOut(){
   chime(220);
   torchMsg("The light dies. The dungeon has been waiting for this.");
   renderTorch();renderMap(false);
+  if(!TBL.isTable)tblSend({t:"dark"});
 }
 function lightUp(){
   const t=S.torch;t.src=$("#lightSource").value;
@@ -1233,9 +1376,9 @@ function lightUp(){
   if(!t.timer)t.timer=setInterval(torchTick,1000);
   t.running=true;
   torchMsg("A new "+SRCNAME[t.src]+" takes the flame."+(t.src==="candle"?" Its light reaches only close.":""));
-  renderTorch();
+  renderTorch();renderLight();
 }
-function torchMsg(m){$("#torchState").innerHTML='<span class="smallcaps">'+esc(m)+"</span>";}
+function torchMsg(m){$("#torchState").innerHTML='<span class="smallcaps">'+esc(m)+"</span>";tblPush();}
 function renderTorch(){
   const t=S.torch,el=$("#torchTime");
   el.textContent=t.timer||t.remain?fmtT(t.remain):"--:--";
@@ -1244,6 +1387,31 @@ function renderTorch(){
   $("#flame").classList.toggle("gutter",t.running&&t.remain<=600&&t.remain>0);
   $("#btnPause").textContent=(t.running||t.remain<=0)?"Pause":"Resume";$("#btnPause").disabled=t.remain<=0;
   $("#torchCount").textContent=t.used?("lights spent: "+t.used):"";
+  tblPush();
+}
+/* ---------- torchlight on the map ----------
+   How far the light reaches, in map units. Full reach while the torch is fresh, shrinking as it burns,
+   a small guttering circle in the last five minutes, a faint pool once it is out. A candle reaches only close. */
+function lightReach(){
+  const t=S.torch,total=SRC[t.src]||3600,full=(t.src==="candle"?5.5:9.5)*CS,gut=3*CS;
+  if(t.remain<=0)return 2.4*CS;
+  if(t.remain<=300)return gut;
+  return gut+(full-gut)*Math.pow((t.remain-300)/(total-300),0.6);
+}
+/* Sets the light's state on the map without rebuilding it: a few classes and two gradient radii.
+   With a position, it also glides the light to the party's room. */
+function renderLight(cur){
+  const svg=$("#mapSvg"),t=S.torch,never=t.used===0&&t.remain<=0,out=!never&&t.remain<=0;
+  svg.classList.toggle("tl-none",never);
+  svg.classList.toggle("tl-out",out);
+  svg.classList.toggle("tl-gutter",!out&&!never&&t.remain<=600);
+  svg.classList.toggle("tl-dm",S.view==="dm");
+  const r=lightReach(),g=svg.querySelector("#tlG"),d=svg.querySelector("#tlD");
+  if(g)g.setAttribute("r",r.toFixed(1));
+  if(d)d.setAttribute("r",(r*1.18).toFixed(1));
+  if(cur){const L=svg.querySelector(".tlL");
+    if(L&&LPOS&&(LPOS.x!==cur.x||LPOS.y!==cur.y)){void L.getBoundingClientRect();L.style.transform="translate("+cur.x+"px,"+cur.y+"px)";}
+    LPOS=cur;}
 }
 $("#btnLight").addEventListener("click",lightUp);
 $("#btnPause").addEventListener("click",()=>{const t=S.torch;if(t.remain>0){t.running=!t.running;torchMsg(t.running?"The flame steadies.":"Time holds its breath. The flame does not burn while you rest.");renderTorch();}});
@@ -1379,17 +1547,37 @@ function hoardXP(){
 function renderFoot(){
   let checked=0;S.model.rooms.forEach(r=>r.treasure.forEach(t=>{if(S.loot.has(t.id))checked+=t.gp;}));
   var H=hoardXP();
-  $("#xpFoot").innerHTML= S.role==="player" ? '◆ your game master keeps the tally' : S.sys==="sd"
+  $("#xpFoot").innerHTML= S.role==="player" ? '◆ Your game master keeps track of treasure and points.' : S.sys==="sd"
     ? '◆ '+checked+' gp carried · '+H.n+' hoards · <b>'+H.xp+' XP</b> to each delver · banked '+(S.banked||0)
     : '◆ '+checked+' gp carried · banked '+(S.banked||0)+' <span class="tiny">(5e awards XP for foes defeated, not coin)</span>';
-  $("#footSeed").textContent="seed "+S.model.seed+(S.model.depth>1?" · depth "+S.model.depth:"");
+  $("#footSeed").textContent="this dungeon's code: "+S.model.seed+(S.model.depth>1?" · depth "+S.model.depth:"");
 }
 function renderTabs(){$("#tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.tab===S.tab));}
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.tab=b.dataset.tab;renderTabs();renderPanel();});
 
 /* ---------- toast ---------- */
 let toastT=null;
-function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2600);}
+function toast(m,ms){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),ms||2600);}
+
+/* ---------- small kindnesses hidden in the file ---------- */
+const EGG_QUIRE=new Set(["quire","q","guild-of-careful-maps","guild of careful maps"]);
+function eggSeed(raw){return String(raw||"").trim().toLowerCase();}
+/* After a dungeon is built: Quire's own commission, if that is the seed that was asked for. */
+function eggAfterBuild(){
+  if(!S.model)return;
+  if(EGG_QUIRE.has(eggSeed(S.model.seed))){
+    S.model.genome.name="Quire's Last Commission";
+    setTimeout(()=>toast("\u270e You found my own commission. Thirty-one years at the Guild, and this is the one I never finished. The last room is yours to draw. \u2014 Q.",7000),2900);
+  }
+}
+/* The ledger: how many places you have drawn on this browser. Quire notices three numbers. */
+function eggLedger(){
+  let n=0; try{n=(parseInt(localStorage.getItem("ac.ledger")||"0",10)||0)+1; localStorage.setItem("ac.ledger",String(n));}catch(e){return;}
+  const line=n===10?"Ten maps. The Guild would still have you sweeping the floor. Keep going. \u2014 Q."
+    :n===31?"Thirty-one. I know the number. \u2014 Q."
+    :n===100?"A hundred places nobody has been. You are one of us now. \u2014 Q.":null;
+  if(line)setTimeout(()=>toast("\u270e "+line,6000),2900);
+}
 
 /* ---------- hash: the seed is the save ---------- */
 let HASHMEM="";
@@ -1398,7 +1586,7 @@ function syncHash(){
   const bytes=new Uint8Array(Math.ceil(m.rooms.length/8));
   S.revealed.forEach(i=>{bytes[i>>3]|=1<<(i&7);});
   const rhex=Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
-  const p=[encodeURIComponent(m.seed),m.depth,m.cfg.party,m.cfg.level,m.cfg.size,m.cfg.mode,m.cfg.factions||"on",m.cfg.origin||"",m.cfg.doom||"",S.sys,S.view,rhex,S.role==="player"?"p":"d"];
+  const p=[encodeURIComponent(m.seed),m.depth,m.cfg.party,(m.cfg.baseLevel!=null?m.cfg.baseLevel:m.cfg.level),m.cfg.size,m.cfg.mode,m.cfg.factions||"on",m.cfg.origin||"",m.cfg.doom||"",S.sys,S.view,rhex,S.role==="player"?"p":"d"];
   HASHMEM="#"+p.join("|");
   try{history.replaceState(null,"",HASHMEM);}catch(e){}
 }
@@ -1415,10 +1603,12 @@ function newDungeon(cfg,revealHex){
   S.revealed=new Set([0]);
   if(revealHex){for(let i=0;i<S.model.rooms.length;i++){const b=parseInt(revealHex.slice((i>>3)*2,(i>>3)*2+2)||"0",16);if(b&(1<<(i&7)))S.revealed.add(i);}}
   S.sel=0;S.loot=new Set();S.tab=S.role==="player"?"gm":"over";VB=null;
+  if(EGG_QUIRE.has(eggSeed(S.model.seed)))S.model.genome.name="Quire's Last Commission";
   $("#seedInput").value=S.model.seed;
   renderTabs();renderMap(true);renderPanel();renderFoot();
   toast(S.model.genome.name);
-  syncHash();
+  syncHash();tblPush();tblSend({t:"clear"});
+  eggAfterBuild();
 }
 function currentCfg(){
   return{seed:$("#seedInput").value.trim()||AC.randomSeed(),depth:1,
@@ -1427,7 +1617,7 @@ function currentCfg(){
     origin:$("#cfgOrigin").value,doom:$("#cfgDoom").value};
 }
 function descend(){
-  const c={...S.model.cfg,seed:S.model.seed,depth:S.model.depth+1};
+  const c={...S.model.cfg,seed:S.model.seed,depth:S.model.depth+1,level:(S.model.cfg.baseLevel!=null?S.model.cfg.baseLevel:S.model.cfg.level)};
   newDungeon(c);toast("Depth "+c.depth+". The air is older here.");
 }
 /* ---- first-touch courtesy: Generate on an unchanged seed rebuilds the same place ---- */
@@ -1448,13 +1638,14 @@ function hideSeedHint(){
   clearTimeout(SEEDHINT_T); h.classList.remove("show");
 }
 $("#btnGenerate").addEventListener("click",()=>{
+  if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");return;}
   const cfg=currentCfg(), same=sameAsOnScreen(cfg);
-  newDungeon(cfg);
+  newDungeon(cfg); if(!same)eggLedger();
   if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");
   else hideSeedHint();
 });
-$("#btnRandom").addEventListener("click",()=>{hideSeedHint();$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());});
-$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);
+$("#btnRandom").addEventListener("click",()=>{hideSeedHint();$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});
+$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");return;}const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);if(!same)eggLedger();
   if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");else hideSeedHint();}});
 $("#seedInput").addEventListener("input",hideSeedHint);
 $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sys=b.dataset.sys;
@@ -1538,7 +1729,7 @@ function expDM(){
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(t.inn)+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v2.6. Seed: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v2.7. Seed: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_DM.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -1607,7 +1798,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v2.6. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v2.7. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -1636,9 +1827,244 @@ function expPlayer(){
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_players.html","text/html",h);
 }
 $("#exportMenu").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();else if(b.dataset.x==="ai")expAIGM();else if(b.dataset.x==="plink")copyPlayerLink();
+  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();else if(b.dataset.x==="ai")expAIGM();else if(b.dataset.x==="plink")copyPlayerLink();else if(b.dataset.x==="table")tblLaunch();
   else dl("abyssal_"+S.model.seed+".json","application/json",JSON.stringify({model:S.model,revealed:[...S.revealed],loot:[...S.loot],banked:S.banked||0},null,1));
   $("#exportMenu").classList.remove("open");});
+
+/* ================= THE PLAYER DISPLAY =================
+   A second browser window the players watch. It is this same file, opened with an address
+   that starts with #table: and then carries the usual share-link fields, so the display
+   builds the dungeon on its own and then follows the game master's window over a
+   BroadcastChannel (one browser, one computer): which rooms are lit, which room is current,
+   the torch, and any text the game master puts in front of the room. No server, no network,
+   still one file. Nothing the players must not see is ever sent or drawn. Lifted from v3.2. */
+var TBL={chan:null,isTable:false,live:false,synced:false,sig:null,mapKey:null,stageRoom:null,hello:null,beat:null,tick:null,watch:null,heard:0,msgAt:0,pend:null};
+var TBL_PREFIX="#table:";
+
+function tblOpen(){
+  try{ if(typeof BroadcastChannel!=="function") return; TBL.chan=new BroadcastChannel("abyssal-table"); }
+  catch(e){ TBL.chan=null; return; }
+  TBL.chan.onmessage=function(e){ try{ TBL.isTable ? tblReceive(e.data) : tblDmHears(e.data); }catch(err){} };
+}
+function tblSend(msg){ if(TBL.chan){ try{ TBL.chan.postMessage(msg); }catch(e){} } }
+
+/* ---- the address and the state share one shape: the thirteen share-link fields ---- */
+function tblRhex(){ var m=S.model,bytes=new Uint8Array(Math.ceil(m.rooms.length/8));
+  S.revealed.forEach(function(i){bytes[i>>3]|=1<<(i&7);});
+  return Array.from(bytes).map(function(b){return b.toString(16).padStart(2,"0");}).join(""); }
+function tblCfg(){ /* the model stores the level already raised by depth; send the base level so the generator raises it once */
+  var m=S.model; return {seed:m.seed,depth:m.depth,party:m.cfg.party,level:(+m.cfg.level||1)-(m.depth-1),size:m.cfg.size,
+    mode:m.cfg.mode,factions:m.cfg.factions||"on",origin:m.cfg.origin||"",doom:m.cfg.doom||""}; }
+function tblSig(c){ return [c.seed,c.depth||1,+c.party,+c.level,c.size,c.mode,c.factions||"on",c.origin||"",c.doom||""].join("|"); }
+function tblAddressBody(cfg,rhex,sys){
+  return [encodeURIComponent(cfg.seed),cfg.depth||1,cfg.party,cfg.level,cfg.size,cfg.mode,cfg.factions||"on",cfg.origin||"",cfg.doom||"",sys||"sd","player",rhex||"01","p"].join("|");
+}
+function tblIsDisplay(){ var x=location.hash||""; return x==="#table"||x.indexOf(TBL_PREFIX)===0; }
+function tblParseAddress(){ /* the fields after #table:, or null when the address carries no dungeon */
+  var x=location.hash||""; if(x.indexOf(TBL_PREFIX)!==0) return null;
+  var p=x.slice(TBL_PREFIX.length).split("|"); if(p.length<12||!p[0]) return null;
+  return {seed:decodeURIComponent(p[0]),depth:+p[1]||1,party:+p[2]||4,level:+p[3]||1,size:p[4]||"m",mode:p[5]||"oneshot",
+    factions:p[6]||"on",origin:p[7]||"",doom:p[8]||"",sys:p[9]||"sd",rhex:p[11]||""};
+}
+
+/* ---- what the game master's window sends: small, and enough to rebuild everything ---- */
+function tblState(){
+  var m=S.model; if(!m) return null;
+  var st=$("#torchState");
+  return {t:"state",cfg:tblCfg(),rhex:tblRhex(),sel:S.sel,sys:S.sys,
+    torch:{remain:S.torch.remain,running:S.torch.running,src:S.torch.src,used:S.torch.used},
+    tmsg:st?st.textContent:""};
+}
+function tblPush(){
+  if(!TBL.live||TBL.isTable) return;
+  var now=Date.now();
+  if(now-TBL.msgAt<180){ if(!TBL.pend) TBL.pend=setTimeout(function(){TBL.pend=null;tblPush();},200); return; }
+  TBL.msgAt=now;
+  var st=null; try{ st=tblState(); }catch(e){ return; }
+  if(st) tblSend(st);
+}
+/* the display says hello when it opens and "alive" every few seconds; silence for ten seconds counts as closed */
+function tblPanel(){ if(S.tab==="room"&&S.role!=="player"&&S.model) renderPanel(); }
+function tblHeard(msg){
+  TBL.heard=Date.now();
+  if(!TBL.live){ TBL.live=true; TBL.msgAt=0; tblPush(); tblStatus(); toast("The player display is connected."); tblPanel(); }
+  else if(msg.t==="hello"){ TBL.msgAt=0; tblPush(); }
+  if(!TBL.watch) TBL.watch=setInterval(tblWatch,4000);
+}
+function tblLost(why){ if(!TBL.live) return; TBL.live=false; tblStatus(); toast(why); tblPanel(); }
+function tblWatch(){ if(TBL.live&&Date.now()-TBL.heard>10000) tblLost("The player display stopped answering."); }
+function tblDmHears(msg){
+  if(!msg) return;
+  if(msg.t==="hello"||msg.t==="alive"){ tblHeard(msg); }
+  if(msg.t==="bye"){ tblLost("The player display closed."); tblSend({t:"who"}); }
+}
+/* every share-link update is a state change the display should hear (rules toggle, reveal all, reset fog) */
+var _tblSyncHash=syncHash;
+syncHash=function(){ if(TBL.isTable) return; _tblSyncHash.apply(this,arguments); tblPush(); };
+
+/* ---- the game master's control: Export menu, "Player display for a TV or iPad" ---- */
+function tblAddress(){ return location.href.split("#")[0]+TBL_PREFIX+tblAddressBody(tblCfg(),tblRhex(),S.sys); }
+function tblStatus(){
+  var s=document.getElementById("tblStatus"); if(!s) return;
+  s.textContent=!TBL.chan?"This browser cannot link two windows. The display would show the dungeon from its address but would not follow this window."
+    :TBL.live?"A player display is open and following this window.":"No player display is open yet.";
+  s.classList.toggle("live",!!TBL.live);
+}
+function tblCopy(u){
+  var ok=function(){toast("Address copied. Paste it into a new window.");};
+  var legacy=function(){try{var t=document.createElement("textarea");t.value=u;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
+    var d=document.execCommand("copy");document.body.removeChild(t);d?ok():toast("Copy is blocked here. Select the address and copy it by hand.");}
+    catch(e){toast("Copy is blocked here. Select the address and copy it by hand.");}};
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(ok,legacy);} else legacy(); }catch(e){ legacy(); }
+}
+function tblLaunch(){
+  if(!S.model) return;
+  var ov=document.getElementById("tblHelp");
+  if(!ov){ ov=document.createElement("div"); ov.id="tblHelp"; ov.className="overlay";
+    ov.innerHTML='<div class="sheet tblsheet"><h2 class="smallcaps">Show the players the map on a second screen</h2>'
+      +'<p class="tblp">The link below opens the players’ view in a new window: the rooms their light has reached, the room they are in, and the torch. Nothing else from this window appears there.</p>'
+      +'<p class="tblp">Drag that window onto the TV, the projector, or an iPad used as a second screen (Sidecar), and turn it to face the players. This only works on this same computer, in this same browser: the new window follows this one and catches up on its own if you open it late.</p>'
+      +'<a class="tbllink" id="tblOpenLink" href="#" target="_blank" rel="noopener">Open the player display</a>'
+      +'<div class="tbladdr" id="tblUrl"></div>'
+      +'<div class="tblrow"><button id="tblCopy">Copy the address</button><span class="tiny">If the link does nothing, paste the copied address into a new window.</span></div>'
+      +'<div class="tblstatus tiny" id="tblStatus"></div>'
+      +'<div class="tblrow" style="justify-content:flex-end"><button class="primary" id="tblHelpClose">Done</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click",function(e){
+      if(e.target===ov||e.target.id==="tblHelpClose"){ ov.classList.remove("open"); return; }
+      if(e.target.id==="tblCopy"){ tblCopy(document.getElementById("tblUrl").textContent); }
+    });
+  }
+  var url=tblAddress();
+  document.getElementById("tblOpenLink").setAttribute("href",url);
+  document.getElementById("tblUrl").textContent=url;
+  tblStatus();
+  ov.classList.add("open");
+}
+window.addEventListener("beforeunload",function(){ if(!TBL.isTable) tblSend({t:"gm-bye"}); });
+
+/* ---- while a display is open, the Room tab offers to put the room's words in front of the players ---- */
+function tblDecoratePanel(){
+  if(TBL.isTable||!TBL.live||S.role==="player"||S.tab!=="room"||!S.model) return;
+  var el=$("#tabBody"), r=S.model.rooms[S.sel]; if(!el||!r) return;
+  var boxes=el.querySelectorAll(".boxed"); if(!boxes.length) return;
+  boxes[0].insertAdjacentHTML("afterend",'<div class="pushrow"><button data-push="box" data-room="'+r.id+'">Read this aloud on the player display</button><button data-push="clear">Clear the player display</button></div>');
+  if(r.riddle&&boxes.length>1) boxes[1].insertAdjacentHTML("afterend",'<div class="pushrow"><button data-push="riddle" data-room="'+r.id+'">Put the riddle on the player display</button></div>');
+  if(r.puzzle){ var labs=el.querySelectorAll(".klabel");
+    for(var i=0;i<labs.length;i++){ if(/^Puzzle/.test(labs[i].textContent)&&labs[i].nextElementSibling){
+      labs[i].nextElementSibling.insertAdjacentHTML("afterend",'<div class="pushrow"><button data-push="puzzle" data-room="'+r.id+'">Show the puzzle on the player display</button></div>'); break; } } }
+}
+var _tblRenderPanel=renderPanel;
+renderPanel=function(){ _tblRenderPanel.apply(this,arguments); tblDecoratePanel(); };
+document.addEventListener("click",function(e){
+  var b=e.target.closest?e.target.closest("[data-push]"):null; if(!b||TBL.isTable) return;
+  var kind=b.dataset.push;
+  if(kind==="clear"){ tblSend({t:"clear"}); toast("The player display shows the map again."); return; }
+  var r=S.model&&S.model.rooms[parseInt(b.dataset.room,10)]; if(!r) return;
+  if(kind==="box") tblSend({t:"stage",room:r.id,kick:"Room "+(r.id+1),body:esc(r.box)});
+  else if(kind==="riddle"&&r.riddle) tblSend({t:"stage",room:r.id,kick:"A riddle",body:esc(r.riddle.q),sig:"answer when you are ready"});
+  else if(kind==="puzzle"&&r.puzzle) tblSend({t:"stage",room:r.id,kick:esc(r.puzzle.n),body:esc(r.puzzle.s)});
+  else return;
+  b.classList.add("lit"); setTimeout(function(){b.classList.remove("lit");},900);
+  toast(TBL.live?"Sent to the player display.":"No player display is open. Find it under Export.");
+});
+
+/* ================= the display side ================= */
+function tblBuild(cfg){ /* the display's own copy of the dungeon, from the same seed and terms */
+  S.model=AC.generate({seed:cfg.seed,depth:cfg.depth||1,party:cfg.party,level:cfg.level,size:cfg.size,mode:cfg.mode,factions:cfg.factions,origin:cfg.origin,doom:cfg.doom});
+  TBL.sig=tblSig(cfg); TBL.mapKey=null; VB=null;
+  var label=S.model.genome.name+(S.model.depth>1?" · depth "+S.model.depth:"");
+  var nm=document.getElementById("tableName"); if(nm) nm.textContent=label;
+  document.title=label+" (player display)";
+}
+function tblApplyRhex(rhex){
+  S.revealed=new Set();
+  for(var i=0;i<S.model.rooms.length;i++){ var b=parseInt((rhex||"").slice((i>>3)*2,(i>>3)*2+2)||"0",16); if(b&(1<<(i&7))) S.revealed.add(i); }
+  if(!S.revealed.size) S.revealed.add(0);
+}
+function tblDrawIfChanged(){ /* the map is rebuilt only when what it shows has changed, not on every tick of the clock */
+  var key=TBL.sig+"|"+tblRhex()+"|"+S.sel+"|"+(document.body.classList.contains("dark")?1:0);
+  if(key===TBL.mapKey) return; TBL.mapKey=key; renderMap(true); tblFit();
+}
+function tblFit(){ /* frame the lit rooms and the doorways just beyond them, closer than the game master's own fit */
+  var m=S.model; if(!m) return; var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,any=false;
+  var add=function(x,y){ any=true; if(x<x0)x0=x; if(y<y0)y0=y; if(x+1>x1)x1=x+1; if(y+1>y1)y1=y+1; };
+  m.rooms.forEach(function(r){ if(!S.revealed.has(r.id)) return; add(r.bbox.x,r.bbox.y); add(r.bbox.x+r.bbox.w-1,r.bbox.y+r.bbox.h-1); });
+  m.edges.forEach(function(e){ if(e.type==="secret") return; if(!S.revealed.has(e.a)&&!S.revealed.has(e.b)) return;
+    add(e.da[0],e.da[1]); add(e.db[0],e.db[1]); (e.path||[]).forEach(function(p){ add(p[0],p[1]); }); });
+  if(!any) return;
+  var mw=12,mh=8,cx=(x0+x1)/2,cy=(y0+y1)/2;
+  if(x1-x0<mw){x0=cx-mw/2;x1=cx+mw/2;} if(y1-y0<mh){y0=cy-mh/2;y1=cy+mh/2;}
+  VB={x:(x0-1.5)*CS,y:(y0-1.5)*CS,w:(x1-x0+3)*CS,h:(y1-y0+3)*CS};
+  $("#mapSvg").setAttribute("viewBox",VB.x+" "+VB.y+" "+VB.w+" "+VB.h);
+}
+function tblWriteAddress(){ try{ history.replaceState(null,"",TBL_PREFIX+tblAddressBody(tblCfg(),tblRhex(),S.sys)); }catch(e){} }
+function tblIdle(on){ var el=document.getElementById("tableIdle"); if(el) el.classList.toggle("gone",!on); }
+function tblReceive(msg){
+  if(!msg) return;
+  if(msg.t==="who"){ tblSend({t:"hello"}); return; }
+  if(msg.t==="gm-bye"){ torchMsg("Waiting for the game master’s window."); return; }
+  if(msg.t==="state"){
+    if(!msg.cfg||!msg.torch) return;
+    var fresh=!S.model||TBL.sig!==tblSig(msg.cfg);
+    if(fresh){ tblBuild(msg.cfg); tblStage(null); }
+    S.sys=msg.sys||"sd"; S.view="player";
+    var prev=fresh?0:S.revealed.size;
+    tblApplyRhex(msg.rhex);
+    S.sel=(typeof msg.sel==="number"&&S.model.rooms[msg.sel])?msg.sel:0;
+    if(S.revealed.size>prev&&prev>0) tblFlash();
+    if(TBL.stageRoom!=null&&TBL.stageRoom!==S.sel) tblStage(null);
+    S.torch.remain=msg.torch.remain; S.torch.running=msg.torch.running; S.torch.src=msg.torch.src; S.torch.used=msg.torch.used;
+    document.body.classList.toggle("dark",S.torch.remain<=0&&S.torch.used>0);
+    $("#flame").classList.toggle("out",!(S.torch.remain>0));
+    if(msg.tmsg) torchMsg(msg.tmsg);
+    TBL.synced=true; tblIdle(false);
+    tblDrawIfChanged(); renderTorch(); tblWriteAddress();
+  }
+  if(msg.t==="stage"){ TBL.stageRoom=(typeof msg.room==="number")?msg.room:null; tblStage(msg.kick,msg.body,msg.sig); }
+  if(msg.t==="clear"){ tblStage(null); }
+  if(msg.t==="dark"){ tblFlash(); }
+}
+function tblStage(kick,body,sig){
+  var st=document.getElementById("tableStage"); if(!st) return;
+  if(!body){ st.classList.remove("on"); TBL.stageRoom=null;
+    setTimeout(function(){ if(!st.classList.contains("on")){ $("#tKick").textContent=""; $("#tBody").textContent=""; $("#tSig").textContent=""; } },800); return; }
+  st.classList.remove("on");
+  setTimeout(function(){ $("#tKick").textContent=kick||""; $("#tBody").innerHTML=body; $("#tSig").textContent=sig||""; st.classList.add("on"); },260);
+}
+function tblFlash(){ var f=document.getElementById("tableFlash"); if(!f) return; f.classList.remove("hit"); void f.offsetWidth; f.classList.add("hit"); }
+
+/* ---- boot as the display, when the address says so ---- */
+function tblBootDisplay(){
+  TBL.isTable=true;
+  document.body.classList.add("table");
+  /* the game master's notes, menus, settings and controls never exist in this window;
+     the few ids renderTorch and the global click handlers still touch stay behind as empty, hidden stubs */
+  ["#sidebar","footer","#mapTools","#mapHint","#configOverlay"].forEach(function(s){ var el=document.querySelector(s); if(el) el.parentNode.removeChild(el); });
+  var hd=document.querySelector("header"); if(hd){ hd.innerHTML='<div class="menu" id="exportMenu"></div>'; }
+  var tb=document.querySelector(".torchbtns"); if(tb){ tb.innerHTML='<button id="btnPause" hidden></button><span id="torchCount" hidden></span><input id="chime" type="checkbox" hidden>'; }
+  var pane=$("#mapPane");
+  pane.insertAdjacentHTML("beforeend",
+    '<div id="tableFlash"></div>'
+    +'<div id="tableStage"><div class="tcard"><div class="tkick" id="tKick"></div><div class="tbody" id="tBody"></div><div class="tsig" id="tSig"></div></div></div>'
+    +'<div id="tableIdle"><h2>Abyssal Cartographer</h2><p>This screen is for the players. It shows the rooms their light has reached, the room they are in, and the torch. It is waiting for the game master’s window to open on this computer.</p></div>');
+  $("#torchbar").insertAdjacentHTML("afterbegin",'<div id="tableName" class="serif"></div>');
+  S.view="player"; S.sel=0;
+  var a=tblParseAddress();
+  if(a){ tblBuild(a); tblApplyRhex(a.rhex); S.sys=a.sys||"sd"; tblDrawIfChanged(); tblIdle(false); }
+  else { tblIdle(true); document.title="Abyssal Cartographer (player display)"; }
+  renderTorch();
+  torchMsg("Waiting for the game master’s window.");
+  tblSend({t:"hello"});
+  TBL.hello=setInterval(function(){ if(TBL.synced){ clearInterval(TBL.hello); TBL.hello=null; return; } tblSend({t:"hello"}); },3000);
+  TBL.beat=setInterval(function(){ tblSend({t:"alive"}); },4000);
+  var said=false, bye=function(){ if(said) return; said=true; tblSend({t:"bye"}); };
+  window.addEventListener("pagehide",bye); window.addEventListener("beforeunload",bye);
+  window.addEventListener("pageshow",function(){ if(said){ said=false; tblSend({t:"hello"}); } });
+  TBL.tick=setInterval(function(){ /* the clock keeps moving between messages; each message resets it */
+    if(S.torch.running&&S.torch.remain>0){ S.torch.remain--; renderTorch();
+      if(S.torch.remain<=0){ S.torch.running=false; document.body.classList.add("dark"); $("#flame").classList.add("out"); tblDrawIfChanged(); tblFlash(); } } },1000);
+}
 
 var QS={on:true,step:0,opened:false,seen:{}};
 
@@ -1721,11 +2147,11 @@ function qMargin(key,text){
 /* ---- the letter and the commission ---- */
 function QLETTER(){
   return '<div class="qletter">'
-   +'<p>To the new hand, whoever you are.</p>'
+   +'<p>To whoever is running this for the first time.</p>'
    +'<p>You do not have to make anything up. The whole dungeon is already built: every room, every creature, every trap, every coin. The map is on your screen. Your friends cannot see it. They only know what you tell them.</p>'
    +'<p>Here is the game. Read a room\'s description (the text in the parchment box) out loud. Ask what their characters do. Check that room\'s notes and tell them what happens. Then on to the next room. Their goal is to find the treasure and get out alive. Your job is not to beat them. It is to show them the place honestly and let their choices count.</p>'
    +'<p>When they try something the notes do not cover, and they will, decide what seems most likely and keep going.</p>'
-   +'<p>I have drawn maps for the Guild for thirty-one years. I drew this one for you, and left notes in the margins for your first time through. Turn them off whenever you like.</p>'
+   +'<p>I have drawn maps for the Guild of Careful Maps for thirty-one years. I drew this one for you, and left tips in its margins for your first time through: the dotted words you can tap, and the notes that appear as you go. The Margins button at the top turns them off whenever you like.</p>'
    +'<p class="qsign">— Q.</p></div>';
 }
 
@@ -1891,20 +2317,23 @@ function renderGM(el,m){
   h+='<div class="boxed serif">'+esc(g.intro)+'</div>';
   h+='<div class="klabel">Your game master is an AI</div><div class="card gmsteps">';
   h+='<div class="step"><span class="num">1</span><div>Copy the dungeon. Everything the game master needs is in it; you never have to read it.<button class="primary" id="btnCopyGM">Copy the dungeon for your game master</button></div></div>';
-  h+='<div class="step"><span class="num">2</span><div>Open one of these and paste.<div class="gmlinks"><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div></div></div>';
-  h+='<div class="step"><span class="num">3</span><div>Play. Keep this tab open: when the game master says <b>[Map: room 4]</b>, click that room on the map to light it, or type the number here. Your torch burns at the top of the page; light it when your character does.'
-    +'<div class="revealrow"><input id="revealNum" type="number" min="1" max="'+m.rooms.length+'" placeholder="4" aria-label="Room number"><button id="btnRevealNum">Light that room</button></div></div></div>';
+  h+='<div class="step"><span class="num">2</span><div>Open a new chat in one of these, paste, and press send. Your game master will greet you. It uses your own account, like any other chat.<div class="gmlinks"><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div></div></div>';
+  h+='<div class="step"><span class="num">3</span><div>Play. Keep this tab open. When the game master names a room, like this: <b>[Map: room 4]</b>, click that room on the map or type its number below, and it lights up. Type <b>status</b> in the chat any time to see your hit points and what you carry.'
+    +'<div class="revealrow"><input id="revealNum" type="number" min="1" max="'+m.rooms.length+'" aria-label="Room number"><button id="btnRevealNum">Light that room</button></div>'
+    +'<div style="margin-top:8px">In this game a torch lasts one real hour. When your character lights one, press <b>Light torch</b> at the top and a timer starts.</div></div></div>';
   h+='</div>';
   h+='<div class="klabel">Dice, if you have none</div><div class="card dice">'
     +'<button class="d20" data-die="20">d20</button><button data-die="4">d4</button><button data-die="6">d6</button><button data-die="8">d8</button><button data-die="10">d10</button><button data-die="12">d12</button>'
     +'<span class="out" id="diceOut">·</span><span class="outnote" id="diceNote">Tell your game master the number. It will trust you.</span></div>';
   h+='<div class="klabel">Good to know</div>';
-  h+='<div class="tiny" style="margin-bottom:6px">Rules: <b>'+(S.sys==="5e"?"Dungeons &amp; Dragons 5th edition":"Shadowdark RPG")+'</b>. '+(S.sys==="5e"?"AI game masters know D&amp;D best, so it is the default here. Switch to Shadowdark at the top if that is your game.":"Switch to 5e at the top if you would rather play D&amp;D; AI game masters know it best.")+'</div>';
-  h+='<div class="tiny" style="margin-bottom:6px">No peeking. <b>Be the game master</b> at the top shows every secret in this place. You will have more fun not knowing.</div>';
-  h+='<div class="tiny">Want a different dungeon? Press <b>New dungeon</b>. Share link copies an address that brings anyone to this exact place.</div>';
-  h+='<div class="qmarg" style="margin-top:14px">You are the one going down tonight. Someone else holds the map. All you have to do is decide. <span class="qsig">— Q.</span></div>';
+  h+='<div class="tiny" style="margin-bottom:6px">Rules: <b>'+(S.sys==="5e"?"Dungeons &amp; Dragons 5th edition":"Shadowdark RPG")+'</b>. '+(S.sys==="5e"?"AI game masters know D&amp;D best, so it is the default here. Switch to Shadowdark at the top if that is your game.":"Switch to D&amp;D 5e at the top if you would rather play that; AI game masters know it best.")+'</div>';
+  h+='<div class="tiny" style="margin-bottom:6px">Coming back tomorrow: bookmark this page (it remembers which rooms are lit) and go back to the same chat.</div>';
+  h+='<div class="tiny" style="margin-bottom:6px">The dungeon is about 3,000 words. If one AI refuses a paste that long, try another of the three.</div>';
+  h+='<div class="tiny" style="margin-bottom:6px">The <b>Be the game master</b> button at the top shows every secret in this place. It is more fun not to know.</div>';
+  h+='<div class="tiny">Want a different dungeon? Press <b>New dungeon</b>. <b>Share</b> copies a link that opens this exact dungeon.</div>';
+  h+='<div class="qmarg" style="margin-top:14px">Tonight you are the one who goes below. Your game master holds the map. All you have to do is decide. <span class="qsig">— Q., who drew this map</span></div>';
   el.innerHTML=h;
-  $("#btnCopyGM").addEventListener("click",()=>expAIGM(true));
+  $("#btnCopyGM").addEventListener("click",()=>{expAIGM(true);const b=$("#btnCopyGM");b.textContent="Copied. Now open a chat and paste.";b.classList.add("done");setTimeout(()=>{if(b.isConnected){b.textContent="Copy the dungeon for your game master";b.classList.remove("done");}},6000);});
   const go=()=>{const n=parseInt($("#revealNum").value,10);
     if(!(n>=1&&n<=m.rooms.length)){toast("Rooms here run 1 to "+m.rooms.length+".");return;}
     $("#revealNum").value="";
@@ -1912,6 +2341,7 @@ function renderGM(el,m){
   $("#btnRevealNum").addEventListener("click",go);
   $("#revealNum").addEventListener("keydown",e=>{if(e.key==="Enter")go();});
   el.querySelectorAll("[data-die]").forEach(b=>b.addEventListener("click",()=>{
+    if(document.body.classList.contains("dark")){$("#diceNote").textContent="Too dark to read the dice. Light something first.";return;}
     const d=+b.dataset.die, r=1+Math.floor(Math.random()*d), o=$("#diceOut");
     o.textContent=r; o.classList.remove("roll"); void o.offsetWidth; o.classList.add("roll");
     $("#diceNote").textContent=d===20&&r===20?"A natural twenty. Say it out loud.":d===20&&r===1?"A one. Tell the game master anyway; the good stories start here.":"d"+d+": "+r+". Tell your game master.";
@@ -1920,6 +2350,7 @@ function renderGM(el,m){
 function setRole(role,opts){
   opts=opts||{};
   S.role=role;
+  document.body.classList.remove("choosing");
   document.body.classList.toggle("role-player",role==="player");
   if(role==="player"){
     S.view="player"; if(opts.sys)S.sys=opts.sys; S.tab="gm";
@@ -1931,25 +2362,29 @@ function setRole(role,opts){
   $("#viewToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.view===S.view));
   $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.sys===S.sys));
   $("#btnRole").textContent=role==="player"?"Be the game master":"Be a player";
+  $("#mapHint").textContent=role==="player"?"Rooms light up as your game master takes you into them. Click a room it has named, or type the number under How to play. Drag to pan, scroll to zoom.":"Click a lit room to enter it. Click a doorway beyond your light to press on. Drag to pan, scroll to zoom.";
   try{localStorage.setItem("ac.role",role);}catch(e){}
   if(S.model){renderTabs();renderMap(true);renderPanel();renderFoot();syncHash();}
 }
 function roleDoor(){
   const pane=$("#mapPane"); if(!pane||document.getElementById("roleDoor"))return;
   const d=document.createElement("div"); d.className="door"; d.id="roleDoor";
-  d.innerHTML='<h3>Who are you tonight?</h3><div class="sub">A dungeon is already drawn behind this card. This decides what you see of it.</div>'
-    +'<button class="primary" id="doorPlayer">I want to play<small>An AI will be your game master. You explore, it tells the story, and nothing here spoils the surprise.</small></button>'
+  document.body.classList.add("choosing");
+  d.innerHTML='<h3>Are you playing, or running the game?</h3><div class="sub">A dungeon is already drawn behind this card. Your choice decides how much of it you get to see.</div>'
+    +'<button class="primary" id="doorPlayer">I want to play<small>An AI will be your game master. You explore, it tells the story, and nothing on your screen spoils the surprise.</small></button>'
     +'<button id="doorDM">I am running it for friends<small>You hold the map and every secret: the full game master’s screen.</small></button>';
   pane.appendChild(d);
   $("#doorPlayer").addEventListener("click",()=>{d.remove();setRole("player",{sys:"5e"});});
   $("#doorDM").addEventListener("click",()=>{d.remove();setRole("dm");setTimeout(qDropNote,600);});
 }
 $("#btnRole").addEventListener("click",()=>setRole(S.role==="player"?"dm":"player"));
-$("#btnNewP").addEventListener("click",()=>{$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());});
+$("#btnNewP").addEventListener("click",()=>{$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});
 
 window.addEventListener("hashchange",()=>location.reload()); /* a pasted link rebuilds the page */
 /* ---------- boot ---------- */
 (function boot(){
+  tblOpen();
+  if(tblIsDisplay()){ tblBootDisplay(); return; }
   for(const[k,v]of Object.entries(AC.ORIGINS))$("#cfgOrigin").insertAdjacentHTML("beforeend",'<option value="'+k+'">'+esc(v.label)+'</option>');
   for(const[k,v]of Object.entries(AC.DOOMS))$("#cfgDoom").insertAdjacentHTML("beforeend",'<option value="'+k+'">'+esc(v.label)+'</option>');
   const hp=parseHash();
@@ -1967,10 +2402,12 @@ window.addEventListener("hashchange",()=>location.reload()); /* a pasted link re
     let stored=null; try{stored=localStorage.getItem("ac.role");}catch(e){}
     $("#seedInput").value=AC.randomSeed();
     if(stored==="player"){S.role="player";S.sys="5e";S.view="player";newDungeon(currentCfg());setRole("player");}
-    else{newDungeon(currentCfg()); if(stored==="dm")setTimeout(qDropNote,900); else roleDoor();}
+    else if(stored==="dm"){newDungeon(currentCfg()); setTimeout(qDropNote,900);}
+    else{S.view="player"; newDungeon(currentCfg()); roleDoor();}
   }
   renderTorch();
   torchMsg("Nobody has lit a torch yet. The dungeon does not mind waiting.");
+  tblSend({t:"who"}); /* a display opened before this window answers, and gets the state */
 })();
 })();
 /*UI-END*/
