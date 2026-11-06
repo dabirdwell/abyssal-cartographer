@@ -9,6 +9,7 @@ node tests/torchlight.test.js     AbyssalCartographer.html out/   # the light on
 node tests/player-display.test.js AbyssalCartographer.html out/   # the second-screen display: sync, no secrets, lights out, reconnect
 node tests/offline.test.js        AbyssalCartographer.html out/   # every outside connection blocked: the full game, then a local model
 node tests/save.test.js           AbyssalCartographer.html out/   # the save-for-offline link, served like GitHub Pages and from disk
+node tests/local-model.test.js    AbyssalCartographer.html out/   # a local model reached from the https address and the saved copy: Chrome's permission, labels, hints, errors
 node hosted/test_hosted.mjs       AbyssalCartographer.html        # the hosted game master against a fake Claude
 ```
 
