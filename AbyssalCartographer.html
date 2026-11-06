@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Abyssal Cartographer v2.0</title>
+<title>Abyssal Cartographer</title>
 <meta name="description" content="A single-file, truly zero-dependency dungeon crawl generator. One click builds a coherent dungeon: origin, doom, factions, keyed rooms, locked doors with reachable keys, treasure worth XP, and a real-time torch. Compatible with Shadowdark RPG, with classic 5e stats included. Works offline. Share any dungeon as a link.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f0d0b'/><path d='M16 4l3.2 8.8L28 16l-8.8 3.2L16 28l-3.2-8.8L4 16l8.8-3.2z' fill='%23f2a33c'/></svg>">
 <style>
@@ -265,12 +265,12 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
 .qmarg{font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic; font-size:12.5px;
   color:var(--parch-dim); border-left:2px solid var(--torch); padding:6px 10px; margin:8px 0; line-height:1.55}
 .qmarg .qsig{font-variant:small-caps; font-style:normal; letter-spacing:.08em; color:var(--parch-deep)}
-@media(max-width:700px){.qsheet{padding:20px 18px}.qnote{width:200px}}
+@media(max-width:700px){.qsheet{padding:20px 18px}.qnote{width:200px}#torchbar{flex-wrap:wrap;gap:8px 12px}#torchbar .torchbtns{flex:1 1 220px;min-width:0}#lightSource{max-width:100%;min-width:0}#torchState{max-width:none;flex:1 1 100%}html,body{max-width:100%;overflow-x:hidden}.qstepnav{flex-wrap:wrap}}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.4</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v2.5</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
@@ -293,6 +293,7 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
     <div class="menu" id="exportMenu">
       <button data-x="dm">DM guide (print ready)</button>
       <button data-x="player">Player handout</button>
+      <button data-x="ai">Play with an AI game master</button>
       <button data-x="json">JSON (full data)</button>
     </div>
   </div>
@@ -346,7 +347,7 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
   <span class="xp" id="xpFoot"></span>
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
-  <span>MIT · works offline · v2.4 · build 2026-08-15 · <span id="footSeed"></span></span>
+  <span>MIT · works offline · v2.5 · build 2026-11-06 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -440,15 +441,15 @@ const SENSES={
   lair:{sound:"A heartbeat you hope is yours",smell:"Old blood and predator musk"}
 };
 const PLAYLISTS={
-  entry:{u:"https://www.youtube.com/watch?v=DSGsqWoFKS8",n:"Dungeon Entrance Ambiance"},
-  guard:{u:"https://www.youtube.com/watch?v=RZVyHH-voR8",n:"Guard Room Ambiance"},
-  store:{u:"https://www.youtube.com/watch?v=u0cKdAilFok",n:"Creepy Storage Ambiance"},
-  shrine:{u:"https://www.youtube.com/watch?v=vNPg8sNJDQo",n:"Dark Temple Ambiance"},
-  crypt:{u:"https://www.youtube.com/watch?v=uD_rOB3tHl8",n:"Crypt Ambiance"},
-  vault:{u:"https://www.youtube.com/watch?v=_iOZGzQ2hWM",n:"Treasure Room Ambiance"},
-  library:{u:"https://www.youtube.com/watch?v=ByGT-UYyJxs",n:"Ancient Library Ambiance"},
-  cell:{u:"https://www.youtube.com/watch?v=0bF6wPgpDAU",n:"Dungeon Prison Ambiance"},
-  lair:{u:"https://www.youtube.com/watch?v=PoMYsTcjzAA",n:"Boss Lair Ambiance"}
+  entry:{u:"https://www.youtube.com/results?search_query=dungeon+entrance+ambience",n:"Dungeon Entrance Ambiance"},
+  guard:{u:"https://www.youtube.com/results?search_query=dungeon+guard+room+ambience",n:"Guard Room Ambiance"},
+  store:{u:"https://www.youtube.com/results?search_query=creepy+cellar+ambience",n:"Creepy Storage Ambiance"},
+  shrine:{u:"https://www.youtube.com/results?search_query=dark+temple+ambience",n:"Dark Temple Ambiance"},
+  crypt:{u:"https://www.youtube.com/results?search_query=crypt+ambience",n:"Crypt Ambiance"},
+  vault:{u:"https://www.youtube.com/results?search_query=treasure+room+ambience",n:"Treasure Room Ambiance"},
+  library:{u:"https://www.youtube.com/results?search_query=ancient+library+ambience",n:"Ancient Library Ambiance"},
+  cell:{u:"https://www.youtube.com/results?search_query=dungeon+prison+ambience",n:"Dungeon Prison Ambiance"},
+  lair:{u:"https://www.youtube.com/results?search_query=boss+lair+ambience",n:"Boss Lair Ambiance"}
 };
 const PLAYLIST_MAP={hall:"entry",quarters:"guard",workshop:"store",well:"crypt",warren:"lair",vault:"vault"};
 
@@ -897,7 +898,7 @@ function generate(cfg){
       const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));
       const m=pickMagic();if(m){r.treasure.push(T(m.n+": "+m.t+(m.curse?" Cursed: "+m.curse:""),0,"magic"));placedItems.push(m.n);}
     }else if(fHome){
-      const g=RI(rng,COIN.moderate[0],COIN.moderate[1]);r.treasure.push(T("the "+fHome.name+"'s hoard: "+coinTxt(g),g));
+      const g=RI(rng,COIN.moderate[0],COIN.moderate[1]);r.treasure.push(T((/^The /.test(fHome.name)?fHome.name.replace(/^The /,"the "):"the "+fHome.name)+"'s hoard: "+coinTxt(g),g));
       if(rng()<.6){const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));}
     }else if(cls==="vault"||rng()<.4){
       const g=RI(rng,COIN.minor[0],COIN.minor[1]);r.treasure.push(T(coinTxt(g),g));
@@ -953,7 +954,7 @@ function generate(cfg){
     const want=wantItem?("recover "+wantItem+" from "+name):("bring back proof that "+boss.mon.name+" is finished");
     const reward=(lvl+1)*RI(rng,40,80);
     const rumors=[];
-    factions.slice(0,2).forEach(f=>rumors.push({txt:"They say the "+f.type+" down there mean to "+f.goal+".",truth:"t"}));
+    factions.slice(0,2).forEach(f=>rumors.push({txt:"They say the "+f.type.replace(/^(the|a|an) /,"")+" down there mean to "+f.goal+".",truth:"t"}));
     const twistTxt=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomLabel:doom.label,townName,innName});
     rumors.push({txt:P(rng,["An old-timer swears: ","The keeper will tell you, for a drink: ","A scrawl in the outhouse reads: "])+twistTxt,truth:"h"});
     const falseDoom=P(rng,Object.keys(DOOMS).filter(k=>k!==doomKey));
@@ -1203,7 +1204,7 @@ function renderTorch(){
   el.className=t.remain<=0&&t.used>0?"dead":t.remain<=300?"crit":t.remain<=600?"warn":"";
   if(!t.running&&t.remain>0)el.classList.add("warn");
   $("#flame").classList.toggle("gutter",t.running&&t.remain<=600&&t.remain>0);
-  $("#btnPause").textContent=t.running?"Pause":"Resume";
+  $("#btnPause").textContent=(t.running||t.remain<=0)?"Pause":"Resume";$("#btnPause").disabled=t.remain<=0;
   $("#torchCount").textContent=t.used?("lights spent: "+t.used):"";
 }
 $("#btnLight").addEventListener("click",lightUp);
@@ -1298,14 +1299,14 @@ function renderPanel(){
     el.innerHTML=h;
   }
   else{
-    let h='<div class="klabel">Treasure is experience. 1 gp recovered and spent is 1 XP.</div>';
+    let h='<div class="klabel">'+(S.sys==="sd"?"Treasure is experience. Each hoard carried out is worth XP by its rating.":"Treasure. In 5e, experience comes from foes overcome, not from coin.")+'</div>';
     if(!dm)h+='<div class="tiny">Your haul so far, as the DM reveals it.</div>';
     let total=0,checked=0;
     m.rooms.forEach(r=>{if(!r.treasure.length)return;if(!dm&&!S.revealed.has(r.id))return;
       h+='<div class="klabel">Room '+(r.id+1)+' · '+esc(r.name)+'</div><div class="treas">';
       r.treasure.forEach(t=>{total+=t.gp;if(S.loot.has(t.id))checked+=t.gp;h+=lootBox(t);});
       h+='</div>';});
-    h+='<hr class="rule"><div class="xp">Recovered: <b>'+checked+' gp</b> of '+(dm?total+' gp placed':'?')+' · <b>'+Math.floor(checked/m.cfg.party)+' XP</b> each on return</div>';
+    h+='<hr class="rule"><div class="xp">Recovered: <b>'+checked+' gp</b> of '+(dm?total+' gp placed':'?')+'</div>';
     h+='<button class="primary" id="btnBank" style="margin-top:8px">Return to town: bank '+checked+' gp</button>';
     if(S.sys==="sd"){var HB=hoardXP();
       h+='<div class="tiny" style="margin-top:4px">'+HB.n+' scoring hoards · <b>'+HB.xp+' XP</b> to every delver, undivided. Ten XP carries a first level delver to second. Shadowdark rates a hoard Poor (0), Normal (1), Fabulous (3) or Legendary (10); the rating is yours to overrule.</div>';}
@@ -1418,7 +1419,7 @@ $("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){const cfg=cur
   if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");else hideSeedHint();}});
 $("#seedInput").addEventListener("input",hideSeedHint);
 $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sys=b.dataset.sys;
-  $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderPanel();syncHash();});
+  $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderPanel();renderFoot();syncHash();});
 $("#viewToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.view=b.dataset.view;
   $("#viewToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderMap(true);renderPanel();syncHash();
   toast(S.view==="dm"?"DM view: all secrets shown":"Player view: only what the light has touched");});
@@ -1472,7 +1473,7 @@ function expDM(){
       h+='<p class="tiny"><span class="k">Leader:</span> '+esc(f.leader.name)+'</p>'+expStat(f.leader);});}
   h+='<h2>Wandering the Halls</h2><p class="tiny">Roll 1d6 between crawling rounds; an encounter arrives on a 1. How often you roll is set by how dangerous the place is: unsafe, every third round. Risky, every second. Deadly, every round. Roll as well whenever the party makes a loud disturbance, whatever the count says.</p><table><tr><th>d6</th><th>What comes</th></tr>';
   m.wander.forEach(w=>h+='<tr><td>'+w.roll+'</td><td>'+esc(w.txt)+(w.mon?' ('+w.n+' × '+esc(w.mon.name)+')':'')+'</td></tr>');h+='</table>';
-  h+='<h2>Light, by the Real Clock</h2><table><tr><th>Source</th><th>Burns</th><th>Reach</th></tr><tr><td>Torch</td><td>1 hour, real time</td><td>near</td></tr><tr><td>Lantern</td><td>4 hours</td><td>near</td></tr><tr><td>Candle</td><td>1 hour</td><td>close</td></tr></table><p class="tiny">In darkness: disadvantage on tasks and attacks, and things with darksight hunt at advantage.</p>';
+  h+='<h2>Light, by the Real Clock</h2><table><tr><th>Source</th><th>Burns</th><th>Reach</th></tr><tr><td>Torch</td><td>1 hour, real time</td><td>near</td></tr><tr><td>Lantern</td><td>1 hour per flask of oil</td><td>near</td></tr><tr><td>Candle</td><td>1 hour</td><td>close</td></tr></table><p class="tiny">In darkness: disadvantage on tasks and attacks, and things with darksight hunt at advantage.</p>';
   h+='<h2>The Rooms</h2>';
   m.rooms.forEach(r=>{
     h+='<div class="room"><h3>'+(r.id+1)+'. '+esc(r.name)+(r.id===m.boss.roomId?' ♛':'')+(r.faction!=null&&m.factions[r.faction]?' <span class="tiny">('+esc(m.factions[r.faction].name)+')</span>':'')+'</h3>';
@@ -1492,8 +1493,83 @@ function expDM(){
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(t.inn)+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v2.0. Seed: '+esc(m.seed)+'. Treasure placed: 1 gp = 1 XP.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v2.5. Seed: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_DM.html","text/html",h);
+}
+/* ---------- hand the dungeon to an AI game master ----------
+   The generator holds the facts (map, monsters, treasure, secrets); the AI does the
+   voices. Copies a ready prompt to the clipboard, or saves it as a text file. */
+function aiGMText(){
+  const m=S.model,g=m.genome,five=S.sys==="5e";
+  const P=s=>{s=String(s||"").replace(/\s+/g," ").trim().replace(/\.+$/,"");return s?s+".":"";};
+  const rules=five?"Dungeons & Dragons 5th edition (the creature stats below are approximate 5e conversions)":"Shadowdark RPG";
+  const L=[];
+  L.push("You are the game master for a tabletop roleplaying session, and I am your player. Below is a complete dungeon. Run it for me.");
+  L.push("");
+  L.push("HOW TO RUN IT");
+  L.push("1. Rules: "+rules+". If I seem new, teach one rule at a time, only when it matters, in plain words.");
+  L.push("2. The dungeon below is fixed. Do not add rooms, move creatures, or change treasure. Improvise freely inside a room: voices, smells, small details, how creatures react.");
+  L.push("3. Keep secrets. Anything marked SECRET, SOLUTION, ANSWER or TRUE/FALSE is for you only, until we find it out in play.");
+  L.push("4. Describe only what my character can see, hear and smell. Read the room's READ-ALOUD text in your own words, then ask what I do.");
+  L.push("5. Dice: when the outcome is uncertain, tell me what to roll and what to add, and let me roll real dice. If I ask you to roll, show the number. Never fudge in secret.");
+  L.push("6. Creatures use the tactics written for them and give up or flee as their morale says. Factions want what they want; let me talk, bargain and sneak, not only fight.");
+  L.push("7. Light matters. A torch burns for one real hour. When I light one, remind me to start a timer. In darkness I have disadvantage.");
+  L.push("8. Track where I am, my hit points, what is lit, and what I carry. Show it whenever I type: status.");
+  L.push("9. Keep turns short. One or two paragraphs, then hand it back to me.");
+  L.push("");
+  L.push("TO BEGIN: ask whether I already have a character. If not, help me make one quickly (a name, a class, a few numbers). The party is meant for "+m.cfg.party+" characters of level "+m.cfg.level+"; if I play alone, give me one or two companions to steer, or soften the fights. Then start "+(m.town?"in the town of "+m.town.name+".":"at the dungeon's entrance (room 1)."));
+  L.push("");
+  L.push("THE DUNGEON: "+g.name);
+  L.push(g.origin+" · "+g.doom+" · "+g.age+" · depth "+m.depth+" · seed "+m.seed);
+  L.push("READ-ALOUD: "+g.intro);
+  L.push("SECRET (the truth of this place): "+g.twist);
+  if(m.town){const t=m.town;
+    L.push("");L.push("TOWN: "+t.name);
+    L.push("The inn is "+t.inn+", kept by "+t.keeper+". "+t.patron.name+" will pay "+t.patron.reward+" gp to "+t.patron.want+".");
+    L.push("Rumors (TRUE/FALSE is secret):");
+    t.rumors.forEach(r=>L.push("- “"+r.txt+"” ["+(r.truth==="t"?"TRUE":r.truth==="f"?"FALSE":"HALF-TRUE")+"]"));
+    L.push("For sale: "+t.shop.map(s=>s.n+" ("+s.c+")").join(", ")+".");}
+  const stat=c=>{const t=AC.statText(c,S.sys);let s="  Stats: "+t.l1+"; "+t.l2+(t.l3?"; "+t.l3:"");
+    (c.ab||[]).forEach(a=>s+="\n  "+a.n+": "+a.t);if(c.gift)s+="\n  "+c.gift.n+": "+c.gift.t;return s;};
+  if(m.factions.length){L.push("");L.push("FACTIONS");
+    m.factions.forEach((f,i)=>{L.push((i+1)+". "+f.name+" ("+f.type+", "+f.att+"), holds rooms "+f.rooms.map(x=>x+1).join(", ")+".");
+      L.push("  Goal: "+f.goal+"."+(f.canAlly?" Will bargain with the party if "+f.allyCond+".":""));
+      (f.rel||[]).forEach(r=>L.push("  "+f.name+" "+r+"."));
+      L.push("  Leader: "+f.leader.name);L.push(stat(f.leader));});}
+  L.push("");L.push("WANDERING CREATURES: roll 1d6 every few turns of exploring and whenever the party is loud; on a 1, something comes.");
+  m.wander.forEach(w=>L.push("- "+w.roll+": "+w.txt+(w.mon?" ("+w.n+" x "+w.mon.name+")":"")));
+  L.push("");L.push("ROOMS");
+  m.rooms.forEach(r=>{
+    L.push("");
+    L.push("ROOM "+(r.id+1)+": "+r.name+(r.id===m.boss.roomId?" (the boss is here)":"")+(r.faction!=null&&m.factions[r.faction]?" [held by "+m.factions[r.faction].name+"]":""));
+    L.push("Light: "+r.light+". Exits: "+r.exits.map(x=>x.dir+", "+x.label+" to "+x.to).join("; ")+".");
+    L.push("READ-ALOUD: "+r.box);
+    if(r.detail)L.push("Detail: "+r.detail);
+    if(r.flooded)L.push("Flooded: knee-deep water, difficult ground, sound carries.");
+    if(r.rubble)L.push("Rubble: half cover, loud to cross quickly.");
+    if(r.enc){L.push("Creatures: "+r.enc.count+" x "+r.enc.mon.name+", "+P(r.enc.act||"present")+" Tactics: "+P(r.enc.tac||"fight")+(r.enc.morale?" Morale: "+P(r.enc.morale):""));L.push(stat(r.enc.mon));}
+    if(r.trap)L.push("SECRET trap ("+r.trap.n+"): "+P(r.trap.tr)+" "+P(r.trap.ef)+" Telltale sign: "+P(r.trap.fd)+" Disarm: "+P(r.trap.ds));
+    if(r.puzzle)L.push("Puzzle ("+r.puzzle.n+"): "+P(r.puzzle.s)+" SOLUTION: "+P(r.puzzle.a));
+    if(r.riddle)L.push("Riddle: "+r.riddle.q+" ANSWER: "+P(r.riddle.a));
+    if(r.treasure.length)L.push("Treasure: "+P(r.treasure.map(t=>P(t.txt).replace(/\.$/,"")+(t.gp&&!/\d+ gp/.test(t.txt)?" ("+t.gp+" gp)":"")).join("; ")));
+    if(r.secretNote)L.push("SECRET: "+r.secretNote);
+    if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
+  });
+  L.push("");
+  L.push("Made with Abyssal Cartographer v2.5. "+LICENSE_LINE);
+  L.push("");
+  L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
+  return L.join("\n");
+}
+function expAIGM(){
+  const text=aiGMText(), name=S.model.genome.name.replace(/[^a-z0-9]+/gi,"_")+"_AI_game_master.txt";
+  const saved=()=>{dl(name,"text/plain",text);toast("Saved as a text file. Open it, copy all of it, and paste it into Claude, ChatGPT or Gemini.");};
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(
+        ()=>toast("Copied. Paste it into Claude, ChatGPT or Gemini and your game master is ready."),saved);
+    }else saved();
+  }catch(e){saved();}
 }
 function expPlayer(){
   const m=S.model,g=m.genome;
@@ -1509,7 +1585,7 @@ function expPlayer(){
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_players.html","text/html",h);
 }
 $("#exportMenu").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();
+  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();else if(b.dataset.x==="ai")expAIGM();
   else dl("abyssal_"+S.model.seed+".json","application/json",JSON.stringify({model:S.model,revealed:[...S.revealed],loot:[...S.loot],banked:S.banked||0},null,1));
   $("#exportMenu").classList.remove("open");});
 
@@ -1560,8 +1636,9 @@ function QPLAIN(m){ /* plain-language reading of a stat block */
   var ab = S.sys==="5e" ? a.b+2 : a.b;
   var need=Math.max(2,m.ac-2);
   var chance=Math.max(5,Math.min(95,Math.round((21-need)/20*100)));
-  return '<div class="qplain">In plain terms: a delver rolls the die and adds what they are good at; the total must reach <b>'
-    +m.ac+'</b> to land a blow, so a middling delver with a +2 lands about '+chance+' swings in a hundred. Roughly <b>'+hp
+  var who = S.sys==="5e" ? "character" : "delver";
+  return '<div class="qplain">In plain terms: a '+who+' rolls the die and adds what they are good at; the total must reach <b>'
+    +m.ac+'</b> to land a blow, so a middling '+who+' with a +2 lands about '+chance+' swings in a hundred. Roughly <b>'+hp
     +'</b> damage puts it down. It strikes back with its '+esc(a.n)+', adding '+ab+' to its own roll, for '+esc(a.d)
     +' damage when it connects.</div>';
 }
@@ -1593,16 +1670,16 @@ function qMargin(key,text){
 function QLETTER(){
   return '<div class="qletter">'
    +'<p>To the new hand, whoever you are.</p>'
-   +'<p>You are about to run this game for your friends. The whole job is this: you describe a room, they say what their people do about it, you say what happens next. Everything else is decoration.</p>'
-   +'<p>I drew maps for the Guild for thirty-one years and never once from standing in the room. You will do the same thing at this table: describe a place you have never seen to friends who have never been there, and then find out what they do about it. That is not an error. That is the work.</p>'
-   +'<p>I have left notes in the margins. Ignore them the moment you stop needing them; turn them off entirely if they crowd the page. The ink keeps.</p>'
-   +'<p>Your first commission is on the table. I have marked it up.</p>'
+   +'<p>You do not have to make anything up. The whole dungeon is already built: every room, every creature, every trap, every coin. The map is on your screen. Your friends cannot see it. They only know what you tell them.</p>'
+   +'<p>Here is the game. Read a room\'s description (the text in the parchment box) out loud. Ask what their characters do. Check that room\'s notes and tell them what happens. Then on to the next room. Their goal is to find the treasure and get out alive. Your job is not to beat them. It is to show them the place honestly and let their choices count.</p>'
+   +'<p>When they try something the notes do not cover, and they will, decide what seems most likely and keep going.</p>'
+   +'<p>I have drawn maps for the Guild for thirty-one years. I drew this one for you, and left notes in the margins for your first time through. Turn them off whenever you like.</p>'
    +'<p class="qsign">— Q.</p></div>';
 }
 
 function QLETTER_PRINT(){
   return '<div style="page-break-after:always">'
-   +'<h1>A Letter to a New Cartographer</h1>'
+   +'<h1>A Letter to a New Game Master</h1>'
    +'<p><i>If this is not your first game, turn the page. Nothing here will be new to you.</i></p>'
    +'<p>You are holding a place, not a story. A story has one path. A place has doors.</p>'
    +'<p><b>The whole arrangement.</b> You describe. They decide. You say what is true about the room; they say what their people do about it; you say what happens next. That is the entire craft, and it does not get more complicated, only faster.</p>'
@@ -1611,7 +1688,7 @@ function QLETTER_PRINT(){
    +'<p><b>Then ask what they do, and wait.</b> Wait longer than is comfortable. That silence is not failure. It is four people working out that the room belongs to them.</p>'
    +'<p><b>The light is a clock.</b> An hour of torch is an hour of the table\'s real life. When it goes out, the dark is a rule and not a mood: everything gets harder. Do not warn them about the time. Let them notice.</p>'
    +'<p><b>What they carry out is what they learn from.</b> Gold hauled back to town becomes experience. That is why they will do something unwise near the end of the night, and it is why the night has an end.</p>'
-   +'<p><b>When they do something I have not written down</b>, and they will, immediately, and they will befriend the thing built to kill them: that is not a hole in the map. It is the reason a cartographer sits at the table instead of a book. Say yes, and say what it costs. Then write down what happened, because it is true now, and the map is yours.</p>'
+   +'<p><b>When they do something I have not written down</b>, and they will, immediately, and they will befriend the thing built to kill them: that is not a hole in the map. It is the reason a game master sits at the table instead of a book. Say yes, and say what it costs. Then write down what happened, because it is true now, and the map is yours.</p>'
    +'<p style="font-variant:small-caps;letter-spacing:.08em">— Q., Guild of Careful Maps</p></div>';
 }
 
@@ -1623,7 +1700,7 @@ function QSTEPS(){
 
   steps.push({t:"What you are holding",h:
     '<p>Not a story. A place, and a list of what is true about it. The difference is the whole job: a story has one path, and a place has doors.</p>'
-    +'<p>You are the cartographer. Everyone else at the table plays somebody walking into your place. You describe. They decide. You say what happens next. That is the entire arrangement, and it never gets more complicated, only quicker.</p>'
+    +'<p>You are the game master. Everyone else at the table plays somebody walking into your place. You describe. They decide. You say what happens next. That is the entire arrangement, and it never gets more complicated, only quicker.</p>'
     +'<div class="qaside">This particular place is called '+esc(m.genome.name)+'. It was '+esc(String(m.genome.origin).toLowerCase())+', until '+esc(String(m.genome.doom).toLowerCase())+'. You did not decide that. Neither did I. The dice did, and now it is true.</div>'});
 
   steps.push({t:"Who sits at the table",h:
@@ -1671,7 +1748,7 @@ function QSTEPS(){
 
   steps.push({t:"When they do something I have not written down",h:
     '<p>They will. Immediately. They will parley with the thing I built to kill them, or set fire to a room you had plans for, or become extremely interested in a barrel.</p>'
-    +'<p>That is not a hole in the map. It is the entire reason a cartographer sits at the table instead of a book. The answer is almost always yes. The interesting part is what it costs them. Then write down what happened, because it is true now, and the map is yours and not mine.</p>'
+    +'<p>That is not a hole in the map. It is the entire reason a game master sits at the table instead of a book. The answer is almost always yes. The interesting part is what it costs them. Then write down what happened, because it is true now, and the map is yours and not mine.</p>'
     +'<div class="qaside">Everything else you will learn the way I did. Badly, in the dark, in front of your friends.</div>'
     +'<p class="qsign" style="margin-top:14px">I will be in the margins. — Q.</p>'});
 
@@ -1685,11 +1762,11 @@ function qRender(){
       +QLETTER()
       +'<div class="qstepnav"><label class="qtoggle"><input type="checkbox" id="qKeep"'+(QS.on?" checked":"")+'> keep the margins</label>'
       +'<span class="spacer"></span><button id="qClose">Not now</button>'
-      +'<button class="primary" id="qNext">Open the commission</button></div>';
+      +'<button class="primary" id="qNext">Walk me through it</button></div>';
   } else {
     var steps=QSTEPS(), i=QS.step-1, s=steps[Math.min(i,steps.length-1)];
     var dots=""; for(var k=0;k<steps.length;k++)dots+='<i class="'+(k===i?"on":"")+'" data-qd="'+k+'"></i>';
-    sh.innerHTML='<div class="qkicker">The first commission · '+(i+1)+' of '+steps.length+'</div>'
+    sh.innerHTML='<div class="qkicker">Your first game · '+(i+1)+' of '+steps.length+'</div>'
       +'<h2>'+s.t+'</h2><div class="qletter" style="margin-top:12px">'+s.h+'</div>'
       +'<div class="qstepnav"><div class="qdots">'+dots+'</div><span class="spacer"></span>'
       +(i>0?'<button id="qPrev">Back</button>':'')
@@ -1724,7 +1801,7 @@ function qDropNote(){
   if(QS.opened)return;
   var pane=document.getElementById("mapPane"); if(!pane||document.getElementById("qNote"))return;
   var d=document.createElement("div"); d.className="qnote"; d.id="qNote";
-  d.innerHTML='<p>Never run one of these before? Nor had I, once. I have left you a letter and a first commission.</p>'
+  d.innerHTML='<p>Never run one of these before? Nor had I, once. I left you a short letter and a step-by-step first game.</p>'
     +'<div class="qsig">— Q., Guild of Careful Maps</div>'
     +'<div class="qbtns"><button class="qgo" id="qNoteGo">Read it</button><button id="qNoteNo">Not tonight</button></div>';
   pane.appendChild(d);
