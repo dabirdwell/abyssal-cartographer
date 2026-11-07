@@ -177,9 +177,9 @@ function gmServer(parts, gap) {
   ctx = await ctxNew(b); p = await open(ctx, SRC + DM, 'dm2');
   await panel(p); await p.check('#sndVoice'); await p.check('#sndRoom'); await p.check('#sndCues'); await closePanel(p); await p.waitForTimeout(2500);
   let m0 = await p.evaluate(() => ({ ...window.__made }));
-  await p.click('#btnLight'); await p.waitForTimeout(500);
+  await p.click('#btnLight'); await p.waitForTimeout(900);
   let m1 = await p.evaluate(() => ({ ...window.__made }));
-  ok(m1.buf - m0.buf >= 12, 'lighting the torch strikes a match (' + (m1.buf - m0.buf) + ' sound grains in half a second)');
+  ok(m1.buf - m0.buf >= 8 && m1.osc - m0.osc >= 1, 'lighting the torch: the flame catches (' + (m1.buf - m0.buf) + ' grains and ' + (m1.osc - m0.osc) + ' tones in under a second)');
   ok(await p.evaluate(() => window.__spoken.some(s => s.text === 'A new torch takes the flame.')), 'and the narrator says so');
   await p.click('#btnQuire'); await p.waitForTimeout(400); await p.evaluate(() => { window.__spoken = []; });
   await p.click('#qSheet .readbtn'); await p.waitForTimeout(300);
@@ -191,7 +191,7 @@ function gmServer(parts, gap) {
   const lairAt = await p.evaluate(() => { const t = [...document.querySelectorAll('#mapSvg text')].find(x => x.textContent === '♛'); if (!t) return null; const g = t.closest('.roomG'); const r = (g || t).getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 + 12 }; });
   if (lairAt) { await p.mouse.click(lairAt.x, lairAt.y); await p.waitForTimeout(1500); }
   m1 = await p.evaluate(() => ({ ...window.__made }));
-  ok(lairAt && m1.osc - m0.osc >= 5, "the boss's lair hums (" + (m1.osc - m0.osc) + ' tones started)');
+  ok(lairAt && m1.osc - m0.osc >= 14, "the boss's lair hums (" + (m1.osc - m0.osc) + ' tones started)');
   // treasure
   await p.click('.tabs button[data-tab="loot"]').catch(() => {}); await p.waitForTimeout(300);
   m0 = await p.evaluate(() => ({ ...window.__made }));

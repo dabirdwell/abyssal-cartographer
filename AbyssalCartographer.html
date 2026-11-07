@@ -2738,12 +2738,33 @@ const FX = (() => {
     mix.connect(g); g.connect(out); s.start(t); s.stop(t + 1.2);
     burst(c, out, t + 1.15, r, { type: 'lowpass', f: 260, gain: 0.5, a: 0.003, dec: 0.18 }); tone(c, out, t + 1.15, { f: 62, f2: 45, glide: 0.15, a: 0.002, gain: 0.35, dec: 0.25 }); }
   /* ---- fire: a match strike, the flare, and the dying hiss ---- */
+  function whoomph(c, out, t, r) { /* fuel catching: a breath of air rushing into flame, then it settles */
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); s.buffer = noise(c); f.type = 'lowpass'; f.Q.value = 0.9;
+    f.frequency.setValueAtTime(140, t); f.frequency.exponentialRampToValueAtTime(1500, t + 0.22); f.frequency.exponentialRampToValueAtTime(520, t + 1.1);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.5, t + 0.14); g.gain.exponentialRampToValueAtTime(0.06, t + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+    s.connect(f); f.connect(g); g.connect(out); s.start(t, r() * 1.2); s.stop(t + 1.5);
+    tone(c, out, t + 0.02, { f: 58, f2: 92, glide: 0.25, a: 0.06, gain: 0.22, dec: 0.45 });
+    for (let i = 0; i < 9; i++) pop(c, out, t + 0.25 + i * (0.08 + r() * 0.12), r, 0.25 + i * 0.05); }
+  function flint(c, out, t, r) { /* two strikes of steel on flint, a spark each, then the tinder takes */
+    [0, 0.42].forEach((d, i) => { burst(c, out, t + d, r, { f: 3400, q: 3, gain: 0.3, a: 0.0006, dec: 0.012 });
+      burst(c, out, t + d + 0.004, r, { type: 'highpass', f: 5200, gain: 0.07, a: 0.002, dec: 0.12 + i * 0.05 }); });
+    whoomph(c, out, t + 0.75, r); }
+  function crackle(c, out, t, sec, r, easeIn) { /* the burning torch: a dark bed, and pops coming faster as it takes */
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); s.buffer = noise(c); s.loop = true; f.type = 'lowpass'; f.frequency.value = 520;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.05, t + (easeIn || 0.05)); s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t + sec);
+    let x = t + 0.05; while (x < t + sec) { const k = easeIn ? Math.min(1, (x - t) / easeIn) : 1; if (k > 0.05) burst(c, out, x, r, { type: 'highpass', f: 1500 + r() * 2800, gain: (0.05 + r() * 0.16) * 0.8 * k, a: 0.0008, dec: 0.006 + r() * 0.02 });
+      x += (0.05 + r() * 0.28) / Math.max(0.25, k); } }
   function strike(c, out, t, r) { for (let i = 0; i < 6; i++) burst(c, out, t + i * 0.022 + r() * 0.01, r, { f: 2600 + r() * 1800, q: 1.5, gain: 0.12 + r() * 0.08, a: 0.002, dec: 0.025 });
     burst(c, out, t + 0.14, r, { type: 'lowpass', f: 400, f2: 3200, sweep: 0.35, gain: 0.28, a: 0.06, dec: 0.5 });
     for (let i = 0; i < 10; i++) burst(c, out, t + 0.3 + r() * 1.2, r, { type: 'highpass', f: 1800 + r() * 2500, gain: 0.08 + r() * 0.12, a: 0.0008, dec: 0.008 + r() * 0.02 }); }
+  function pop(c, out, t, r, gain) { /* a resin pocket bursting: a sharp click with a short woody knock under it */
+    burst(c, out, t, r, { type: 'highpass', f: 1200, gain: 0.38 * (gain || 1), a: 0.0005, dec: 0.007 });
+    burst(c, out, t, r, { f: 2400, q: 2, gain: 0.2 * (gain || 1), a: 0.0005, dec: 0.02 });
+    tone(c, out, t, { f: 720, f2: 300, glide: 0.03, a: 0.0008, gain: 0.16 * (gain || 1), dec: 0.04 }); }
   function douse(c, out, t, r) { burst(c, out, t, r, { type: 'highpass', f: 3000, f2: 6000, sweep: 0.9, gain: 0.16, a: 0.02, dec: 1.0 });
     burst(c, out, t + 0.05, r, { type: 'lowpass', f: 600, gain: 0.12, a: 0.004, dec: 0.12 });
-    for (let i = 0; i < 4; i++) burst(c, out, t + 0.2 + r() * 0.7, r, { type: 'highpass', f: 2200, gain: 0.05, a: 0.001, dec: 0.01 }); }
+    for (let i = 0; i < 3; i++) burst(c, out, t + 0.2 + r() * 0.5, r, { type: 'highpass', f: 2200, gain: 0.05, a: 0.001, dec: 0.01 });
+    pop(c, out, t + 0.82, r, 1); pop(c, out, t + 1.0 + r() * 0.1, r, 0.45); }
   /* ---- the dark: your own heartbeat, close ---- */
   function heartbeat(c, out, t, r, beats) { for (let i = 0; i < (beats || 6); i++) { const at = t + i * (0.95 + r() * 0.05);
       tone(c, out, at, { f: 58, f2: 38, glide: 0.12, a: 0.004, gain: 0.45, dec: 0.16 }); burst(c, out, at, r, { type: 'lowpass', f: 140, gain: 0.25, a: 0.004, dec: 0.1 });
@@ -2759,14 +2780,25 @@ const FX = (() => {
   /* ---- dice extremes ---- */
   function nat20(c, out, t) { [523.3, 659.3, 784, 1046.5, 1318.5].forEach((f, i) => { tone(c, out, t + i * 0.07, { f, type: 'triangle', a: 0.004, gain: 0.09, dec: 1.4 }); tone(c, out, t + i * 0.07, { f: f * 2.001, a: 0.004, gain: 0.025, dec: 1.0 }); }); }
   function nat1(c, out, t, r) { burst(c, out, t, r, { type: 'lowpass', f: 200, gain: 0.45, a: 0.003, dec: 0.2 }); tone(c, out, t, { f: 98, f2: 73.4, glide: 0.5, type: 'triangle', a: 0.01, gain: 0.16, dec: 0.9 }); tone(c, out, t + 0.02, { f: 116.5, f2: 87.3, glide: 0.5, a: 0.01, gain: 0.07, dec: 0.8 }); }
-  return { noise, impulse, burst, tone, drip, steps, door, strike, douse, heartbeat, dread, coins, nat20, nat1 };
+  /* the lair, for small speakers: laptops cannot play 41 Hz, so play the overtones of a low A (110, 165, 220...)
+     and let the ear supply the missing bass; each overtone beats against a twin a few cycles away, and the whole
+     thing throbs slowly. The true low notes stay underneath for speakers that can play them. */
+  function dread2(c, out, t, sec, breath) { const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.2, t + Math.min(3, sec * 0.35)); g.gain.setValueAtTime(0.2, t + sec * 0.8); g.gain.linearRampToValueAtTime(0.0001, t + sec);
+    const am = c.createGain(); am.gain.value = 0.65; am.connect(g); g.connect(out);
+    const l = c.createOscillator(), ld = c.createGain(); l.frequency.value = 0.55; ld.gain.value = 0.35; l.connect(ld); ld.connect(am.gain); l.start(t); l.stop(t + sec + 0.1);
+    [[110, 1], [165, 0.7], [220, 0.5], [275, 0.32], [330, 0.2], [440, 0.08]].forEach(([f, gn], i) => [0, 2.7 + i * 0.4].forEach((d, j) => { const o = c.createOscillator(), og = c.createGain(); o.type = i === 0 ? 'triangle' : 'sine'; o.frequency.value = f + d; og.gain.value = gn * (j ? 0.8 : 1) * 0.5; o.connect(og); og.connect(am); o.start(t); o.stop(t + sec + 0.1); }));
+    [[41.2, 0.5], [43.6, 0.4]].forEach(([f, gn]) => { const o = c.createOscillator(), og = c.createGain(); o.frequency.value = f; og.gain.value = gn; o.connect(og); og.connect(am); o.start(t); o.stop(t + sec + 0.1); });
+    const s = c.createBufferSource(), bp = c.createBiquadFilter(), ng = c.createGain(); s.buffer = noise(c); s.loop = true; bp.type = 'bandpass'; bp.frequency.value = 240; bp.Q.value = 0.8; ng.gain.value = 0.18; s.connect(bp); bp.connect(ng); ng.connect(am); s.start(t); s.stop(t + sec + 0.1);
+    if (breath) { const b = c.createBufferSource(), bf = c.createBiquadFilter(), bg = c.createGain(); b.buffer = noise(c); b.loop = true; bf.type = 'bandpass'; bf.frequency.value = 380; bf.Q.value = 1.2; bg.gain.value = 0.35;
+      const bl = c.createOscillator(), bld = c.createGain(); bl.frequency.value = 0.16; bld.gain.value = 0.35; bl.connect(bld); bld.connect(bg.gain); b.connect(bf); bf.connect(bg); bg.connect(g); b.start(t); bl.start(t); b.stop(t + sec + 0.1); bl.stop(t + sec + 0.1); } }
+  return { noise, impulse, burst, tone, drip, steps, door, strike, whoomph, flint, crackle, pop, douse, heartbeat, dread, dread2, coins, nat20, nat1 };
 })();
-const SND_DRIP="splash"; /* David's pick from the listening page, Nov 6 */
+const SND_LIGHT="catch", SND_LAIR_BREATH=false; /* David's picks, Nov 7 */
 /* ---------- v3.1 sound: the game master's voice, rooms you can hear, small cues ----------
    Everything starts off. Sounds are made here as you play: nothing is recorded, nothing is sent anywhere.
    The dungeon's own random numbers are never touched; sounds draw from their own small generator,
    seeded from the dungeon's code and the room, so a shared link still builds the same dungeon. */
-const SND={cfg:{voice:false,src:"system",sysVoice:"",sysVoice2:"",kVoice:"af_heart",kVoice2:"bm_george",voice2:true,rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
+const SND={cfg:{voice:false,src:"system",sysVoice:"",sysVoice2:"",kVoice:"af_bella",kVoice2:"bm_george",voice2:true,rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
   ctx:null,room:null,roomKey:"",torch:null,kok:null};
 try{const j=JSON.parse(localStorage.getItem("ac.sound")||"null"); if(j&&typeof j==="object")Object.assign(SND.cfg,j);}catch(e){}
 function sndSave(){try{localStorage.setItem("ac.sound",JSON.stringify(SND.cfg));}catch(e){}}
@@ -2827,7 +2859,11 @@ function sndBed(n,o){const c=SND.ctx, s=c.createBufferSource(), f=c.createBiquad
 const SND_LAYERS={
   tone:n=>sndBed(n,{freq:160,gain:0.16}),
   wind:n=>sndBed(n,{kind:"white",filt:"bandpass",freq:420,Q:0.9,gain:0.05,lfo:0.07,lfoDepth:260,gLfo:0.045}),
-  drips:n=>sndEvery(n,0.8,3.6,()=>{const c=SND.ctx, p=sndPan(c,n.rng()*1.6-0.8); p.connect(n.out); FX.drip[SND_DRIP](c,p,c.currentTime+0.02,n.rng); setTimeout(()=>{try{p.disconnect();}catch(e){}},2000);}),
+  /* David's pick: the splash drop and the deep-cave drop take turns, and now and then fall together */
+  drips:n=>sndEvery(n,0.8,3.6,()=>{const c=SND.ctx, t=c.currentTime+0.02, x=n.rng()*1.6-0.8, p=sndPan(c,x); p.connect(n.out);
+    if(n.rng()<0.18){FX.drip.deep(c,p,t,n.rng); const p2=sndPan(c,-x*0.8); p2.connect(n.out); FX.drip.splash(c,p2,t+0.06+n.rng()*0.16,n.rng); setTimeout(()=>{try{p2.disconnect();}catch(e){}},2000);}
+    else (n.alt=!n.alt)?FX.drip.splash(c,p,t,n.rng):FX.drip.deep(c,p,t,n.rng);
+    setTimeout(()=>{try{p.disconnect();}catch(e){}},2000);}),
   lap:n=>{sndBed(n,{kind:"brown",freq:420,gain:0.09,gLfo:0.18}); SND_LAYERS.drips(n);},
   scrape:n=>sndEvery(n,6,16,()=>sndBurst(n,{dur:0.8+n.rng()*0.9,gain:0.12,freq:260+n.rng()*320,Q:2.5,attack:0.25,pan:n.rng()*1.4-0.7})),
   creak:n=>sndEvery(n,5,13,()=>{const f=95+n.rng()*70; sndBlip(n,{type:"sawtooth",f0:f,f1:f*1.25,dur:0.45,gain:0.035,filt:"bandpass",ff:900,q:5,attack:0.08,pan:n.rng()*1.2-0.6});}),
@@ -2890,6 +2926,7 @@ function sndEnter(prev,next){const c=sndLive(); if(!c||prev===next)return;
 /* fire: a strike when a light is lit, a hiss when it dies */
 function sndFire(kind){const c=sndLive(); if(!c)return; const n=sndFxNode(0.3), t=c.currentTime+0.03;
   if(kind==="strike"&&S.torch.src==="spell"){sndBell(n.out,587.33,0.05,0.5);return;} if(kind==="strike"&&S.torch.src==="lantern"){FX.burst(c,n.out,t,n.rng,{f:2600,q:3,gain:0.1,a:0.002,dec:0.04}); FX.burst(c,n.out,t+0.1,n.rng,{type:"lowpass",f:500,f2:2000,sweep:0.3,gain:0.18,a:0.05,dec:0.4});return;}
+  if(kind==="strike"){if(SND_LIGHT==="catch")FX.whoomph(c,n.out,t,n.rng); else if(SND_LIGHT==="flint")FX.flint(c,n.out,t,n.rng); return;} /* "crackle": the torch's own crackle eases in, as in v3.1 */
   FX[kind](c,n.out,t,n.rng);}
 /* the show engine's bell (galaxy intro, src/stage/audio/engine.ts): sine partials at a bell's ratios, each fading at its own rate */
 function sndBell(out,f,gain,len){const c=SND.ctx, t=c.currentTime+0.02, R=[1,2.756,5.404,8.933,0.5], A=[1,0.55,0.3,0.14,0.25], D=[3.4,2.1,1.2,0.6,4.5];
@@ -2899,10 +2936,18 @@ function sndDarkSync(c,dark){try{SND.muffle.frequency.setTargetAtTime(dark?450:1
   if(dark&&!SND.dark){const n=sndNode("dark",0.2); const beat=()=>{if(n.dead)return; FX.heartbeat(SND.ctx,n.out,SND.ctx.currentTime+0.02,n.rng,1); n.timers.push(setTimeout(beat,(0.92+n.rng()*0.1)*1000));}; n.timers.push(setTimeout(beat,1500)); n.out.disconnect(); n.out.connect(SND.master); n.out.gain.cancelScheduledValues(SND.ctx.currentTime); n.out.gain.setTargetAtTime(0.55,SND.ctx.currentTime,1.5); SND.dark=n;}
   else if(!dark&&SND.dark){sndNodeStop(SND.dark);SND.dark=null;}}
 /* the lair: two low notes a few cycles apart, so they throb against each other */
-function sndDreadStart(){const c=SND.ctx, n=sndNode("dread",0.6), g=c.createGain(); g.gain.value=0.0001; g.gain.setTargetAtTime(0.13,c.currentTime,2.5); g.connect(n.out);
-  [[41.2,"sine",1],[43.6,"sine",0.8],[82.4,"triangle",0.25],[123.5,"sine",0.08]].forEach(([f,ty,gn])=>{const o=c.createOscillator(), og=c.createGain(); o.type=ty; o.frequency.value=f; og.gain.value=gn; o.connect(og); og.connect(g); o.start(); n.srcs.push(o);});
-  const l=c.createOscillator(), ld=c.createGain(); l.frequency.value=0.07; ld.gain.value=0.05; l.connect(ld); ld.connect(g.gain); l.start(); n.srcs.push(l);
-  sndBed(n,{kind:"brown",freq:200,gain:0.06,gLfo:0.05}); return n;}
+/* laptops cannot play 41 Hz, so the lair plays the overtones of a low A (110, 165, 220...) and the ear supplies the
+   missing bass; each overtone beats against a twin a few cycles away, the whole hum throbs, and the true low notes stay
+   underneath for speakers that can play them (on a 200 Hz laptop filter: 5% of the old sound survived, 61% of this) */
+function sndDreadStart(){const c=SND.ctx, n=sndNode("dread",0.6), g=c.createGain(); g.gain.value=0.0001; g.gain.setTargetAtTime(0.2,c.currentTime,2.5); g.connect(n.out);
+  const am=c.createGain(); am.gain.value=0.65; am.connect(g);
+  const l=c.createOscillator(), ld=c.createGain(); l.frequency.value=0.55; ld.gain.value=0.35; l.connect(ld); ld.connect(am.gain); l.start(); n.srcs.push(l);
+  [[110,1],[165,0.7],[220,0.5],[275,0.32],[330,0.2],[440,0.08]].forEach(([f,gn],i)=>[0,2.7+i*0.4].forEach((d,j)=>{const o=c.createOscillator(), og=c.createGain(); o.type=i===0?"triangle":"sine"; o.frequency.value=f+d; og.gain.value=gn*(j?0.8:1)*0.5; o.connect(og); og.connect(am); o.start(); n.srcs.push(o);}));
+  [[41.2,0.5],[43.6,0.4]].forEach(([f,gn])=>{const o=c.createOscillator(), og=c.createGain(); o.frequency.value=f; og.gain.value=gn; o.connect(og); og.connect(am); o.start(); n.srcs.push(o);});
+  const s=c.createBufferSource(), bp=c.createBiquadFilter(), ng=c.createGain(); s.buffer=FX.noise(c); s.loop=true; bp.type="bandpass"; bp.frequency.value=240; bp.Q.value=0.8; ng.gain.value=0.18; s.connect(bp); bp.connect(ng); ng.connect(am); s.start(); n.srcs.push(s);
+  if(SND_LAIR_BREATH){const b=c.createBufferSource(), bf=c.createBiquadFilter(), bg=c.createGain(); b.buffer=FX.noise(c); b.loop=true; bf.type="bandpass"; bf.frequency.value=380; bf.Q.value=1.2; bg.gain.value=0.35;
+    const bl=c.createOscillator(), bld=c.createGain(); bl.frequency.value=0.16; bld.gain.value=0.35; bl.connect(bld); bld.connect(bg.gain); b.connect(bf); bf.connect(bg); bg.connect(g); b.start(); bl.start(); n.srcs.push(b,bl);}
+  return n;}
 function sndTalking(){return !!((window.speechSynthesis&&speechSynthesis.speaking)||(SND.kok&&SND.ctx&&SND.kok.end>SND.ctx.currentTime));}
 function sndTick(){
   if(sndIsTable())return;
