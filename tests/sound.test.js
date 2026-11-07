@@ -1,4 +1,4 @@
-// v3.1 sound: the game master's voice, room sounds, the torch, small cues, read-aloud buttons, and Kokoro in the browser.
+// v3.2 sound (built on the v3.1 suite): the game master's voice, room sounds, the torch, small cues, read-aloud buttons, and Kokoro in the browser.
 // Speech is stubbed (headless Linux has no voices) so every spoken sentence is recorded; audio is tapped with an analyser.
 // Usage: node v31.test.js FILE OUT [kokoro]   (add "kokoro" to also download and run the real Kokoro model; needs internet)
 const { chromium } = require('playwright');
@@ -122,24 +122,24 @@ function gmServer(parts, gap) {
 
   // 5. the game master's voice, following the stream
   const parts = ['The doors ', 'hang open. ', 'Cold air rises from below, ', 'smelling of wet stone. ', '**What do you do?** ', '[Map: room 2]'];
-  let gm = await gmServer(parts, 250);
+  let gm = await gmServer(parts, 300);
   ctx = await ctxNew(b); p = await open(ctx, SRC + PL, 'voice');
   await p.selectOption('#gmProv', 'lmstudio'); await p.waitForTimeout(200); await p.fill('#gmUrl', gm.url); await p.click('#gmCheck'); await p.waitForTimeout(500);
   await p.click('#gmStart'); await p.waitForTimeout(300);
   ok(await p.isVisible('#btnSound'), "player's view: the Sound button is there too");
   await panel(p); await p.check('#sndVoice'); await closePanel(p);
-  await p.click('#gmSendBtn'); await p.waitForTimeout(900);
+  await p.click('#gmSendBtn'); await p.waitForTimeout(1550);
   const mid = await p.evaluate(() => { const m = [...document.querySelectorAll('#gmLog .msg')].pop(); return m ? m.textContent : ''; });
   ok(/The doors hang open/.test(mid), 'the reply shows while it is still being written (repair): "' + mid.replace(/\s+/g, ' ').slice(0, 60) + '"');
   const midSpoken = await p.evaluate(() => window.__spoken.length);
   ok(midSpoken >= 1, 'the voice starts on the first finished sentence, before the reply is done (' + midSpoken + ')');
   await p.waitForTimeout(1800);
   spoken = await p.evaluate(() => window.__spoken.map(s => s.text));
-  ok(JSON.stringify(spoken) === JSON.stringify(['The doors hang open.', 'Cold air rises from below, smelling of wet stone.', 'What do you do?']), 'it speaks each sentence once, without the map tag or the bold marks: ' + JSON.stringify(spoken));
+  ok(JSON.stringify(spoken) === JSON.stringify(['The doors hang open. Cold air rises from below, smelling of wet stone.', 'What do you do?']), 'it speaks every word once, short sentences grouped, without the map tag or the bold marks: ' + JSON.stringify(spoken));
   ok(await p.evaluate(() => document.querySelectorAll('#mapSvg .roomG').length >= 2), 'the map tag still lights the room');
   const c0 = await p.evaluate(() => window.__cancels);
   await p.click('#gmLog .msg.assistant .readbtn'); await p.waitForTimeout(300);
-  ok(await p.evaluate(c => window.__cancels > c && window.__spoken.length === 6, c0), '▶ on a message hears it again from the start');
+  ok(await p.evaluate(c => window.__cancels > c && window.__spoken.length === 4, c0), '▶ on a message hears it again from the start');
   await p.click('#gmSendBtn').catch(() => {}); await p.fill('#gmIn', 'I step inside.'); await p.click('#gmSendBtn'); await p.waitForTimeout(300);
   ok(await p.evaluate(c => window.__cancels > c + 1, c0), 'a new turn stops the old voice');
   await p.waitForTimeout(2200);
@@ -156,6 +156,81 @@ function gmServer(parts, gap) {
   await p.fill('#gmIn', 'I wait.'); await p.click('#gmSendBtn'); await p.waitForTimeout(2200);
   ok(await p.evaluate(n => window.__spoken.length > n, n1) && /open Sound and press Download/.test(await p.textContent('#toast')), 'until it is downloaded, this computer speaks and the page says how to get Kokoro');
   await ctx.close(); gm.srv.close();
+
+  // 5b. characters in a second voice
+  gm = await gmServer(['The guard leans close. ', '“Keep your voice down,” he whispers. ', '“It hears everything.”'], 200);
+  ctx = await ctxNew(b); p = await open(ctx, SRC + PL, 'quotes');
+  await p.selectOption('#gmProv', 'lmstudio'); await p.waitForTimeout(200); await p.fill('#gmUrl', gm.url); await p.click('#gmCheck'); await p.waitForTimeout(500);
+  await p.click('#gmStart'); await p.waitForTimeout(300); await panel(p); await p.check('#sndVoice');
+  const chars = await p.evaluate(() => [...document.querySelectorAll('#sndSysVoice2 option')].map(o => o.selected ? '*' + o.textContent : o.textContent));
+  ok(chars.includes('*Samantha'), 'the character voice defaults to the next-best voice: ' + JSON.stringify(chars));
+  await closePanel(p); await p.click('#gmSendBtn'); await p.waitForTimeout(1800);
+  let sp = await p.evaluate(() => window.__spoken.map(s => s.voice + ': ' + s.text));
+  ok(JSON.stringify(sp) === JSON.stringify(['Daniel (Enhanced): The guard leans close.', 'Samantha: Keep your voice down,', 'Daniel (Enhanced): he whispers.', 'Samantha: It hears everything.']), 'words in quotation marks go to the character voice: ' + JSON.stringify(sp));
+  await panel(p); await p.uncheck('#sndVoice2'); await closePanel(p);
+  await p.evaluate(() => { window.__spoken = []; }); await p.click('#gmLog .msg.assistant .readbtn'); await p.waitForTimeout(300);
+  sp = await p.evaluate(() => window.__spoken.map(s => s.voice));
+  ok(sp.length >= 1 && sp.every(v => v === 'Daniel (Enhanced)'), 'with the quotes setting off, one voice reads it all');
+  await ctx.close(); gm.srv.close();
+
+  // 5c. the game master's screen: torch news spoken, Quire's letter, xyzzy, and the new sounds
+  ctx = await ctxNew(b); p = await open(ctx, SRC + DM, 'dm2');
+  await panel(p); await p.check('#sndVoice'); await p.check('#sndRoom'); await p.check('#sndCues'); await closePanel(p); await p.waitForTimeout(2500);
+  let m0 = await p.evaluate(() => ({ ...window.__made }));
+  await p.click('#btnLight'); await p.waitForTimeout(500);
+  let m1 = await p.evaluate(() => ({ ...window.__made }));
+  ok(m1.buf - m0.buf >= 12, 'lighting the torch strikes a match (' + (m1.buf - m0.buf) + ' sound grains in half a second)');
+  ok(await p.evaluate(() => window.__spoken.some(s => s.text === 'A new torch takes the flame.')), 'and the narrator says so');
+  await p.click('#btnQuire'); await p.waitForTimeout(400); await p.evaluate(() => { window.__spoken = []; });
+  await p.click('#qSheet .readbtn'); await p.waitForTimeout(300);
+  sp = await p.evaluate(() => window.__spoken);
+  ok(sp.length >= 3 && /^To whoever is running this/.test(sp[0].text) && sp.every(s => s.voice === 'Samantha'), "▶ Hear the letter reads Quire's letter in the character voice (" + sp.length + ' parts)');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  // the lair: select the boss's room
+  m0 = await p.evaluate(() => ({ ...window.__made }));
+  const lairAt = await p.evaluate(() => { const t = [...document.querySelectorAll('#mapSvg text')].find(x => x.textContent === '♛'); if (!t) return null; const g = t.closest('.roomG'); const r = (g || t).getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 + 12 }; });
+  if (lairAt) { await p.mouse.click(lairAt.x, lairAt.y); await p.waitForTimeout(1500); }
+  m1 = await p.evaluate(() => ({ ...window.__made }));
+  ok(lairAt && m1.osc - m0.osc >= 5, "the boss's lair hums (" + (m1.osc - m0.osc) + ' tones started)');
+  // treasure
+  await p.click('.tabs button[data-tab="loot"]').catch(() => {}); await p.waitForTimeout(300);
+  m0 = await p.evaluate(() => ({ ...window.__made }));
+  const lootBox = await p.$('#tabBody [data-loot]');
+  if (lootBox) { await lootBox.click().catch(() => {}); await p.waitForTimeout(1200); }
+  m1 = await p.evaluate(() => ({ ...window.__made }));
+  ok(lootBox && m1.osc - m0.osc >= 25, 'ticking off treasure jingles coins (' + (m1.osc - m0.osc) + ' tones)');
+  // the dark
+  await p.click('.tabs button[data-tab="room"]').catch(() => {}); await p.waitForTimeout(200);
+  await p.click('#btnSnuff'); await p.waitForTimeout(400);
+  ok(await p.evaluate(() => window.__spoken.some(s => /snuff the light/.test(s.text))), 'snuffing the light is spoken');
+  m0 = await p.evaluate(() => ({ ...window.__made })); await p.waitForTimeout(5000); m1 = await p.evaluate(() => ({ ...window.__made }));
+  ok((m1.osc - m0.osc) >= 6, 'in the dark a heartbeat comes in (' + (m1.osc - m0.osc) + ' tones in 5 s)');
+  // xyzzy
+  await p.evaluate(() => { window.__spoken = []; }); await p.fill('#seedInput', 'xyzzy'); await p.press('#seedInput', 'Enter'); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => window.__spoken.some(s => s.text === 'Nothing happens.')), 'xyzzy: "Nothing happens," aloud');
+  await ctx.close();
+
+  // 5d. walking into rooms and the dice (player view, cues and room sounds on)
+  ctx = await ctxNew(b); p = await open(ctx, SRC + DM, 'walk');
+  await panel(p); await p.check('#sndRoom'); await p.check('#sndCues'); await closePanel(p); await p.waitForTimeout(2000);
+  await p.click('#viewToggle button[data-view="player"]'); await p.waitForTimeout(300);
+  m0 = await p.evaluate(() => ({ ...window.__made }));
+  const door = await p.evaluate(() => { const f = document.querySelector('#mapSvg .frontier'); if (!f) return null; const r = f.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+  if (door) { await p.mouse.move(door.x, door.y); await p.mouse.down(); await p.mouse.up(); await p.waitForTimeout(700); }
+  m1 = await p.evaluate(() => ({ ...window.__made }));
+  ok(door && m1.buf - m0.buf >= 6 && m1.osc - m0.osc >= 8, 'walking into a new room: footsteps and the bell (' + (m1.buf - m0.buf) + ' grains, ' + (m1.osc - m0.osc) + ' tones)');
+  await ctx.close();
+  ctx = await ctxNew(b); p = await open(ctx, SRC + PL, 'dice');
+  await panel(p); await p.check('#sndCues'); await closePanel(p);
+  await p.click('.tabs button[data-tab="gm"]').catch(() => {}); await p.waitForTimeout(300);
+  for (const [val, name, min] of [[0.9999, 'natural 20', 10], [0, 'natural 1', 2]]) {
+    m0 = await p.evaluate(() => ({ ...window.__made }));
+    await p.evaluate(v => { const o = Math.random; Math.random = () => v; setTimeout(() => { Math.random = o; }, 60); }, val);
+    await p.click('#tabBody [data-die="20"]'); await p.waitForTimeout(800);
+    m1 = await p.evaluate(() => ({ ...window.__made }));
+    ok(m1.osc - m0.osc >= min, 'a ' + name + ' gets its own sound after the clatter (' + (m1.osc - m0.osc) + ' tones): ' + (await p.textContent('#diceNote')).slice(0, 40));
+  }
+  await ctx.close();
 
   // 6. the Table window stays silent even with sound switched on
   ctx = await ctxNew(b); p = await open(ctx, SRC + DM, 'table-main');

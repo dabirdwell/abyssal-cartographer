@@ -420,7 +420,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.1</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.2</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
@@ -504,7 +504,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.1 · build 2026-11-06 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.2 · build 2026-11-06 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -1376,7 +1376,7 @@ function renderMap(fit){
         if(adjRev)reveal(id);}}
   }
 })();
-function reveal(id){const was=S.revealed.has(id);S.revealed.add(id);if(!was)sndCue("room");select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
+function reveal(id){const was=S.revealed.has(id),prev=S.sel;S.revealed.add(id);if(!was){sndCue("room");sndEnter(prev,id);}select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
 function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
 /* ---------- torch ---------- */
@@ -1392,8 +1392,8 @@ function chime(freq){let cue=false; try{cue=SND.cfg.cues;}catch(e){} if(!$("#chi
 function torchTick(){
   const t=S.torch;if(!t.running)return;
   t.remain-=1;
-  if(t.remain<=600&&!t.warned.w10){t.warned.w10=true;chime(660);torchMsg("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");}
-  if(t.remain<=300&&!t.warned.w5){t.warned.w5=true;chime(520);torchMsg("The flame shrinks to a knuckle of light. Five minutes.");}
+  if(t.remain<=600&&!t.warned.w10){t.warned.w10=true;chime(660);torchMsg("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");narAnnounce("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");}
+  if(t.remain<=300&&!t.warned.w5){t.warned.w5=true;chime(520);torchMsg("The flame shrinks to a knuckle of light. Five minutes.");narAnnounce("The flame shrinks to a knuckle of light. Five minutes.");}
   if(t.remain<=0){lightsOut();return;}
   renderTorch();renderLight();
 }
@@ -1403,6 +1403,7 @@ function lightsOut(){
   $("#flame").classList.add("out");
   chime(220);
   torchMsg("The light dies. The dungeon has been waiting for this.");
+  sndFire("douse"); narAnnounce("The light dies. The dungeon has been waiting for this.");
   renderTorch();renderMap(false);
   if(!TBL.isTable)tblSend({t:"dark"});
 }
@@ -1414,6 +1415,7 @@ function lightUp(){
   if(!t.timer)t.timer=setInterval(torchTick,1000);
   t.running=true;
   torchMsg("A new "+SRCNAME[t.src]+" takes the flame."+(t.src==="candle"?" Its light reaches only close.":""));
+  sndFire("strike"); narAnnounce($("#torchState").textContent);
   renderTorch();renderLight();
 }
 function torchMsg(m){$("#torchState").innerHTML='<span class="smallcaps">'+esc(m)+"</span>";tblPush();}
@@ -1453,7 +1455,7 @@ function renderLight(cur){
 }
 $("#btnLight").addEventListener("click",lightUp);
 $("#btnPause").addEventListener("click",()=>{const t=S.torch;if(t.remain>0){t.running=!t.running;torchMsg(t.running?"The flame steadies.":"Time holds its breath. The flame does not burn while you rest.");renderTorch();}});
-$("#btnSnuff").addEventListener("click",()=>{if(S.torch.remain>0){lightsOut();torchMsg("You snuff the light on purpose. Bold.");}});
+$("#btnSnuff").addEventListener("click",()=>{if(S.torch.remain>0){lightsOut();torchMsg("You snuff the light on purpose. Bold.");narAnnounce("You snuff the light on purpose. Bold.");}});
 /*UI-CONT*/
 
 /* ---------- panels ---------- */
@@ -1503,7 +1505,7 @@ function renderPanel(){
     if(dm&&r.trap){h+='<div class="klabel">Trap · '+esc(r.trap.n)+'</div><div class="dmnote"><b>Trigger:</b> '+esc(r.trap.tr)+'<br><b>Effect:</b> '+esc(r.trap.ef)+'<br><b>Telltale:</b> '+esc(r.trap.fd)+'<br><b>Disarm:</b> '+esc(r.trap.ds)+'</div>';}
     if(r.puzzle){h+='<div class="klabel">Puzzle · '+esc(r.puzzle.n)+'</div><div class="dmnote">'+esc(r.puzzle.s)+'</div>';
       if(dm)h+='<div class="dmnote secretline"><b>Solution:</b> '+esc(r.puzzle.a)+'</div>';}
-    if(r.riddle){h+='<div class="klabel">Riddle</div><div class="boxed serif">'+esc(r.riddle.q)+'</div>';
+    if(r.riddle){h+='<div class="klabel">Riddle</div><div class="boxed serif">'+esc(r.riddle.q)+'</div><button class="readbtn" title="Read the riddle aloud">▶ Read aloud</button>';
       if(dm)h+='<div class="dmnote secretline" style="margin-top:6px"><b>Answer:</b> '+esc(r.riddle.a)+'</div>';}
     if(r.treasure.length&&dm){h+='<div class="klabel">Treasure</div><div class="treas">'+r.treasure.map(lootBox).join("")+'</div>';}
     el.innerHTML=h;
@@ -1565,7 +1567,7 @@ function renderPanel(){
       toast("Banked. The tavern lights look very good tonight.");renderPanel();renderFoot();});
   }
   el.querySelectorAll("[data-loot]").forEach(cb=>cb.addEventListener("change",()=>{
-    if(cb.checked)S.loot.add(cb.dataset.loot);else S.loot.delete(cb.dataset.loot);
+    if(cb.checked){S.loot.add(cb.dataset.loot);sndCue("coins");}else S.loot.delete(cb.dataset.loot);
     renderFoot();if(S.tab==="loot")renderPanel();}));
 }
 /* Shadowdark awards XP by treasure hoard tier, not gold count, and every delver
@@ -1679,14 +1681,14 @@ function hideSeedHint(){
   clearTimeout(SEEDHINT_T); h.classList.remove("show");
 }
 $("#btnGenerate").addEventListener("click",()=>{
-  if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");return;}
+  if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");narAnnounce("Nothing happens.");return;}
   const cfg=currentCfg(), same=sameAsOnScreen(cfg);
   newDungeon(cfg); if(!same)eggLedger();
   if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");
   else hideSeedHint();
 });
 $("#btnRandom").addEventListener("click",()=>{hideSeedHint();$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});
-$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");return;}const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);if(!same)eggLedger();
+$("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");narAnnounce("Nothing happens.");return;}const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);if(!same)eggLedger();
   if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");else hideSeedHint();}});
 $("#seedInput").addEventListener("input",hideSeedHint);
 $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sys=b.dataset.sys;
@@ -1770,7 +1772,7 @@ function expDM(){
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(t.inn)+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.1. Seed: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.2. Seed: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_DM.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -1839,7 +1841,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v3.1. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v3.2. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -2291,7 +2293,7 @@ function qRender(){
   var sh=document.getElementById("qSheet");
   if(QS.step===0){
     sh.innerHTML='<h2>A note has been left for you</h2><div class="qkicker">Guild of Careful Maps · unopened</div>'
-      +QLETTER()
+      +QLETTER()+'<button class="readbtn" data-voice="2" title="Hear the letter, in the second voice">▶ Hear the letter</button>'
       +'<div class="qstepnav"><label class="qtoggle"><input type="checkbox" id="qKeep"'+(QS.on?" checked":"")+'> keep the margins</label>'
       +'<span class="spacer"></span><button id="qClose">Not now</button>'
       +'<button class="primary" id="qNext">Walk me through it</button></div>';
@@ -2525,7 +2527,7 @@ async function gmSend(text,opts){
 function gmApplyTags(text){
   const re=/\[Map:\s*room\s*(\d+)\]/gi; let m,lit=[];
   while((m=re.exec(text))){const n=parseInt(m[1],10); if(n>=1&&S.model&&n<=S.model.rooms.length&&!S.revealed.has(n-1)){S.revealed.add(n-1);lit.push(n);}}
-  if(lit.length){sndCue("room");const last=lit[lit.length-1]-1; S.sel=last; renderMap(true); renderFoot(); syncHash(); toast("Room "+lit.join(", ")+" steps into the light");}
+  if(lit.length){sndCue("room");sndEnter(S.sel|0,lit[lit.length-1]-1);const last=lit[lit.length-1]-1; S.sel=last; renderMap(true); renderFoot(); syncHash(); toast("Room "+lit.join(", ")+" steps into the light");}
 }
 function gmFormat(t){ /* plain text to safe HTML: paragraphs, bold, the room tag as a chip */
   return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\[Map:\s*room\s*(\d+)\]/gi,'<span class="maptag">room $1 lit</span>').replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>");
@@ -2637,7 +2639,7 @@ function renderGM(el,m){
   el.querySelectorAll("[data-die]").forEach(b=>b.addEventListener("click",()=>{
     if(document.body.classList.contains("dark")){$("#diceNote").textContent="Too dark to read the dice. Light something first.";return;}
     const d=+b.dataset.die, r=1+Math.floor(Math.random()*d), o=$("#diceOut");
-    o.textContent=r; o.classList.remove("roll"); void o.offsetWidth; o.classList.add("roll"); sndCue("dice");
+    o.textContent=r; o.classList.remove("roll"); void o.offsetWidth; o.classList.add("roll"); sndCue("dice"); if(d===20&&r===20)sndCue("nat20"); else if(d===20&&r===1)sndCue("nat1");
     $("#diceNote").textContent=d===20&&r===20?"A natural twenty. Say it out loud.":d===20&&r===1?"A one. Tell the game master anyway; the good stories start here.":"d"+d+": "+r+". Tell your game master.";
   }));
 }
@@ -2685,11 +2687,86 @@ function saveOffline(){
 (function(){const a=document.getElementById("saveOffline"); if(!a)return;
   if(location.protocol==="file:"){a.removeAttribute("href");a.removeAttribute("download");a.textContent="playing from your computer, works offline";a.style.color="inherit";a.style.cursor="default";}
   else{a.href=saveOfflineHref(); a.addEventListener("click",()=>setTimeout(()=>toast("Saved as AbyssalCartographer.html. Open it from your computer any time; no internet needed.",5000),300));}})();
+/* Sound designs for Abyssal Cartographer v3.2, written once and used twice: rendered into the listening page,
+   then pasted into the game. Every function takes (c, out, t, r): an audio context, where to send the sound,
+   when to start it, and a random-number function. Nothing here touches the dungeon's own random numbers. */
+const FX = (() => {
+  const nb = new WeakMap();
+  function noise(c) { let b = nb.get(c); if (b) return b; const n = c.sampleRate * 2; b = c.createBuffer(1, n, c.sampleRate); const d = b.getChannelData(0); let s = 1234567; for (let i = 0; i < n; i++) { s = (s * 16807) % 2147483647; d[i] = s / 1073741823.5 - 1; } nb.set(c, b); return b; }
+  function env(g, t, a, peak, dec, floor) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(floor || 0.0001, t + a + dec); }
+  function burst(c, out, t, r, o) { /* filtered noise with an envelope */
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = noise(c); f.type = o.type || 'bandpass'; f.frequency.setValueAtTime(o.f, t); if (o.f2) f.frequency.exponentialRampToValueAtTime(o.f2, t + (o.sweep || o.dec)); f.Q.value = o.q || 1;
+    env(g, t, o.a || 0.002, o.gain, o.dec); s.connect(f); f.connect(g); g.connect(out); s.start(t, r() * 1.5); s.stop(t + (o.a || 0.002) + o.dec + 0.05); return g; }
+  function tone(c, out, t, o) { const osc = c.createOscillator(), g = c.createGain(); osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(o.f, t); if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t + (o.glide || o.dec)); if (o.detune) osc.detune.value = o.detune;
+    env(g, t, o.a || 0.002, o.gain, o.dec); osc.connect(g); g.connect(out); osc.start(t); osc.stop(t + (o.a || 0.002) + o.dec + 0.05); return g; }
+  function impulse(c, sec, bright) { /* a cave: early reflections, then a long dark tail */
+    const n = Math.floor(c.sampleRate * sec), b = c.createBuffer(2, n, c.sampleRate); let s = 99991;
+    for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch);
+      for (let i = 0; i < n; i++) { s = (s * 48271) % 2147483647; const w = s / 1073741823.5 - 1; const x = i / n; d[i] = w * Math.pow(1 - x, 2.6) * (bright ? 1 : (0.35 + 0.65 * Math.exp(-x * 6))); }
+      [0.011, 0.023, 0.037, 0.052, 0.071].forEach((sec2, k) => { const j = Math.floor(sec2 * c.sampleRate * (ch ? 1.07 : 1)); if (j < n) d[j] += (0.6 - k * 0.1) * (ch ? -1 : 1); }); }
+    return b; }
+  /* ---- water: a drop ticks as it lands, then the air bubble it traps rings with a fast rising pitch ---- */
+  const drip = {
+    old(c, out, t, r) { const f = 1300 + r() * 1300; tone(c, out, t, { f, f2: f * 0.45, glide: 0.07, a: 0.006, gain: 0.16, dec: 0.11 }); },
+    plink(c, out, t, r) { const f0 = 650 + r() * 450, f1 = f0 * (2.6 + r() * 0.8), d = 0.028 + r() * 0.02;
+      burst(c, out, t, r, { type: 'highpass', f: 2500, gain: 0.05, a: 0.0005, dec: 0.004 });
+      tone(c, out, t + 0.001, { f: f0, f2: f1, glide: d, a: 0.0008, gain: 0.26, dec: d + 0.015 }); },
+    deep(c, out, t, r) { const f0 = 330 + r() * 220, f1 = f0 * (2.2 + r() * 0.7), d = 0.04 + r() * 0.025;
+      burst(c, out, t, r, { type: 'highpass', f: 1800, gain: 0.04, a: 0.0005, dec: 0.005 });
+      tone(c, out, t + 0.001, { f: f0, f2: f1, glide: d, a: 0.001, gain: 0.3, dec: d + 0.02 }); },
+    splash(c, out, t, r) { drip.plink(c, out, t, r);
+      burst(c, out, t + 0.002, r, { f: 4200, q: 1.4, gain: 0.035, a: 0.001, dec: 0.03 });
+      if (r() < 0.6) { const f0 = 900 + r() * 500; tone(c, out, t + 0.018 + r() * 0.015, { f: f0, f2: f0 * 2.4, glide: 0.02, a: 0.0008, gain: 0.1, dec: 0.03 }); } },
+    puddle(c, out, t, r) { const f0 = 500 + r() * 300; burst(c, out, t, r, { type: 'lowpass', f: 900, gain: 0.12, a: 0.001, dec: 0.035 });
+      tone(c, out, t + 0.003, { f: f0, f2: f0 * 2.8, glide: 0.035, a: 0.001, gain: 0.18, dec: 0.05 }); }
+  };
+  /* ---- footsteps on stone: heel, then toe, with a little grit ---- */
+  function steps(c, out, t, r, n) { for (let i = 0; i < (n || 4); i++) { const at = t + i * (0.5 + r() * 0.08), pan = c.createStereoPanner(); pan.pan.value = (i % 2 ? 0.12 : -0.12); pan.connect(out);
+      burst(c, pan, at, r, { type: 'lowpass', f: 700, gain: 0.32 - i * 0.03, a: 0.002, dec: 0.06 });
+      tone(c, pan, at, { f: 85 + r() * 20, f2: 55, glide: 0.05, a: 0.001, gain: 0.18, dec: 0.07 });
+      burst(c, pan, at + 0.045, r, { f: 2200, q: 1.2, gain: 0.07, a: 0.001, dec: 0.04 }); } }
+  /* ---- a heavy wooden door: stick-slip creak (pulses through wood resonances), then the thud ---- */
+  function creakBuffer(c, sec, r) { const n = Math.floor(c.sampleRate * sec), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    let phase = 0; for (let i = 0; i < n; i++) { const x = i / n, rate = 28 + 55 * Math.sin(Math.PI * x) * (0.8 + 0.4 * Math.sin(x * 23 + r() * 0.2)) + (r() - 0.5) * 6;
+      phase += rate / c.sampleRate; if (phase >= 1) { phase -= 1; d[i] = (0.6 + r() * 0.4) * Math.sin(Math.PI * x); } else d[i] = (r() - 0.5) * 0.02; }
+    return b; }
+  function door(c, out, t, r) { const s = c.createBufferSource(); s.buffer = creakBuffer(c, 1.1, r); const mix = c.createGain(); mix.gain.value = 0.9;
+    [[420, 7, 1], [950, 9, 0.6], [1650, 10, 0.35], [2700, 12, 0.18]].forEach(([f, q, gn]) => { const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f * (0.95 + r() * 0.1); bp.Q.value = q; const g = c.createGain(); g.gain.value = gn * 2.2; s.connect(bp); bp.connect(g); g.connect(mix); });
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.5, t + 0.08); g.gain.setValueAtTime(0.5, t + 0.9); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.15);
+    mix.connect(g); g.connect(out); s.start(t); s.stop(t + 1.2);
+    burst(c, out, t + 1.15, r, { type: 'lowpass', f: 260, gain: 0.5, a: 0.003, dec: 0.18 }); tone(c, out, t + 1.15, { f: 62, f2: 45, glide: 0.15, a: 0.002, gain: 0.35, dec: 0.25 }); }
+  /* ---- fire: a match strike, the flare, and the dying hiss ---- */
+  function strike(c, out, t, r) { for (let i = 0; i < 6; i++) burst(c, out, t + i * 0.022 + r() * 0.01, r, { f: 2600 + r() * 1800, q: 1.5, gain: 0.12 + r() * 0.08, a: 0.002, dec: 0.025 });
+    burst(c, out, t + 0.14, r, { type: 'lowpass', f: 400, f2: 3200, sweep: 0.35, gain: 0.28, a: 0.06, dec: 0.5 });
+    for (let i = 0; i < 10; i++) burst(c, out, t + 0.3 + r() * 1.2, r, { type: 'highpass', f: 1800 + r() * 2500, gain: 0.08 + r() * 0.12, a: 0.0008, dec: 0.008 + r() * 0.02 }); }
+  function douse(c, out, t, r) { burst(c, out, t, r, { type: 'highpass', f: 3000, f2: 6000, sweep: 0.9, gain: 0.16, a: 0.02, dec: 1.0 });
+    burst(c, out, t + 0.05, r, { type: 'lowpass', f: 600, gain: 0.12, a: 0.004, dec: 0.12 });
+    for (let i = 0; i < 4; i++) burst(c, out, t + 0.2 + r() * 0.7, r, { type: 'highpass', f: 2200, gain: 0.05, a: 0.001, dec: 0.01 }); }
+  /* ---- the dark: your own heartbeat, close ---- */
+  function heartbeat(c, out, t, r, beats) { for (let i = 0; i < (beats || 6); i++) { const at = t + i * (0.95 + r() * 0.05);
+      tone(c, out, at, { f: 58, f2: 38, glide: 0.12, a: 0.004, gain: 0.45, dec: 0.16 }); burst(c, out, at, r, { type: 'lowpass', f: 140, gain: 0.25, a: 0.004, dec: 0.1 });
+      tone(c, out, at + 0.27, { f: 52, f2: 36, glide: 0.1, a: 0.004, gain: 0.28, dec: 0.13 }); } }
+  /* ---- the lair: two low notes that beat against each other, swelling ---- */
+  function dread(c, out, t, sec) { const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.16, t + sec * 0.4); g.gain.setValueAtTime(0.16, t + sec * 0.75); g.gain.linearRampToValueAtTime(0.0001, t + sec); g.connect(out);
+    [[41.2, 'sine', 1], [43.6, 'sine', 0.8], [82.4, 'triangle', 0.25], [123.5, 'sine', 0.08]].forEach(([f, ty, gn]) => { const o = c.createOscillator(), og = c.createGain(); o.type = ty; o.frequency.value = f; og.gain.value = gn; o.connect(og); og.connect(g); o.start(t); o.stop(t + sec + 0.1); });
+    const s = c.createBufferSource(), lp = c.createBiquadFilter(), ng = c.createGain(); s.buffer = noise(c); s.loop = true; lp.type = 'lowpass'; lp.frequency.setValueAtTime(90, t); lp.frequency.linearRampToValueAtTime(260, t + sec * 0.6); ng.gain.value = 0.35; s.connect(lp); lp.connect(ng); ng.connect(g); s.start(t); s.stop(t + sec + 0.1); }
+  /* ---- coins: bright metal with uneven partials, bouncing ---- */
+  function coin(c, out, t, r, gain) { const f = 2600 + r() * 1500; [[1, 1], [2.76, 0.5], [5.4, 0.28], [8.93, 0.14]].forEach(([k, gn]) => tone(c, out, t, { f: f * k, a: 0.0008, gain: (gain || 0.06) * gn, dec: 0.25 + r() * 0.35 })); }
+  function coins(c, out, t, r) { let at = t; for (let i = 0; i < 7; i++) { coin(c, out, at, r, 0.07 * (1 - i * 0.08)); at += 0.05 + r() * 0.13; }
+    burst(c, out, t, r, { f: 5000, q: 0.8, gain: 0.03, a: 0.002, dec: 0.4 }); }
+  /* ---- dice extremes ---- */
+  function nat20(c, out, t) { [523.3, 659.3, 784, 1046.5, 1318.5].forEach((f, i) => { tone(c, out, t + i * 0.07, { f, type: 'triangle', a: 0.004, gain: 0.09, dec: 1.4 }); tone(c, out, t + i * 0.07, { f: f * 2.001, a: 0.004, gain: 0.025, dec: 1.0 }); }); }
+  function nat1(c, out, t, r) { burst(c, out, t, r, { type: 'lowpass', f: 200, gain: 0.45, a: 0.003, dec: 0.2 }); tone(c, out, t, { f: 98, f2: 73.4, glide: 0.5, type: 'triangle', a: 0.01, gain: 0.16, dec: 0.9 }); tone(c, out, t + 0.02, { f: 116.5, f2: 87.3, glide: 0.5, a: 0.01, gain: 0.07, dec: 0.8 }); }
+  return { noise, impulse, burst, tone, drip, steps, door, strike, douse, heartbeat, dread, coins, nat20, nat1 };
+})();
+const SND_DRIP="splash"; /* David's pick from the listening page, Nov 6 */
 /* ---------- v3.1 sound: the game master's voice, rooms you can hear, small cues ----------
    Everything starts off. Sounds are made here as you play: nothing is recorded, nothing is sent anywhere.
    The dungeon's own random numbers are never touched; sounds draw from their own small generator,
    seeded from the dungeon's code and the room, so a shared link still builds the same dungeon. */
-const SND={cfg:{voice:false,src:"system",sysVoice:"",kVoice:"bm_george",rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
+const SND={cfg:{voice:false,src:"system",sysVoice:"",sysVoice2:"",kVoice:"af_heart",kVoice2:"bm_george",voice2:true,rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
   ctx:null,room:null,roomKey:"",torch:null,kok:null};
 try{const j=JSON.parse(localStorage.getItem("ac.sound")||"null"); if(j&&typeof j==="object")Object.assign(SND.cfg,j);}catch(e){}
 function sndSave(){try{localStorage.setItem("ac.sound",JSON.stringify(SND.cfg));}catch(e){}}
@@ -2699,9 +2776,11 @@ function sndCtx(){
   if(!SND.ctx){const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return null;
     try{SND.ctx=new AC();}catch(e){return null;}
     const c=SND.ctx;
-    SND.master=c.createGain(); SND.master.gain.value=SND.cfg.vol; SND.master.connect(c.destination);
+    SND.comp=c.createDynamicsCompressor(); SND.comp.threshold.value=-16; SND.comp.ratio.value=3.5; SND.comp.attack.value=0.004; SND.comp.release.value=0.25; SND.comp.connect(c.destination); /* as in the show's sound engine */
+    SND.master=c.createGain(); SND.master.gain.value=SND.cfg.vol; SND.master.connect(SND.comp);
     SND.voiceBus=c.createGain(); SND.voiceBus.connect(SND.master);
-    SND.ambBus=c.createGain(); SND.ambBus.gain.value=SND.cfg.roomVol; SND.ambBus.connect(SND.master);
+    SND.muffle=c.createBiquadFilter(); SND.muffle.type="lowpass"; SND.muffle.frequency.value=18000; SND.muffle.connect(SND.master);
+    SND.ambBus=c.createGain(); SND.ambBus.gain.value=SND.cfg.roomVol; SND.ambBus.connect(SND.muffle);
     SND.cueBus=c.createGain(); SND.cueBus.gain.value=0.9; SND.cueBus.connect(SND.master);
     SND.verb=c.createConvolver(); SND.verb.buffer=sndImpulse(2.4); SND.verb.connect(SND.ambBus);}
   if(SND.ctx.state==="suspended")SND.ctx.resume().catch(()=>{});
@@ -2748,7 +2827,7 @@ function sndBed(n,o){const c=SND.ctx, s=c.createBufferSource(), f=c.createBiquad
 const SND_LAYERS={
   tone:n=>sndBed(n,{freq:160,gain:0.16}),
   wind:n=>sndBed(n,{kind:"white",filt:"bandpass",freq:420,Q:0.9,gain:0.05,lfo:0.07,lfoDepth:260,gLfo:0.045}),
-  drips:n=>sndEvery(n,0.9,4.5,()=>{const f=1300+n.rng()*1300, p=n.rng()*1.6-0.8; sndBlip(n,{f0:f,f1:f*0.45,dur:0.12,gain:0.16,pan:p}); if(n.rng()<0.25)sndBlip(n,{f0:f*1.1,f1:f*0.5,dur:0.1,gain:0.09,pan:p,at:0.14});}),
+  drips:n=>sndEvery(n,0.8,3.6,()=>{const c=SND.ctx, p=sndPan(c,n.rng()*1.6-0.8); p.connect(n.out); FX.drip[SND_DRIP](c,p,c.currentTime+0.02,n.rng); setTimeout(()=>{try{p.disconnect();}catch(e){}},2000);}),
   lap:n=>{sndBed(n,{kind:"brown",freq:420,gain:0.09,gLfo:0.18}); SND_LAYERS.drips(n);},
   scrape:n=>sndEvery(n,6,16,()=>sndBurst(n,{dur:0.8+n.rng()*0.9,gain:0.12,freq:260+n.rng()*320,Q:2.5,attack:0.25,pan:n.rng()*1.4-0.7})),
   creak:n=>sndEvery(n,5,13,()=>{const f=95+n.rng()*70; sndBlip(n,{type:"sawtooth",f0:f,f1:f*1.25,dur:0.45,gain:0.035,filt:"bandpass",ff:900,q:5,attack:0.08,pan:n.rng()*1.2-0.6});}),
@@ -2782,7 +2861,7 @@ function sndRoomLayers(r){
   if(has(/breathing|breath/))L.push("breath");
   if(has(/tool|bench|clatter/))L.push("clatter");
   return L;}
-function sndRoomStart(r){const layers=sndRoomLayers(r), n=sndNode("room:"+(r?r.id:"dark"),layers.includes("steps")?0.9:0.5); n.layers=layers;
+function sndRoomStart(r){const layers=sndRoomLayers(r), n=sndNode("room:"+(r?r.id:"dark"),layers.includes("steps")?0.9:(layers.includes("drips")||layers.includes("lap"))?0.95:0.5); n.layers=layers;
   layers.forEach(l=>{try{SND_LAYERS[l](n);}catch(e){}}); return n;}
 /* the torch: crackle that thins as the hour burns down, and silence when the light dies */
 function sndTorchLevel(){const t=S.torch; if(!t||!t.running||t.remain<=0)return 0; let lv=0.35+0.65*Math.min(1,t.remain/3600); if(t.remain<300)lv*=0.55; return lv;}
@@ -2797,15 +2876,46 @@ function sndTorchSync(){
     SND.torch=n;}
   const lv=sndTorchLevel(); try{SND.torch.bed.gain.setTargetAtTime((t.src==="candle"?0.015:0.05)*lv+0.004,SND.ctx.currentTime,0.5);}catch(e){}
 }
+function sndFxNode(wet){const c=SND.ctx, out=c.createGain(); out.connect(SND.ambBus); const s=c.createGain(); s.gain.value=wet==null?0.6:wet; out.connect(s); s.connect(SND.verb);
+  setTimeout(()=>{try{out.disconnect();s.disconnect();}catch(e){}},9000); return {out,rng:sndRng("fx:"+Date.now()+":"+Math.random())};}
+function sndLive(){if(!SND.cfg.room||sndIsTable()||!S.model)return null; const c=sndCtx(); return c&&c.state==="running"?c:null;}
+/* walking into a room: footsteps, and the doorway the dungeon says was there */
+function sndEnter(prev,next){const c=sndLive(); if(!c||prev===next)return;
+  const e=(S.model.edges||[]).find(x=>(x.a===prev&&x.b===next)||(x.a===next&&x.b===prev)), ty=e?e.type:"open", n=sndFxNode(), t=c.currentTime+0.05, r=n.rng;
+  if(ty==="locked"){for(let i=0;i<2;i++){FX.burst(c,n.out,t+i*0.12,r,{f:3600,q:5,gain:0.16,a:0.001,dec:0.03}); FX.tone(c,n.out,t+i*0.12,{f:1850,a:0.001,gain:0.05,dec:0.06});} FX.door(c,n.out,t+0.4,r); FX.steps(c,n.out,t+1.85,r,3);}
+  else if(ty==="door"||ty==="barred"){FX.door(c,n.out,t,r); FX.steps(c,n.out,t+1.45,r,3);}
+  else if(ty==="stuck"){FX.burst(c,n.out,t,r,{type:"lowpass",f:220,gain:0.5,a:0.003,dec:0.18}); FX.burst(c,n.out,t+0.32,r,{type:"lowpass",f:240,gain:0.45,a:0.003,dec:0.16}); FX.door(c,n.out,t+0.6,r); FX.steps(c,n.out,t+2.05,r,3);}
+  else if(ty==="secret"){FX.burst(c,n.out,t,r,{type:"lowpass",f:160,f2:650,sweep:1.3,gain:0.42,a:0.35,dec:1.15}); for(let i=0;i<5;i++)FX.burst(c,n.out,t+0.2+r()*1.0,r,{f:300+r()*300,q:3,gain:0.12,a:0.05,dec:0.25}); FX.steps(c,n.out,t+1.7,r,3);}
+  else FX.steps(c,n.out,t,r,3);}
+/* fire: a strike when a light is lit, a hiss when it dies */
+function sndFire(kind){const c=sndLive(); if(!c)return; const n=sndFxNode(0.3), t=c.currentTime+0.03;
+  if(kind==="strike"&&S.torch.src==="spell"){sndBell(n.out,587.33,0.05,0.5);return;} if(kind==="strike"&&S.torch.src==="lantern"){FX.burst(c,n.out,t,n.rng,{f:2600,q:3,gain:0.1,a:0.002,dec:0.04}); FX.burst(c,n.out,t+0.1,n.rng,{type:"lowpass",f:500,f2:2000,sweep:0.3,gain:0.18,a:0.05,dec:0.4});return;}
+  FX[kind](c,n.out,t,n.rng);}
+/* the show engine's bell (galaxy intro, src/stage/audio/engine.ts): sine partials at a bell's ratios, each fading at its own rate */
+function sndBell(out,f,gain,len){const c=SND.ctx, t=c.currentTime+0.02, R=[1,2.756,5.404,8.933,0.5], A=[1,0.55,0.3,0.14,0.25], D=[3.4,2.1,1.2,0.6,4.5];
+  R.forEach((k,i)=>{FX.tone(c,out,t,{f:f*k,a:0.003,gain:gain*A[i],dec:D[i]*(len||0.6)}); if(i<3)FX.tone(c,out,t,{f:f*k*1.0021,a:0.003,gain:gain*A[i]*0.5,dec:D[i]*(len||0.6)});});}
+/* the dark: the room goes muffled and your own heartbeat comes close */
+function sndDarkSync(c,dark){try{SND.muffle.frequency.setTargetAtTime(dark?450:18000,c.currentTime,dark?0.8:0.3);}catch(e){}
+  if(dark&&!SND.dark){const n=sndNode("dark",0.2); const beat=()=>{if(n.dead)return; FX.heartbeat(SND.ctx,n.out,SND.ctx.currentTime+0.02,n.rng,1); n.timers.push(setTimeout(beat,(0.92+n.rng()*0.1)*1000));}; n.timers.push(setTimeout(beat,1500)); n.out.disconnect(); n.out.connect(SND.master); n.out.gain.cancelScheduledValues(SND.ctx.currentTime); n.out.gain.setTargetAtTime(0.55,SND.ctx.currentTime,1.5); SND.dark=n;}
+  else if(!dark&&SND.dark){sndNodeStop(SND.dark);SND.dark=null;}}
+/* the lair: two low notes a few cycles apart, so they throb against each other */
+function sndDreadStart(){const c=SND.ctx, n=sndNode("dread",0.6), g=c.createGain(); g.gain.value=0.0001; g.gain.setTargetAtTime(0.13,c.currentTime,2.5); g.connect(n.out);
+  [[41.2,"sine",1],[43.6,"sine",0.8],[82.4,"triangle",0.25],[123.5,"sine",0.08]].forEach(([f,ty,gn])=>{const o=c.createOscillator(), og=c.createGain(); o.type=ty; o.frequency.value=f; og.gain.value=gn; o.connect(og); og.connect(g); o.start(); n.srcs.push(o);});
+  const l=c.createOscillator(), ld=c.createGain(); l.frequency.value=0.07; ld.gain.value=0.05; l.connect(ld); ld.connect(g.gain); l.start(); n.srcs.push(l);
+  sndBed(n,{kind:"brown",freq:200,gain:0.06,gLfo:0.05}); return n;}
 function sndTalking(){return !!((window.speechSynthesis&&speechSynthesis.speaking)||(SND.kok&&SND.ctx&&SND.kok.end>SND.ctx.currentTime));}
 function sndTick(){
   if(sndIsTable())return;
-  if(!SND.cfg.room||!S.model){if(SND.room){sndNodeStop(SND.room);SND.room=null;SND.roomKey="";} if(SND.torch){sndNodeStop(SND.torch);SND.torch=null;} return;}
+  if(!SND.cfg.room||!S.model){if(SND.room){sndNodeStop(SND.room);SND.room=null;SND.roomKey="";} if(SND.torch){sndNodeStop(SND.torch);SND.torch=null;}
+    if(SND.dark){sndNodeStop(SND.dark);SND.dark=null;} if(SND.dread){sndNodeStop(SND.dread);SND.dread=null;} if(SND.muffle)SND.muffle.frequency.value=18000; return;}
   const c=sndCtx(); if(!c||c.state!=="running")return;
   const r=S.model.rooms[S.sel|0]; const lit=!!r&&(S.role!=="player"||S.revealed.has(r.id));
   const key=S.model.seed+"|"+(lit?r.id:"dark");
   if(key!==SND.roomKey){if(SND.room)sndNodeStop(SND.room); SND.room=sndRoomStart(lit?r:null); SND.roomKey=key;}
   sndTorchSync();
+  sndDarkSync(c,document.body.classList.contains("dark"));
+  const lair=lit&&S.model.boss&&r.id===S.model.boss.roomId;
+  if(lair&&!SND.dread)SND.dread=sndDreadStart(); else if(!lair&&SND.dread){sndNodeStop(SND.dread);SND.dread=null;}
   SND.ambBus.gain.setTargetAtTime(SND.cfg.roomVol*(sndTalking()?0.45:1),c.currentTime,0.4); /* the room quiets while the game master speaks */
 }
 setInterval(sndTick,600);
@@ -2814,38 +2924,51 @@ function sndCue(kind){
   if(!SND.cfg.cues||sndIsTable())return; const c=sndCtx(); if(!c)return;
   const n={out:SND.cueBus,rng:sndRng(kind+":"+Date.now()),timers:[],srcs:[],dead:false};
   if(kind==="dice"){let at=0; for(let i=0;i<5;i++){sndBurst(n,{dur:0.03,gain:0.22-i*0.03,freq:2400+n.rng()*1800,Q:2,at}); at+=0.05+i*0.035+n.rng()*0.03;}}
-  else if(kind==="room"){sndBlip(n,{f0:110,dur:2.2,gain:0.12}); sndBlip(n,{f0:164.8,dur:1.8,gain:0.06}); sndBlip(n,{f0:220.5,dur:1.4,gain:0.03});}
+  else if(kind==="room")sndBell(n.out,293.66,0.08,0.7);
+  else if(kind==="coins")FX.coins(c,n.out,c.currentTime+0.02,n.rng);
+  else if(kind==="nat20")FX.nat20(c,n.out,c.currentTime+0.35);
+  else if(kind==="nat1")FX.nat1(c,n.out,c.currentTime+0.35,n.rng);
 }
 
 /* ---------- the game master's voice ---------- */
-const NAR={buf:"",gen:0};
+const NAR={buf:"",pend:"",gen:0,q:false};
 function narClean(t){return String(t)
   .replace(/\[Map:[^\]]*\]/gi," ").replace(/\(Table:[^)]*\)/g," ").replace(/https?:\/\/\S+/g," ")
   .replace(/[*_#`>|~]+/g," ").replace(/\[[^\]]*\]/g," ")
   .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu," ").replace(/\s+/g," ").trim();}
-function narSay(s){const t=narClean(s); if(!t||!/[a-z0-9]/i.test(t))return; if(SND.cfg.src==="kokoro")kokSay(t); else sysSay(t);}
+/* words inside quotation marks are a character speaking: they go to the second voice */
+function narSegments(s){const out=[]; let cur="", q=NAR.q;
+  for(const ch of s){if(ch==="“"||ch==="”"||ch==='"'){if(cur.trim())out.push([cur,q]); cur=""; q=ch==="“"?true:ch==="”"?false:!q; continue;} cur+=ch;}
+  if(cur.trim())out.push([cur,q]); NAR.q=q; return out;}
+function narSay(s,allChar){const segs=allChar?[[s,true]]:SND.cfg.voice2?narSegments(s):[[s,false]];
+  segs.forEach(([x,ch])=>{const t=narClean(x); if(!t||!/[a-z0-9]/i.test(t))return; if(SND.cfg.src==="kokoro")kokSay(t,ch); else sysSay(t,ch);});}
+function narAnnounce(m){if(SND.cfg.voice&&!sndIsTable())narSay(m);}
 function narSentences(text){const out=[]; let rest=String(text);
   for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(rest); if(!m)break; out.push(rest.slice(0,m.index+m[0].length)); rest=rest.slice(m.index+m[0].length);}
   if(rest.trim())out.push(rest); return out;}
+/* sentences are grouped until there are about 50 letters to say: Kokoro sounds worse on very short inputs, and fewer gaps */
+function narGroup(s,force){NAR.pend+=s; if(force||narClean(NAR.pend).length>=50||/\n\s*$/.test(s)){const p=NAR.pend; NAR.pend=""; if(p.trim())narSay(p);}}
 function narFeed(tok){if(!SND.cfg.voice||sndIsTable())return; NAR.buf+=tok;
-  for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(NAR.buf); if(!m)break; const end=m.index+m[0].length; narSay(NAR.buf.slice(0,end)); NAR.buf=NAR.buf.slice(end);}}
-function narFlush(){if(!SND.cfg.voice){NAR.buf="";return;} if(NAR.buf.trim())narSay(NAR.buf); NAR.buf="";}
-function narReadAll(text){narStop(); narSentences(text).forEach(narSay);}
-function narStop(){NAR.buf=""; NAR.gen++; try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){} kokStop();}
+  for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(NAR.buf); if(!m)break; const end=m.index+m[0].length; narGroup(NAR.buf.slice(0,end)); NAR.buf=NAR.buf.slice(end);}}
+function narFlush(){if(!SND.cfg.voice){NAR.buf="";NAR.pend="";return;} narGroup(NAR.buf,true); NAR.buf=""; NAR.q=false;}
+function narReadAll(text,allChar){narStop(); const ss=narSentences(text); let pend="";
+  ss.forEach((s,i)=>{pend+=s; if(narClean(pend).length>=50||i===ss.length-1){narSay(pend,allChar); pend="";}}); NAR.q=false;}
+function narStop(){NAR.buf=""; NAR.pend=""; NAR.q=false; NAR.gen++; try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){} kokStop();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sndTalking())narStop();});
 /* this computer's voices, ranked the way our reading app (Clarity) ranks them: enhanced and premium first */
 function sysVoices(){try{return window.speechSynthesis?speechSynthesis.getVoices():[];}catch(e){return [];}}
 function sysScore(v){return (/enhanced|premium/i.test(v.name)?100:0)+(/natural|neural|siri/i.test(v.name)?80:0)+(v.localService?10:0);}
 function sysRanked(){return sysVoices().filter(v=>/^en/i.test(v.lang||"")).sort((a,b)=>sysScore(b)-sysScore(a));}
 function sysPick(){const r=sysRanked(); return r.find(v=>v.voiceURI===SND.cfg.sysVoice)||r[0]||null;}
-function sysSay(t){if(!window.speechSynthesis||typeof SpeechSynthesisUtterance==="undefined")return;
-  const u=new SpeechSynthesisUtterance(t), v=sysPick(); if(v){u.voice=v;u.lang=v.lang;} u.rate=SND.cfg.rate; u.volume=Math.max(0,Math.min(1,SND.cfg.vol));
+function sysPick2(){const r=sysRanked(), a=sysPick(); return r.find(v=>v.voiceURI===SND.cfg.sysVoice2&&v!==a)||r.find(v=>v!==a)||a;}
+function sysSay(t,ch){if(!window.speechSynthesis||typeof SpeechSynthesisUtterance==="undefined")return;
+  const u=new SpeechSynthesisUtterance(t), v=ch?sysPick2():sysPick(); if(v){u.voice=v;u.lang=v.lang;} u.rate=SND.cfg.rate; u.volume=Math.max(0,Math.min(1,SND.cfg.vol));
   speechSynthesis.speak(u);}
 if(window.speechSynthesis)try{speechSynthesis.addEventListener("voiceschanged",()=>{if($("#soundMenu")&&$("#soundMenu").classList.contains("open"))sndRenderPanel();});}catch(e){}
 /* Kokoro: a small voice model (82 million parameters, Apache 2.0), the one our reading app uses.
    It runs inside this browser after a one-time download, on the graphics chip when the browser offers it. */
 const KOK_LIB="https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js", KOK_MODEL="onnx-community/Kokoro-82M-v1.0-ONNX";
-const KOK_VOICES=[["bm_george","George, British, low"],["af_heart","Heart, warm (the reading app's voice)"],["am_michael","Michael, American"],["bf_emma","Emma, British"],["am_fenrir","Fenrir, deep"]];
+const KOK_VOICES=[["af_heart","Heart, American, warm (the reading app's voice)"],["af_bella","Bella, American"],["bf_emma","Emma, British"],["af_nicole","Nicole, American, hushed"],["am_fenrir","Fenrir, American, deep"],["am_michael","Michael, American"],["am_puck","Puck, American"],["bm_george","George, British, low"],["bm_fable","Fable, British"]];
 async function kokPlan(){ /* the graphics chip if the browser offers a real one: half-size model when it handles 16-bit numbers */
   try{if(navigator.gpu){const a=await navigator.gpu.requestAdapter(); const info=a&&a.info||{};
     if(a&&!a.isFallbackAdapter&&!info.isFallbackAdapter&&!/swiftshader|llvmpipe|software/i.test((info.vendor||"")+" "+(info.architecture||"")+" "+(info.description||"")))
@@ -2874,17 +2997,17 @@ function kokEnsure(){
   k.w=w;
   w.onmessage=e=>{const m=e.data;
     if(m.type==="progress"){k.files[m.file]=[m.loaded||0,m.total||0]; k.loaded=0;k.total=0; Object.values(k.files).forEach(([l,t])=>{k.loaded+=l;k.total+=t;}); kokPaint();}
-    else if(m.type==="ready"){k.state="ready"; SND.cfg.kokDownloaded=true; sndSave(); kokPaint(); const p=k.pending; k.pending=[]; p.forEach(([g,t])=>{if(g===NAR.gen)kokPost(t);});}
+    else if(m.type==="ready"){k.state="ready"; SND.cfg.kokDownloaded=true; sndSave(); kokPaint(); const p=k.pending; k.pending=[]; p.forEach(([g,t,ch])=>{if(g===NAR.gen)kokPost(t,ch);});}
     else if(m.type==="audio"){if(m.gen!==NAR.gen)return; kokPlay(m.pcm,m.sr);
       const dur=m.pcm.length/m.sr*1000; k.times.push(m.ms/dur); if(k.times.length>=3&&!k.slow){const avg=k.times.slice(-3).reduce((a,b)=>a+b,0)/3; if(avg>1.05){k.slow=true;kokPaint();}}}
-    else if(m.type==="error"){if(k.state==="loading"){k.state="error";k.err=m.message.slice(0,120);kokPaint();toast("The Kokoro voice could not load, so this computer's voices are speaking instead.",5000); const p=k.pending;k.pending=[];p.forEach(([g,t])=>{if(g===NAR.gen)sysSay(t);});}}};
+    else if(m.type==="error"){if(k.state==="loading"){k.state="error";k.err=m.message.slice(0,120);kokPaint();toast("The Kokoro voice could not load, so this computer's voices are speaking instead.",5000); const p=k.pending;k.pending=[];p.forEach(([g,t,ch])=>{if(g===NAR.gen)sysSay(t,ch);});}}};
   w.onerror=()=>{if(k.state==="loading"){k.state="error";k.err="the download was interrupted";kokPaint();}};
   kokPlan().then(pl=>{SND.kokPlan=pl; w.postMessage({type:"load",lib:KOK_LIB,model:KOK_MODEL,dtype:pl.dtype,device:pl.device});});
   kokPaint(); return k;
 }
-function kokSay(t){if(!SND.kok&&!SND.cfg.kokDownloaded){sysSay(t);kokNudge();return;} const k=kokEnsure(); if(k.state==="error"){sysSay(t);return;} if(k.state!=="ready"){k.pending.push([NAR.gen,t]);return;} kokPost(t);}
+function kokSay(t,ch){if(!SND.kok&&!SND.cfg.kokDownloaded){sysSay(t,ch);kokNudge();return;} const k=kokEnsure(); if(k.state==="error"){sysSay(t,ch);return;} if(k.state!=="ready"){k.pending.push([NAR.gen,t,ch]);return;} kokPost(t,ch);}
 function kokNudge(){if(SND.nudged)return; SND.nudged=true; toast("Speaking with this computer’s voice for now. To hear Kokoro, open Sound and press Download.",5000);}
-function kokPost(t){SND.kok.w.postMessage({type:"say",gen:NAR.gen,text:t,voice:SND.cfg.kVoice,speed:SND.cfg.rate});}
+function kokPost(t,ch){SND.kok.w.postMessage({type:"say",gen:NAR.gen,text:t,voice:ch?SND.cfg.kVoice2:SND.cfg.kVoice,speed:SND.cfg.rate});}
 function kokPlay(pcm,sr){const c=sndCtx(); if(!c)return; const k=SND.kok;
   const b=c.createBuffer(1,pcm.length,sr); b.copyToChannel(pcm,0); const s=c.createBufferSource(); s.buffer=b; s.connect(SND.voiceBus);
   const at=Math.max(c.currentTime+0.05,k.end); s.start(at); k.end=at+b.duration+0.2; k.srcs.push(s);
@@ -2898,18 +3021,21 @@ function sndPanelHTML(){
   h+='<label class="qtoggle"><input type="checkbox" id="sndVoice"'+ck(c.voice)+'> Read the game master’s replies aloud</label>';
   h+='<div class="sndsub"><div class="sndrow"><span>Voice</span><select id="sndSrc"><option value="system"'+(c.src==="system"?" selected":"")+'>This computer’s voices</option><option value="kokoro"'+(c.src==="kokoro"?" selected":"")+'>Kokoro, a small voice model (more natural)</option></select></div>';
   if(c.src==="kokoro"){
-    h+='<div class="sndrow"><span>Who</span><select id="sndKVoice">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
+    h+='<div class="sndrow"><span>Narrator</span><select id="sndKVoice">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
+    h+='<div class="sndrow"><span>Characters</span><select id="sndKVoice2">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice2?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
     h+='<div class="tiny sndk" id="sndKStatus">'+esc(kokStatusText())+'</div>';
     if((kokState()==="none"&&!SND.cfg.kokDownloaded)||kokState()==="error")h+='<button id="sndKLoad">Download the Kokoro voice (about '+((SND.kokPlan&&SND.kokPlan.mb)||100)+' MB, once)</button><div class="tiny" style="margin:4px 0">It downloads once from the internet, then runs on this computer.</div>';
   }else{
     const vs=sysRanked(), pick=sysPick();
-    h+='<div class="sndrow"><span>Who</span><select id="sndSysVoice">'+(vs.length?vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick?" selected":"")+'>'+esc(v.name)+'</option>').join(""):'<option value="">this computer’s default voice</option>')+'</select></div>';
+    h+='<div class="sndrow"><span>Narrator</span><select id="sndSysVoice">'+(vs.length?vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick?" selected":"")+'>'+esc(v.name)+'</option>').join(""):'<option value="">this computer’s default voice</option>')+'</select></div>';
+    const pick2=sysPick2(); if(vs.length>1)h+='<div class="sndrow"><span>Characters</span><select id="sndSysVoice2">'+vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick2?" selected":"")+'>'+esc(v.name)+'</option>').join("")+'</select></div>';
   }
+  h+='<label class="qtoggle" style="margin:4px 0;font-size:12px"><input type="checkbox" id="sndVoice2"'+ck(c.voice2)+'> Lines in “quotation marks” go to the character voice</label>';
   h+='<div class="sndrow"><span>Speed</span><input type="range" id="sndRate" min="0.8" max="1.3" step="0.05" value="'+c.rate+'" aria-label="Speaking speed"></div>';
   h+='<div class="sndrow"><span></span><span><button id="sndTest">Hear a sample</button> <button id="sndStop">Stop</button></span></div></div>';
-  h+='<label class="qtoggle"><input type="checkbox" id="sndRoom"'+ck(c.room)+'> Room sounds: wind, water, stone, and your torch</label>';
+  h+='<label class="qtoggle"><input type="checkbox" id="sndRoom"'+ck(c.room)+'> Room sounds: water, stone, doors, footsteps, and your torch</label>';
   h+='<div class="sndsub"><div class="sndrow"><span>Level</span><input type="range" id="sndRoomVol" min="0" max="1" step="0.05" value="'+c.roomVol+'" aria-label="Room sound level"></div></div>';
-  h+='<label class="qtoggle"><input type="checkbox" id="sndCues"'+ck(c.cues)+'> Small cues: dice, a newly lit room, torch warnings</label>';
+  h+='<label class="qtoggle"><input type="checkbox" id="sndCues"'+ck(c.cues)+'> Small cues: dice, treasure, a newly lit room, torch warnings</label>';
   h+='<div class="sndrow" style="margin-top:8px"><span>Volume</span><input type="range" id="sndVol" min="0" max="1" step="0.05" value="'+c.vol+'" aria-label="Volume"></div>';
   h+='<div class="tiny" style="margin-top:6px">The ▶ buttons beside read-aloud text speak it in this voice. Esc stops the voice.</div>';
   return h;}
@@ -2921,9 +3047,12 @@ function sndWirePanel(){
   on("#sndSrc","change",e=>{narStop(); SND.cfg.src=e.target.value; sndSave(); sndRenderPanel();});
   on("#sndSysVoice","change",e=>{SND.cfg.sysVoice=e.target.value; sndSave();});
   on("#sndKVoice","change",e=>{SND.cfg.kVoice=e.target.value; sndSave();});
+  on("#sndKVoice2","change",e=>{SND.cfg.kVoice2=e.target.value; sndSave();});
+  on("#sndSysVoice2","change",e=>{SND.cfg.sysVoice2=e.target.value; sndSave();});
+  on("#sndVoice2","change",e=>{SND.cfg.voice2=e.target.checked; sndSave();});
   on("#sndKLoad","click",()=>{sndCtx(); kokEnsure(); sndRenderPanel();});
   on("#sndRate","input",e=>{SND.cfg.rate=+e.target.value; sndSave();});
-  on("#sndTest","click",()=>{sndCtx(); narReadAll("The doors hang open, and cold air rises from below. Somewhere in the dark, water drips onto stone.");});
+  on("#sndTest","click",()=>{sndCtx(); narReadAll("The doors hang open, and cold air rises from below. “Keep your voice down,” the old guard whispers. “Something down there is listening.”");});
   on("#sndStop","click",()=>narStop());
   on("#sndRoom","change",e=>{SND.cfg.room=e.target.checked; sndSave(); if(SND.cfg.room)sndCtx(); sndTick();});
   on("#sndRoomVol","input",e=>{SND.cfg.roomVol=+e.target.value; sndSave(); if(SND.ambBus)SND.ambBus.gain.setTargetAtTime(SND.cfg.roomVol,SND.ctx.currentTime,0.1);});
@@ -2940,7 +3069,7 @@ function sndWirePanel(){
 /* ▶ buttons: read-aloud boxes and the game master's messages */
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".readbtn"); if(!b)return; e.preventDefault(); sndCtx();
   if(b.dataset.readmsg!=null){const m=GM.msgs[+b.dataset.readmsg]; if(m)narReadAll(m.content); return;}
-  const box=b.previousElementSibling; if(box&&box.classList.contains("boxed"))narReadAll(box.textContent);});
+  const box=b.previousElementSibling; if(box&&(box.classList.contains("boxed")||box.classList.contains("qletter")))narReadAll(box.textContent,b.dataset.voice==="2");});
 
 /* ---------- boot ---------- */
 (function boot(){
