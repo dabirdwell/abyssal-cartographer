@@ -341,6 +341,20 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
 .qdice .qout{font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:14px; color:var(--parch-dim); font-style:italic}
 .qdice .qout b{color:var(--flame); font-style:normal}
 .qtoggle{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--parch-deep); cursor:pointer}
+/* v3.1 sound */
+.sndwrap{position:relative}
+.soundmenu{width:330px; max-width:calc(100vw - 24px); padding:12px 14px; right:0; z-index:60}
+.soundmenu .sndhead{font-family:var(--serif, Georgia, serif); font-size:15px; color:var(--parch); margin-bottom:8px; display:flex; flex-direction:column; gap:3px}
+.soundmenu .qtoggle{margin:10px 0 4px; font-size:13px; color:var(--parch)}
+.soundmenu .sndsub{margin:0 0 4px 22px}
+.soundmenu .sndrow{display:grid; grid-template-columns:58px 1fr; align-items:center; gap:8px; margin:5px 0; font-size:12px; color:var(--parch-deep)}
+.soundmenu select{width:100%; min-width:0}
+.soundmenu input[type=range]{width:100%; accent-color:var(--flame)}
+.soundmenu input[type=checkbox]{accent-color:var(--flame)}
+.soundmenu button{display:inline-block; width:auto; border:1px solid var(--line, #444); padding:4px 10px; margin:2px 0}
+.soundmenu .sndk{margin:4px 0; line-height:1.45}
+.readbtn{font-size:11px; padding:2px 8px; margin:4px 0 2px; opacity:.85}
+.msg .who .readbtn{margin:0 0 0 6px; padding:0 6px; font-size:10px; vertical-align:baseline}
 
 .qterm{border-bottom:1px dotted var(--parch-deep); cursor:help}
 .qterm:hover{border-bottom-color:var(--torch); color:var(--flame)}
@@ -406,7 +420,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.0.2</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.1</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
@@ -421,6 +435,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
     </div>
   </div>
   <div class="spacer"></div>
+  <div class="sndwrap"><button id="btnSound" title="Sound: the game master's voice, room sounds, small cues" aria-expanded="false">♪ Sound</button><div class="menu soundmenu" id="soundMenu" role="dialog" aria-label="Sound"></div></div>
   <button id="btnShare" title="Copy a link that opens this exact dungeon, with the rooms you have lit">Share</button>
   <div class="menuwrap">
     <button id="btnExport">Export ▾</button>
@@ -489,7 +504,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.0.2 · build 2026-11-06 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.1 · build 2026-11-06 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -1361,7 +1376,7 @@ function renderMap(fit){
         if(adjRev)reveal(id);}}
   }
 })();
-function reveal(id){S.revealed.add(id);select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
+function reveal(id){const was=S.revealed.has(id);S.revealed.add(id);if(!was)sndCue("room");select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
 function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
 /* ---------- torch ---------- */
@@ -1369,11 +1384,11 @@ const SRC={torch:3600,lantern:14400,candle:3600,spell:3600};
 const SRCNAME={torch:"torch",lantern:"lantern",candle:"candle",spell:"light spell"};
 function fmtT(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;
   return(h?h+":":"")+String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");}
-function chime(freq){if(!$("#chime").checked)return;
-  try{const ctx=chime.ctx||(chime.ctx=new (window.AudioContext||window.webkitAudioContext)());
+function chime(freq){let cue=false; try{cue=SND.cfg.cues;}catch(e){} if(!$("#chime").checked&&!cue)return;
+  try{const sc=cue?sndCtx():null, ctx=sc||chime.ctx||(chime.ctx=new (window.AudioContext||window.webkitAudioContext)());
     const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=freq;o.type="sine";
     g.gain.setValueAtTime(0.12,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
-    o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+0.62);}catch(e){}}
+    o.connect(g);g.connect(sc?SND.cueBus:ctx.destination);o.start();o.stop(ctx.currentTime+0.62);}catch(e){}}
 function torchTick(){
   const t=S.torch;if(!t.running)return;
   t.remain-=1;
@@ -1468,7 +1483,7 @@ function renderPanel(){
     if(!S.revealed.has(r.id)&&!dm){el.innerHTML='<div class="tiny">This room waits beyond your light.</div>';return;}
     let h='<div class="klabel">Room '+(r.id+1)+' · '+esc(r.name)+'</div>';
     h+='<div style="margin-bottom:8px">'+factionPill(r.faction)+(r.id===m.boss.roomId&&dm?'<span class="pill hot">♛ lair</span>':'')+(r.flooded?'<span class="pill">flooded</span>':'')+(r.rubble?'<span class="pill">rubble</span>':'')+'</div>';
-    h+='<div class="boxed serif">'+esc(r.box)+'</div>';
+    h+='<div class="boxed serif">'+esc(r.box)+'</div><button class="readbtn" title="Read it aloud with the voice chosen under Sound">▶ Read aloud</button>';
     h+='<div class="senses"><b>Light</b><span>'+esc(r.light)+'</span><b>Sound</b><span>'+esc(r.sense.sound)+'</span><b>Smell</b><span>'+esc(r.sense.smell)+'</span></div>';
     if(r.detail)h+='<div class="dmnote tiny" style="margin-top:6px">Detail: '+esc(r.detail)+'</div>';
     if(r.playlist)h+='<div class="tiny" style="margin-top:4px">♫ <a href="'+r.playlist.u+'" target="_blank" rel="noopener">'+esc(r.playlist.n)+'</a></div>';
@@ -1498,7 +1513,7 @@ function renderPanel(){
     const g=m.genome;
     let h='<div class="dun-title serif">'+esc(g.name)+'</div>';
     h+='<div class="dun-sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+' · depth '+m.depth+'</div>';
-    h+='<div class="boxed serif">'+esc(g.intro)+'</div>';
+    h+='<div class="boxed serif">'+esc(g.intro)+'</div><button class="readbtn" title="Read it aloud with the voice chosen under Sound">▶ Read aloud</button>';
     if(dm)h+='<div class="klabel">The truth of this place</div><div class="dmnote secretline">'+esc(g.twist)+'</div>';
     if(m.factions.length&&S.role!=="player"){h+='<div class="klabel">Factions</div>';
       m.factions.forEach((f,i)=>{
@@ -1755,7 +1770,7 @@ function expDM(){
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(t.inn)+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.0.2. Seed: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.1. Seed: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_DM.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -1824,7 +1839,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v3.0.2. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v3.1. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -2490,12 +2505,14 @@ async function gmSend(text,opts){
   const note=gmTableNote(); const noted=!opts.first&&note!==GM.lastNote; if(noted)GM.lastNote=note;
   const shown=text, sent=(noted?note+"\n\n":"")+text;
   GM.msgs.push({role:"user",content:sent,shown}); GM.busy=true; GM.err="";
+  narStop();
   const reply={role:"assistant",content:""}; GM.msgs.push(reply); gmRenderChat();
   const nearby=GMP[GM.cfg.provider].local||gmIsNearby(GM.cfg.url||"");
   const waitT=nearby?setTimeout(()=>{if(reply.content)return; const el=document.querySelector("#gmLog .thinking"); if(el)el.textContent=GM_WAIT_LINE;},4000):0;
   try{
     const history=GM.msgs.slice(0,-1).slice(-60).map(m=>({role:m.role,content:m.content}));
-    await gmStream(aiGMText(),history,tok=>{reply.content+=tok;gmPaintLast();});
+    await gmStream(aiGMText(),history,tok=>{reply.content+=tok;gmPaintLast();narFeed(tok);});
+    narFlush();
     if(!reply.content.trim())reply.content="(The game master said nothing. Try again.)";
     gmApplyTags(reply.content);
   }catch(e){
@@ -2508,13 +2525,13 @@ async function gmSend(text,opts){
 function gmApplyTags(text){
   const re=/\[Map:\s*room\s*(\d+)\]/gi; let m,lit=[];
   while((m=re.exec(text))){const n=parseInt(m[1],10); if(n>=1&&S.model&&n<=S.model.rooms.length&&!S.revealed.has(n-1)){S.revealed.add(n-1);lit.push(n);}}
-  if(lit.length){const last=lit[lit.length-1]-1; S.sel=last; renderMap(true); renderFoot(); syncHash(); toast("Room "+lit.join(", ")+" steps into the light");}
+  if(lit.length){sndCue("room");const last=lit[lit.length-1]-1; S.sel=last; renderMap(true); renderFoot(); syncHash(); toast("Room "+lit.join(", ")+" steps into the light");}
 }
 function gmFormat(t){ /* plain text to safe HTML: paragraphs, bold, the room tag as a chip */
   return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\[Map:\s*room\s*(\d+)\]/gi,'<span class="maptag">room $1 lit</span>').replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>");
 }
 function gmPaintLast(){
-  const el=document.querySelector("#gmLog .msg:last-child .body"); if(!el)return;
+  const all=document.querySelectorAll("#gmLog .msg"), lastMsg=all[all.length-1], el=lastMsg&&lastMsg.querySelector(".body"); if(!el)return;
   const m=GM.msgs[GM.msgs.length-1]; el.innerHTML="<p>"+gmFormat(m.content)+"</p>"; const log=$("#gmLog"); log.scrollTop=log.scrollHeight;
 }
 function gmRenderChat(){
@@ -2523,7 +2540,7 @@ function gmRenderChat(){
   let h='<div class="gmhead"><span class="tiny">Game master: <b>'+esc(GM.cfg.model||p.short)+'</b> ('+esc(p.short)+')</span><span class="spacer"></span><button id="gmSetup" class="tiny">Change</button><button id="gmNew" class="tiny" title="Forget this conversation and begin the dungeon again">Restart</button></div>';
   h+='<div id="gmLog">';
   if(!GM.msgs.length)h+='<div class="tiny" style="padding:10px">Your game master has the whole dungeon and is waiting. Say hello, or press Begin.</div>';
-  GM.msgs.forEach(m=>{h+='<div class="msg '+m.role+'"><div class="who">'+(m.role==="user"?"You":"Game master")+'</div><div class="body"><p>'+gmFormat(m.shown!==undefined?m.shown:m.content)+'</p></div></div>';});
+  GM.msgs.forEach((m,i)=>{h+='<div class="msg '+m.role+'"><div class="who">'+(m.role==="user"?"You":"Game master"+(m.content?'<button class="readbtn" data-readmsg="'+i+'" title="Hear this aloud" aria-label="Hear this aloud">▶</button>':""))+'</div><div class="body"><p>'+gmFormat(m.shown!==undefined?m.shown:m.content)+'</p></div></div>';});
   if(GM.busy)h+='<div class="tiny thinking" style="padding:4px 10px">The game master is writing…</div>';
   h+='</div>';
   if(GM.err)h+='<div class="gmerr">'+esc(GM.err)+'</div>';
@@ -2584,7 +2601,7 @@ function gmWireSetup(){
 function renderGM(el,m){
   const g=m.genome;
   let h='<div class="dun-title serif">'+esc(g.name)+'</div><div class="dun-sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+'</div>';
-  h+='<div class="boxed serif">'+esc(g.intro)+'</div>';
+  h+='<div class="boxed serif">'+esc(g.intro)+'</div><button class="readbtn" title="Read it aloud with the voice chosen under Sound">▶ Read aloud</button>';
   h+='<div class="klabel">Your game master is an AI</div>';
   h+='<div class="tiny" style="margin:-4px 0 8px">Two ways to get one. The quick way: paste the dungeon into an AI you already use. The other way, further down: play right here in this page, with your own key or a model on this computer.</div>';
   h+='<div class="card gmsteps">';
@@ -2620,7 +2637,7 @@ function renderGM(el,m){
   el.querySelectorAll("[data-die]").forEach(b=>b.addEventListener("click",()=>{
     if(document.body.classList.contains("dark")){$("#diceNote").textContent="Too dark to read the dice. Light something first.";return;}
     const d=+b.dataset.die, r=1+Math.floor(Math.random()*d), o=$("#diceOut");
-    o.textContent=r; o.classList.remove("roll"); void o.offsetWidth; o.classList.add("roll");
+    o.textContent=r; o.classList.remove("roll"); void o.offsetWidth; o.classList.add("roll"); sndCue("dice");
     $("#diceNote").textContent=d===20&&r===20?"A natural twenty. Say it out loud.":d===20&&r===1?"A one. Tell the game master anyway; the good stories start here.":"d"+d+": "+r+". Tell your game master.";
   }));
 }
@@ -2668,6 +2685,263 @@ function saveOffline(){
 (function(){const a=document.getElementById("saveOffline"); if(!a)return;
   if(location.protocol==="file:"){a.removeAttribute("href");a.removeAttribute("download");a.textContent="playing from your computer, works offline";a.style.color="inherit";a.style.cursor="default";}
   else{a.href=saveOfflineHref(); a.addEventListener("click",()=>setTimeout(()=>toast("Saved as AbyssalCartographer.html. Open it from your computer any time; no internet needed.",5000),300));}})();
+/* ---------- v3.1 sound: the game master's voice, rooms you can hear, small cues ----------
+   Everything starts off. Sounds are made here as you play: nothing is recorded, nothing is sent anywhere.
+   The dungeon's own random numbers are never touched; sounds draw from their own small generator,
+   seeded from the dungeon's code and the room, so a shared link still builds the same dungeon. */
+const SND={cfg:{voice:false,src:"system",sysVoice:"",kVoice:"bm_george",rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
+  ctx:null,room:null,roomKey:"",torch:null,kok:null};
+try{const j=JSON.parse(localStorage.getItem("ac.sound")||"null"); if(j&&typeof j==="object")Object.assign(SND.cfg,j);}catch(e){}
+function sndSave(){try{localStorage.setItem("ac.sound",JSON.stringify(SND.cfg));}catch(e){}}
+function sndIsTable(){return document.body.classList.contains("table");}
+function sndCtx(){
+  if(sndIsTable())return null;
+  if(!SND.ctx){const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return null;
+    try{SND.ctx=new AC();}catch(e){return null;}
+    const c=SND.ctx;
+    SND.master=c.createGain(); SND.master.gain.value=SND.cfg.vol; SND.master.connect(c.destination);
+    SND.voiceBus=c.createGain(); SND.voiceBus.connect(SND.master);
+    SND.ambBus=c.createGain(); SND.ambBus.gain.value=SND.cfg.roomVol; SND.ambBus.connect(SND.master);
+    SND.cueBus=c.createGain(); SND.cueBus.gain.value=0.9; SND.cueBus.connect(SND.master);
+    SND.verb=c.createConvolver(); SND.verb.buffer=sndImpulse(2.4); SND.verb.connect(SND.ambBus);}
+  if(SND.ctx.state==="suspended")SND.ctx.resume().catch(()=>{});
+  return SND.ctx;
+}
+/* browsers keep sound asleep until the first click; wake it then */
+document.addEventListener("pointerdown",()=>{if(SND.ctx&&SND.ctx.state==="suspended")SND.ctx.resume().catch(()=>{});else if(!SND.ctx&&(SND.cfg.room||SND.cfg.cues||(SND.cfg.voice&&SND.cfg.src==="kokoro")))sndCtx();},true);
+function sndRng(seed){let h=2166136261>>>0; const s=String(seed); for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);} let a=h>>>0;
+  return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function sndNoise(kind){const c=SND.ctx; SND.nb=SND.nb||{}; if(SND.nb[kind])return SND.nb[kind];
+  const n=c.sampleRate*3, b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0), r=sndRng("noise:"+kind); let last=0;
+  for(let i=0;i<n;i++){const w=r()*2-1; if(kind==="brown"){last=(last+0.02*w)/1.02; d[i]=last*3.5;} else d[i]=w;}
+  return SND.nb[kind]=b;}
+function sndImpulse(sec){const c=SND.ctx, n=Math.floor(c.sampleRate*sec), b=c.createBuffer(2,n,c.sampleRate), r=sndRng("cave");
+  for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch); for(let i=0;i<n;i++)d[i]=(r()*2-1)*Math.pow(1-i/n,3.2);} return b;}
+function sndPan(c,x){if(c.createStereoPanner){const p=c.createStereoPanner(); p.pan.value=Math.max(-1,Math.min(1,x)); return p;} return c.createGain();}
+/* a node is one sound scene: everything in it fades together */
+function sndNode(key,wet){const c=SND.ctx, out=c.createGain(); out.gain.value=0.0001; out.connect(SND.ambBus);
+  const send=c.createGain(); send.gain.value=wet==null?0.5:wet; out.connect(send); send.connect(SND.verb);
+  out.gain.setTargetAtTime(1,c.currentTime,0.7);
+  return {key,out,send,srcs:[],timers:[],dead:false,rng:sndRng((S.model?S.model.seed:"")+"|"+key)};}
+function sndNodeStop(n){if(!n||n.dead)return; n.dead=true; n.timers.forEach(clearTimeout); const c=SND.ctx;
+  try{n.out.gain.cancelScheduledValues(c.currentTime); n.out.gain.setTargetAtTime(0.0001,c.currentTime,0.6);}catch(e){}
+  setTimeout(()=>{n.srcs.forEach(s=>{try{s.stop();}catch(e){}}); try{n.out.disconnect();n.send.disconnect();}catch(e){}},3000);}
+function sndEvery(n,minS,maxS,fn){const go=()=>{if(n.dead)return; try{fn();}catch(e){} n.timers.push(setTimeout(go,(minS+(maxS-minS)*n.rng())*1000));};
+  n.timers.push(setTimeout(go,(0.3+maxS*0.5*n.rng())*1000));}
+function sndLater(n,sec,fn){n.timers.push(setTimeout(()=>{if(!n.dead)fn();},sec*1000));}
+function sndBlip(n,o){const c=SND.ctx, t=c.currentTime+0.02+(o.at||0), osc=c.createOscillator(), g=c.createGain(), p=sndPan(c,o.pan||0);
+  osc.type=o.type||"sine"; osc.frequency.setValueAtTime(o.f0,t); if(o.f1)osc.frequency.exponentialRampToValueAtTime(o.f1,t+o.dur*0.6);
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(o.gain,t+(o.attack||0.006)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.dur);
+  let last=osc; if(o.filt){const f=c.createBiquadFilter(); f.type=o.filt; f.frequency.value=o.ff||1000; f.Q.value=o.q||1; osc.connect(f); last=f;}
+  last.connect(g); g.connect(p); p.connect(n.out); osc.start(t); osc.stop(t+o.dur+0.05);}
+function sndBurst(n,o){const c=SND.ctx, t=c.currentTime+0.02+(o.at||0), s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(), p=sndPan(c,o.pan||0);
+  s.buffer=sndNoise("white"); f.type=o.filt||"bandpass"; f.frequency.value=o.freq||800; f.Q.value=o.Q||1;
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(o.gain,t+(o.attack||0.005)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.dur);
+  s.connect(f); f.connect(g); g.connect(p); p.connect(n.out); s.start(t,n.rng()*2); s.stop(t+o.dur+0.05);}
+function sndBed(n,o){const c=SND.ctx, s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain();
+  s.buffer=sndNoise(o.kind||"brown"); s.loop=true; f.type=o.filt||"lowpass"; f.frequency.value=o.freq||200; f.Q.value=o.Q||0.7; g.gain.value=o.gain;
+  s.connect(f); f.connect(g); g.connect(n.out); s.start(0,n.rng()*2.5); n.srcs.push(s);
+  if(o.lfo){const l=c.createOscillator(), d=c.createGain(); l.frequency.value=o.lfo; d.gain.value=o.lfoDepth; l.connect(d); d.connect(f.frequency); l.start(); n.srcs.push(l);}
+  if(o.gLfo){const l=c.createOscillator(), d=c.createGain(); l.frequency.value=o.gLfo; d.gain.value=o.gain*0.6; l.connect(d); d.connect(g.gain); l.start(); n.srcs.push(l);}
+  return g;}
+/* each room already has a written sound ("Wind from above, dripping below"); the room plays what it says */
+const SND_LAYERS={
+  tone:n=>sndBed(n,{freq:160,gain:0.16}),
+  wind:n=>sndBed(n,{kind:"white",filt:"bandpass",freq:420,Q:0.9,gain:0.05,lfo:0.07,lfoDepth:260,gLfo:0.045}),
+  drips:n=>sndEvery(n,0.9,4.5,()=>{const f=1300+n.rng()*1300, p=n.rng()*1.6-0.8; sndBlip(n,{f0:f,f1:f*0.45,dur:0.12,gain:0.16,pan:p}); if(n.rng()<0.25)sndBlip(n,{f0:f*1.1,f1:f*0.5,dur:0.1,gain:0.09,pan:p,at:0.14});}),
+  lap:n=>{sndBed(n,{kind:"brown",freq:420,gain:0.09,gLfo:0.18}); SND_LAYERS.drips(n);},
+  scrape:n=>sndEvery(n,6,16,()=>sndBurst(n,{dur:0.8+n.rng()*0.9,gain:0.12,freq:260+n.rng()*320,Q:2.5,attack:0.25,pan:n.rng()*1.4-0.7})),
+  creak:n=>sndEvery(n,5,13,()=>{const f=95+n.rng()*70; sndBlip(n,{type:"sawtooth",f0:f,f1:f*1.25,dur:0.45,gain:0.035,filt:"bandpass",ff:900,q:5,attack:0.08,pan:n.rng()*1.2-0.6});}),
+  chain:n=>sndEvery(n,2.2,3.4,()=>{const p=Math.sin(SND.ctx.currentTime*0.9)*0.5; sndBlip(n,{f0:2300+n.rng()*300,dur:0.25,gain:0.03,pan:p}); sndBlip(n,{f0:3150+n.rng()*300,dur:0.18,gain:0.02,pan:p});}),
+  scurry:n=>sndEvery(n,7,18,()=>{const k=6+Math.floor(n.rng()*9); let at=0, p=n.rng()*1.6-0.8; const dp=(n.rng()-0.5)*0.12;
+    for(let i=0;i<k;i++){p+=dp; sndBurst(n,{dur:0.012,gain:0.07,filt:"highpass",freq:3200,Q:0.7,pan:p,at}); at+=0.03+n.rng()*0.05;}}),
+  hum:n=>{const c=SND.ctx, g=c.createGain(); g.gain.value=0.035; g.connect(n.out);
+    [55,82.4,110.2].forEach((f,i)=>{const o=c.createOscillator(), og=c.createGain(); o.frequency.value=f*(1+(n.rng()-0.5)*0.004); og.gain.value=[1,0.5,0.25][i]; o.connect(og); og.connect(g); o.start(); n.srcs.push(o);});
+    const l=c.createOscillator(), d=c.createGain(); l.frequency.value=0.11; d.gain.value=0.015; l.connect(d); d.connect(g.gain); l.start(); n.srcs.push(l);},
+  steps:n=>sndEvery(n,4,9,()=>{const k=2+Math.floor(n.rng()*3); for(let i=0;i<k;i++)sndBurst(n,{dur:0.09,gain:0.11,filt:"lowpass",freq:150,Q:0.8,at:i*0.52,pan:-0.2+i*0.1});}),
+  cloth:n=>sndEvery(n,6,14,()=>sndBurst(n,{dur:0.9,gain:0.03,freq:2200,Q:0.8,attack:0.35,pan:n.rng()*1.4-0.7})),
+  coins:n=>sndEvery(n,5,12,()=>{const k=3+Math.floor(n.rng()*6); let at=0; for(let i=0;i<k;i++){sndBlip(n,{f0:3200+n.rng()*1800,dur:0.2,gain:0.025,pan:n.rng()*1.2-0.6,at}); at+=0.05+n.rng()*0.12;}}),
+  heart:n=>sndEvery(n,1.05,1.15,()=>{sndBlip(n,{f0:60,f1:40,dur:0.16,gain:0.2}); sndBlip(n,{f0:55,f1:38,dur:0.14,gain:0.13,at:0.26});}),
+  breath:n=>sndEvery(n,3.6,4.6,()=>sndBurst(n,{dur:1.4,gain:0.035,freq:650,Q:1.2,attack:0.7})),
+  clatter:n=>sndEvery(n,14,28,()=>{let at=0; for(let i=0;i<5;i++){sndBurst(n,{dur:0.05,gain:0.08*(1-i*0.15),freq:900+n.rng()*500,Q:3,at}); at+=0.22-i*0.03;}})
+};
+function sndRoomLayers(r){
+  if(!r)return ["tone"];
+  const t=((r.sense&&r.sense.sound)||"").toLowerCase(), L=["tone"], has=re=>re.test(t);
+  if(has(/wind|breeze|draft/))L.push("wind");
+  if(has(/water moving|lapping/))L.push("lap"); else if(has(/drip|water|wet/)||r.flooded)L.push("drips");
+  if(has(/scrap|grit|stone|rubble/)||r.rubble)L.push("scrape");
+  if(has(/creak|leather/))L.push("creak");
+  if(has(/chain/))L.push("chain");
+  if(has(/scurr|crate|skitter/))L.push("scurry");
+  if(has(/hum|drone|chant/))L.push("hum");
+  if(has(/steps|footfall/))L.push("steps");
+  if(has(/cloth|pages|whisper|rustl/))L.push("cloth");
+  if(has(/coin/))L.push("coins");
+  if(has(/heartbeat/))L.push("heart");
+  if(has(/breathing|breath/))L.push("breath");
+  if(has(/tool|bench|clatter/))L.push("clatter");
+  return L;}
+function sndRoomStart(r){const layers=sndRoomLayers(r), n=sndNode("room:"+(r?r.id:"dark"),layers.includes("steps")?0.9:0.5); n.layers=layers;
+  layers.forEach(l=>{try{SND_LAYERS[l](n);}catch(e){}}); return n;}
+/* the torch: crackle that thins as the hour burns down, and silence when the light dies */
+function sndTorchLevel(){const t=S.torch; if(!t||!t.running||t.remain<=0)return 0; let lv=0.35+0.65*Math.min(1,t.remain/3600); if(t.remain<300)lv*=0.55; return lv;}
+function sndTorchSync(){
+  const t=S.torch, on=SND.cfg.room&&t&&t.running&&t.remain>0&&t.src!=="spell";
+  if(!on){if(SND.torch){sndNodeStop(SND.torch);SND.torch=null;} return;}
+  if(!SND.torch){const n=sndNode("torch",0.25); n.bed=sndBed(n,{kind:t.src==="lantern"?"white":"brown",filt:t.src==="lantern"?"highpass":"lowpass",freq:t.src==="lantern"?5000:520,gain:0.05});
+    if(t.src==="torch"){const pop=()=>{if(n.dead)return; const lv=sndTorchLevel();
+        if(lv>0&&!(S.torch.remain<300&&n.rng()<0.35))sndBurst(n,{dur:0.006+n.rng()*0.02,gain:(0.05+n.rng()*0.16)*lv,filt:"highpass",freq:1500+n.rng()*2800,Q:0.6,pan:(n.rng()-0.5)*0.3});
+        n.timers.push(setTimeout(pop,(0.05+n.rng()*0.28)/Math.max(0.25,lv)*1000));};
+      pop();}
+    SND.torch=n;}
+  const lv=sndTorchLevel(); try{SND.torch.bed.gain.setTargetAtTime((t.src==="candle"?0.015:0.05)*lv+0.004,SND.ctx.currentTime,0.5);}catch(e){}
+}
+function sndTalking(){return !!((window.speechSynthesis&&speechSynthesis.speaking)||(SND.kok&&SND.ctx&&SND.kok.end>SND.ctx.currentTime));}
+function sndTick(){
+  if(sndIsTable())return;
+  if(!SND.cfg.room||!S.model){if(SND.room){sndNodeStop(SND.room);SND.room=null;SND.roomKey="";} if(SND.torch){sndNodeStop(SND.torch);SND.torch=null;} return;}
+  const c=sndCtx(); if(!c||c.state!=="running")return;
+  const r=S.model.rooms[S.sel|0]; const lit=!!r&&(S.role!=="player"||S.revealed.has(r.id));
+  const key=S.model.seed+"|"+(lit?r.id:"dark");
+  if(key!==SND.roomKey){if(SND.room)sndNodeStop(SND.room); SND.room=sndRoomStart(lit?r:null); SND.roomKey=key;}
+  sndTorchSync();
+  SND.ambBus.gain.setTargetAtTime(SND.cfg.roomVol*(sndTalking()?0.45:1),c.currentTime,0.4); /* the room quiets while the game master speaks */
+}
+setInterval(sndTick,600);
+/* small cues */
+function sndCue(kind){
+  if(!SND.cfg.cues||sndIsTable())return; const c=sndCtx(); if(!c)return;
+  const n={out:SND.cueBus,rng:sndRng(kind+":"+Date.now()),timers:[],srcs:[],dead:false};
+  if(kind==="dice"){let at=0; for(let i=0;i<5;i++){sndBurst(n,{dur:0.03,gain:0.22-i*0.03,freq:2400+n.rng()*1800,Q:2,at}); at+=0.05+i*0.035+n.rng()*0.03;}}
+  else if(kind==="room"){sndBlip(n,{f0:110,dur:2.2,gain:0.12}); sndBlip(n,{f0:164.8,dur:1.8,gain:0.06}); sndBlip(n,{f0:220.5,dur:1.4,gain:0.03});}
+}
+
+/* ---------- the game master's voice ---------- */
+const NAR={buf:"",gen:0};
+function narClean(t){return String(t)
+  .replace(/\[Map:[^\]]*\]/gi," ").replace(/\(Table:[^)]*\)/g," ").replace(/https?:\/\/\S+/g," ")
+  .replace(/[*_#`>|~]+/g," ").replace(/\[[^\]]*\]/g," ")
+  .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu," ").replace(/\s+/g," ").trim();}
+function narSay(s){const t=narClean(s); if(!t||!/[a-z0-9]/i.test(t))return; if(SND.cfg.src==="kokoro")kokSay(t); else sysSay(t);}
+function narSentences(text){const out=[]; let rest=String(text);
+  for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(rest); if(!m)break; out.push(rest.slice(0,m.index+m[0].length)); rest=rest.slice(m.index+m[0].length);}
+  if(rest.trim())out.push(rest); return out;}
+function narFeed(tok){if(!SND.cfg.voice||sndIsTable())return; NAR.buf+=tok;
+  for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(NAR.buf); if(!m)break; const end=m.index+m[0].length; narSay(NAR.buf.slice(0,end)); NAR.buf=NAR.buf.slice(end);}}
+function narFlush(){if(!SND.cfg.voice){NAR.buf="";return;} if(NAR.buf.trim())narSay(NAR.buf); NAR.buf="";}
+function narReadAll(text){narStop(); narSentences(text).forEach(narSay);}
+function narStop(){NAR.buf=""; NAR.gen++; try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){} kokStop();}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sndTalking())narStop();});
+/* this computer's voices, ranked the way our reading app (Clarity) ranks them: enhanced and premium first */
+function sysVoices(){try{return window.speechSynthesis?speechSynthesis.getVoices():[];}catch(e){return [];}}
+function sysScore(v){return (/enhanced|premium/i.test(v.name)?100:0)+(/natural|neural|siri/i.test(v.name)?80:0)+(v.localService?10:0);}
+function sysRanked(){return sysVoices().filter(v=>/^en/i.test(v.lang||"")).sort((a,b)=>sysScore(b)-sysScore(a));}
+function sysPick(){const r=sysRanked(); return r.find(v=>v.voiceURI===SND.cfg.sysVoice)||r[0]||null;}
+function sysSay(t){if(!window.speechSynthesis||typeof SpeechSynthesisUtterance==="undefined")return;
+  const u=new SpeechSynthesisUtterance(t), v=sysPick(); if(v){u.voice=v;u.lang=v.lang;} u.rate=SND.cfg.rate; u.volume=Math.max(0,Math.min(1,SND.cfg.vol));
+  speechSynthesis.speak(u);}
+if(window.speechSynthesis)try{speechSynthesis.addEventListener("voiceschanged",()=>{if($("#soundMenu")&&$("#soundMenu").classList.contains("open"))sndRenderPanel();});}catch(e){}
+/* Kokoro: a small voice model (82 million parameters, Apache 2.0), the one our reading app uses.
+   It runs inside this browser after a one-time download, on the graphics chip when the browser offers it. */
+const KOK_LIB="https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js", KOK_MODEL="onnx-community/Kokoro-82M-v1.0-ONNX";
+const KOK_VOICES=[["bm_george","George, British, low"],["af_heart","Heart, warm (the reading app's voice)"],["am_michael","Michael, American"],["bf_emma","Emma, British"],["am_fenrir","Fenrir, deep"]];
+async function kokPlan(){ /* the graphics chip if the browser offers a real one: half-size model when it handles 16-bit numbers */
+  try{if(navigator.gpu){const a=await navigator.gpu.requestAdapter(); const info=a&&a.info||{};
+    if(a&&!a.isFallbackAdapter&&!info.isFallbackAdapter&&!/swiftshader|llvmpipe|software/i.test((info.vendor||"")+" "+(info.architecture||"")+" "+(info.description||"")))
+      return a.features&&a.features.has("shader-f16")?{device:"webgpu",dtype:"fp16",mb:170}:{device:"webgpu",dtype:"fp32",mb:335};}}catch(e){}
+  return {device:"wasm",dtype:"q8",mb:100};}
+function kokState(){return SND.kok?SND.kok.state:"none";}
+function kokStatusText(){const k=SND.kok; if(!k)return SND.cfg.kokDownloaded?"Downloaded before; it wakes up the first time it speaks.":"Not downloaded yet.";
+  if(k.state==="loading")return "Downloading the voice… "+(k.total?Math.round(k.loaded/1048576)+" of "+Math.round(k.total/1048576)+" MB":"starting");
+  if(k.state==="error")return "The voice could not load: "+k.err+". Speaking with this computer's voices for now.";
+  if(k.state==="ready")return k.slow?"Ready. This computer makes the voice a little slower than it speaks, so expect short pauses between sentences. This computer's own voices never pause.":"Ready. It runs on this computer; nothing you hear is sent anywhere.";
+  return "";}
+function kokPaint(){const el=$("#sndKStatus"); if(el)el.textContent=kokStatusText(); const b=$("#sndKLoad"); if(b&&SND.kok&&SND.kok.state!=="error")b.remove();}
+function kokEnsure(){
+  if(SND.kok&&SND.kok.state!=="error")return SND.kok;
+  const k=SND.kok={state:"loading",w:null,id:0,pending:[],srcs:[],end:0,loaded:0,total:0,files:{},times:[],slow:false,err:""};
+  const src='let tts=null,chain=Promise.resolve();\n'
+    +'self.onmessage=e=>{const m=e.data;chain=chain.then(()=>run(m));};\n'
+    +'async function run(m){try{\n'
+    +' if(m.type==="load"){const {KokoroTTS}=await import(m.lib);\n'
+    +'  tts=await KokoroTTS.from_pretrained(m.model,{dtype:m.dtype,device:m.device,progress_callback:p=>{if(p&&p.status==="progress")self.postMessage({type:"progress",file:p.file,loaded:p.loaded,total:p.total});}});\n'
+    +'  self.postMessage({type:"ready"});}\n'
+    +' else if(m.type==="say"){const t0=performance.now();const a=await tts.generate(m.text,{voice:m.voice,speed:m.speed});const pcm=new Float32Array(a.audio);\n'
+    +'  self.postMessage({type:"audio",gen:m.gen,pcm,sr:a.sampling_rate,ms:performance.now()-t0},[pcm.buffer]);}\n'
+    +'}catch(err){self.postMessage({type:"error",message:String(err&&err.message||err)});}}';
+  let w; try{w=new Worker(URL.createObjectURL(new Blob([src],{type:"text/javascript"}))); /* a classic worker: the saved copy (file://) cannot start module workers */}catch(e){k.state="error";k.err="this browser cannot run it";kokPaint();return k;}
+  k.w=w;
+  w.onmessage=e=>{const m=e.data;
+    if(m.type==="progress"){k.files[m.file]=[m.loaded||0,m.total||0]; k.loaded=0;k.total=0; Object.values(k.files).forEach(([l,t])=>{k.loaded+=l;k.total+=t;}); kokPaint();}
+    else if(m.type==="ready"){k.state="ready"; SND.cfg.kokDownloaded=true; sndSave(); kokPaint(); const p=k.pending; k.pending=[]; p.forEach(([g,t])=>{if(g===NAR.gen)kokPost(t);});}
+    else if(m.type==="audio"){if(m.gen!==NAR.gen)return; kokPlay(m.pcm,m.sr);
+      const dur=m.pcm.length/m.sr*1000; k.times.push(m.ms/dur); if(k.times.length>=3&&!k.slow){const avg=k.times.slice(-3).reduce((a,b)=>a+b,0)/3; if(avg>1.05){k.slow=true;kokPaint();}}}
+    else if(m.type==="error"){if(k.state==="loading"){k.state="error";k.err=m.message.slice(0,120);kokPaint();toast("The Kokoro voice could not load, so this computer's voices are speaking instead.",5000); const p=k.pending;k.pending=[];p.forEach(([g,t])=>{if(g===NAR.gen)sysSay(t);});}}};
+  w.onerror=()=>{if(k.state==="loading"){k.state="error";k.err="the download was interrupted";kokPaint();}};
+  kokPlan().then(pl=>{SND.kokPlan=pl; w.postMessage({type:"load",lib:KOK_LIB,model:KOK_MODEL,dtype:pl.dtype,device:pl.device});});
+  kokPaint(); return k;
+}
+function kokSay(t){if(!SND.kok&&!SND.cfg.kokDownloaded){sysSay(t);kokNudge();return;} const k=kokEnsure(); if(k.state==="error"){sysSay(t);return;} if(k.state!=="ready"){k.pending.push([NAR.gen,t]);return;} kokPost(t);}
+function kokNudge(){if(SND.nudged)return; SND.nudged=true; toast("Speaking with this computer’s voice for now. To hear Kokoro, open Sound and press Download.",5000);}
+function kokPost(t){SND.kok.w.postMessage({type:"say",gen:NAR.gen,text:t,voice:SND.cfg.kVoice,speed:SND.cfg.rate});}
+function kokPlay(pcm,sr){const c=sndCtx(); if(!c)return; const k=SND.kok;
+  const b=c.createBuffer(1,pcm.length,sr); b.copyToChannel(pcm,0); const s=c.createBufferSource(); s.buffer=b; s.connect(SND.voiceBus);
+  const at=Math.max(c.currentTime+0.05,k.end); s.start(at); k.end=at+b.duration+0.2; k.srcs.push(s);
+  s.onended=()=>{k.srcs=k.srcs.filter(x=>x!==s);};}
+function kokStop(){const k=SND.kok; if(!k)return; k.srcs.forEach(s=>{try{s.stop();}catch(e){}}); k.srcs=[]; k.end=0; k.pending=[];}
+
+/* ---------- the Sound panel ---------- */
+function sndPanelHTML(){
+  const c=SND.cfg, ck=b=>b?" checked":"";
+  let h='<div class="sndhead">Sound<span class="tiny">Everything starts off. The page makes these sounds as you play; nothing is recorded or sent anywhere.</span></div>';
+  h+='<label class="qtoggle"><input type="checkbox" id="sndVoice"'+ck(c.voice)+'> Read the game master’s replies aloud</label>';
+  h+='<div class="sndsub"><div class="sndrow"><span>Voice</span><select id="sndSrc"><option value="system"'+(c.src==="system"?" selected":"")+'>This computer’s voices</option><option value="kokoro"'+(c.src==="kokoro"?" selected":"")+'>Kokoro, a small voice model (more natural)</option></select></div>';
+  if(c.src==="kokoro"){
+    h+='<div class="sndrow"><span>Who</span><select id="sndKVoice">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
+    h+='<div class="tiny sndk" id="sndKStatus">'+esc(kokStatusText())+'</div>';
+    if((kokState()==="none"&&!SND.cfg.kokDownloaded)||kokState()==="error")h+='<button id="sndKLoad">Download the Kokoro voice (about '+((SND.kokPlan&&SND.kokPlan.mb)||100)+' MB, once)</button><div class="tiny" style="margin:4px 0">It downloads once from the internet, then runs on this computer.</div>';
+  }else{
+    const vs=sysRanked(), pick=sysPick();
+    h+='<div class="sndrow"><span>Who</span><select id="sndSysVoice">'+(vs.length?vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick?" selected":"")+'>'+esc(v.name)+'</option>').join(""):'<option value="">this computer’s default voice</option>')+'</select></div>';
+  }
+  h+='<div class="sndrow"><span>Speed</span><input type="range" id="sndRate" min="0.8" max="1.3" step="0.05" value="'+c.rate+'" aria-label="Speaking speed"></div>';
+  h+='<div class="sndrow"><span></span><span><button id="sndTest">Hear a sample</button> <button id="sndStop">Stop</button></span></div></div>';
+  h+='<label class="qtoggle"><input type="checkbox" id="sndRoom"'+ck(c.room)+'> Room sounds: wind, water, stone, and your torch</label>';
+  h+='<div class="sndsub"><div class="sndrow"><span>Level</span><input type="range" id="sndRoomVol" min="0" max="1" step="0.05" value="'+c.roomVol+'" aria-label="Room sound level"></div></div>';
+  h+='<label class="qtoggle"><input type="checkbox" id="sndCues"'+ck(c.cues)+'> Small cues: dice, a newly lit room, torch warnings</label>';
+  h+='<div class="sndrow" style="margin-top:8px"><span>Volume</span><input type="range" id="sndVol" min="0" max="1" step="0.05" value="'+c.vol+'" aria-label="Volume"></div>';
+  h+='<div class="tiny" style="margin-top:6px">The ▶ buttons beside read-aloud text speak it in this voice. Esc stops the voice.</div>';
+  return h;}
+function sndRenderPanel(){const el=$("#soundMenu"); if(!el)return; el.innerHTML=sndPanelHTML(); sndWirePanel();
+  if(SND.cfg.src==="kokoro"&&!SND.kokPlan)kokPlan().then(p=>{SND.kokPlan=p; const b=$("#sndKLoad"); if(b)b.textContent="Download the Kokoro voice (about "+p.mb+" MB, once)";});}
+function sndWirePanel(){
+  const on=(id,ev,fn)=>{const el=$(id); if(el)el.addEventListener(ev,fn);};
+  on("#sndVoice","change",e=>{SND.cfg.voice=e.target.checked; if(!SND.cfg.voice)narStop(); sndSave();});
+  on("#sndSrc","change",e=>{narStop(); SND.cfg.src=e.target.value; sndSave(); sndRenderPanel();});
+  on("#sndSysVoice","change",e=>{SND.cfg.sysVoice=e.target.value; sndSave();});
+  on("#sndKVoice","change",e=>{SND.cfg.kVoice=e.target.value; sndSave();});
+  on("#sndKLoad","click",()=>{sndCtx(); kokEnsure(); sndRenderPanel();});
+  on("#sndRate","input",e=>{SND.cfg.rate=+e.target.value; sndSave();});
+  on("#sndTest","click",()=>{sndCtx(); narReadAll("The doors hang open, and cold air rises from below. Somewhere in the dark, water drips onto stone.");});
+  on("#sndStop","click",()=>narStop());
+  on("#sndRoom","change",e=>{SND.cfg.room=e.target.checked; sndSave(); if(SND.cfg.room)sndCtx(); sndTick();});
+  on("#sndRoomVol","input",e=>{SND.cfg.roomVol=+e.target.value; sndSave(); if(SND.ambBus)SND.ambBus.gain.setTargetAtTime(SND.cfg.roomVol,SND.ctx.currentTime,0.1);});
+  on("#sndCues","change",e=>{SND.cfg.cues=e.target.checked; sndSave(); if(SND.cfg.cues){sndCtx(); sndCue("dice");}});
+  on("#sndVol","input",e=>{SND.cfg.vol=+e.target.value; sndSave(); if(SND.master)SND.master.gain.setTargetAtTime(SND.cfg.vol,SND.ctx.currentTime,0.05);});
+}
+(function(){const b=$("#btnSound"), m=$("#soundMenu"); if(!b||!m)return;
+  const place=()=>{if(innerWidth<700){const r=b.getBoundingClientRect(); Object.assign(m.style,{position:"fixed",left:"12px",right:"12px",width:"auto",top:Math.round(r.bottom+6)+"px",maxHeight:"calc(100vh - "+Math.round(r.bottom+18)+"px)",overflow:"auto"});}
+    else ["position","left","right","width","top","maxHeight","overflow"].forEach(k=>m.style[k]="");};
+  b.addEventListener("click",e=>{e.stopPropagation(); const open=!m.classList.contains("open"); if(open){sndRenderPanel(); place();} m.classList.toggle("open",open); b.setAttribute("aria-expanded",open?"true":"false");});
+  addEventListener("resize",()=>{if(m.classList.contains("open"))place();});
+  m.addEventListener("click",e=>e.stopPropagation());
+  document.addEventListener("click",()=>{if(m.classList.contains("open")){m.classList.remove("open");b.setAttribute("aria-expanded","false");}});})();
+/* ▶ buttons: read-aloud boxes and the game master's messages */
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".readbtn"); if(!b)return; e.preventDefault(); sndCtx();
+  if(b.dataset.readmsg!=null){const m=GM.msgs[+b.dataset.readmsg]; if(m)narReadAll(m.content); return;}
+  const box=b.previousElementSibling; if(box&&box.classList.contains("boxed"))narReadAll(box.textContent);});
+
 /* ---------- boot ---------- */
 (function boot(){
   tblOpen();
