@@ -107,6 +107,14 @@ The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](
 
 This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.
 
+### Voices
+
+The voices are machine-made speech, generated in your browser. Nothing you hear is recorded or sent anywhere. Each model downloads once, only when you press its Download button under Sound.
+
+- **Daniel and the other narrator voices:** Supertonic 3 by Supertone Inc., through the Transformers.js build `open-world-group/Supertonic-3-ONNX` (pinned to one commit). The model is under the [OpenRAIL-M license](https://huggingface.co/supertone-oss-archive/supertonic-3/blob/main/LICENSE), and its use restrictions apply to everyone who uses it here.
+- **Kokoro voices:** Kokoro-82M (Apache 2.0) through `kokoro-js`.
+- **This computer's voices:** the speech built into your browser and operating system.
+
 ---
 
 *"Roll for initiative!"* 🎲

@@ -1,4 +1,4 @@
-// v3.2 sound (built on the v3.1 suite): the game master's voice, room sounds, the torch, small cues, read-aloud buttons, and Kokoro in the browser.
+// v3.2 sound, v3.3 Daniel as the default narrator (built on the v3.1 suite): the game master's voice, room sounds, the torch, small cues, read-aloud buttons, and Kokoro in the browser.
 // Speech is stubbed (headless Linux has no voices) so every spoken sentence is recorded; audio is tapped with an analyser.
 // Usage: node v31.test.js FILE OUT [kokoro]   (add "kokoro" to also download and run the real Kokoro model; needs internet)
 const { chromium } = require('playwright');
@@ -62,6 +62,11 @@ function gmServer(parts, gap) {
   await panel(p);
   const offs = await p.evaluate(() => ['#sndVoice', '#sndRoom', '#sndCues'].map(s => document.querySelector(s).checked));
   ok(offs.every(x => !x), 'everything starts off');
+  // v3.3: Daniel (Supertonic 3) is the narrator by default, downloads only when asked, and the panel says it is machine-made speech
+  ok(await p.evaluate(() => document.querySelector('#sndSrc').value === 'supertonic'), 'Daniel is the default voice');
+  const sp0 = await p.textContent('#soundMenu');
+  ok(/Download Daniel’s voice \(about \d+ MB, once\)/.test(sp0) && /machine-made speech/.test(sp0) && /Supertonic 3/.test(sp0) && /OpenRAIL-M/.test(sp0), 'the panel offers a one-time download, says its size, and says the voices are machine-made under the OpenRAIL-M license');
+  await p.selectOption('#sndSrc', 'system'); await p.waitForTimeout(200);
   const opts = await p.evaluate(() => [...document.querySelectorAll('#sndSysVoice option')].map(o => o.textContent));
   ok(opts[0] === 'Daniel (Enhanced)' && opts.length === 2, "this computer's voices: English only, the enhanced one first, as the reading app ranks them: " + JSON.stringify(opts));
   const before = await dungeonText(p);
@@ -161,7 +166,7 @@ function gmServer(parts, gap) {
   gm = await gmServer(['The guard leans close. ', '“Keep your voice down,” he whispers. ', '“It hears everything.”'], 200);
   ctx = await ctxNew(b); p = await open(ctx, SRC + PL, 'quotes');
   await p.selectOption('#gmProv', 'lmstudio'); await p.waitForTimeout(200); await p.fill('#gmUrl', gm.url); await p.click('#gmCheck'); await p.waitForTimeout(500);
-  await p.click('#gmStart'); await p.waitForTimeout(300); await panel(p); await p.check('#sndVoice');
+  await p.click('#gmStart'); await p.waitForTimeout(300); await panel(p); await p.check('#sndVoice'); await p.selectOption('#sndSrc', 'system'); await p.waitForTimeout(200);
   const chars = await p.evaluate(() => [...document.querySelectorAll('#sndSysVoice2 option')].map(o => o.selected ? '*' + o.textContent : o.textContent));
   ok(chars.includes('*Samantha'), 'the character voice defaults to the next-best voice: ' + JSON.stringify(chars));
   await closePanel(p); await p.click('#gmSendBtn'); await p.waitForTimeout(1800);
