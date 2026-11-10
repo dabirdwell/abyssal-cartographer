@@ -6,12 +6,14 @@ Why this exists: the publisher of Shadowdark RPG says, in its own FAQ on its thi
 game masters needed its special permission. This script produces a build that does not lean on that license:
 the publisher's name and the license line are gone, the native rules are called "old-school", and the two places
 that restated that game's own tables (hoard ratings by name, luck tokens) are put in plain generic words.
+It also drops the name of the other game from the second rules button, which becomes "5e": the fifth-edition rules
+document allows "5E compatible" and "compatible with fifth edition", and asks for no other mention of its owner.
 
 What it does NOT change, and a lawyer or the publisher would still want to look at:
   - the layout of a creature's stat line (AC, HP, ATK, MV near, S D C I W Ch, AL, LV)
   - the ladder of difficulties (9, 12, 15, 18) and the one-real-hour torch
   - the word "delver"
-  - the name "D&D 5e" on the other rules button
+
 The dungeon generator is untouched: the same code builds the same dungeon in both builds.
 Every replacement must match exactly, so this either applies cleanly to a build or stops and says where."""
 import re, sys
@@ -47,7 +49,17 @@ p.rep('stat text: Shadowdark native, 5e projection', 'stat text: old-school nati
 p.rep('/* Shadowdark awards XP by treasure hoard tier, not gold count', '/* Experience is awarded by treasure hoard tier, not gold count')
 p.rep("/* In 5e mode, Shadowdark's words step aside. Text only. */", '/* In 5e mode, the old-school words step aside. Text only. */')
 
-left = sorted(set(re.findall(r'.{0,60}(?:Shadowdark|Arcane Library).{0,60}', p.s)))
+# The fifth-edition rules document (SRD 5.1) asks for no mention of its owner beyond the credit line, and names two
+# phrases a work may use: "compatible with fifth edition" and "5E compatible". The neutral build keeps to those.
+p.rep('title="Dungeons &amp; Dragons 5th edition. The creature numbers', 'title="Fifth edition rules. The creature numbers')
+p.rep('">D&amp;D 5e</button>', '">5e</button>')
+p.rep('"Dungeons & Dragons 5th edition, the SRD rules you know.', '"fifth edition, the SRD rules you know.')
+p.rep('"Dungeons &amp; Dragons 5th edition":"Old-school rules")', '"Fifth edition":"Old-school rules")')
+p.rep('AI game masters know D&amp;D best, so it is the default here.', 'AI game masters know fifth edition best, so it is the default here.')
+p.rep('Switch to D&amp;D 5e at the top if you would rather play that', 'Switch to 5e at the top if you would rather play that')
+p.rep('in D&D 5e a torch is lit', 'in fifth edition a torch is lit')
+
+left = sorted(set(re.findall(r'.{0,60}(?:Shadowdark|Arcane Library|D&amp;D|D&D|Dungeons &amp; Dragons|Dungeons & Dragons).{0,60}', p.s)))
 if left: sys.exit('NEUTRAL STOP: the publisher is still named here:\n' + '\n'.join(left))
 p.path = out
 p.save()

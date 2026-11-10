@@ -434,7 +434,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.5</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v4.0</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">dungeon code</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon code">
@@ -519,7 +519,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.5 · build 2026-11-09 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v4.0 · build 2026-11-09 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -770,7 +770,7 @@ const RIDDLES=[
  {q:"The more of me there is, the less you see.",a:"Darkness"},
  {q:"I am always hungry and must be fed. The finger I touch will soon turn red.",a:"Fire"},
  {q:"I have cities but no houses, mountains but no trees, water but no fish.",a:"A map"},
- {q:"What has roots that nobody sees, is taller than trees, up it goes, and yet it never grows?",a:"A mountain"},
+ {q:"I am older than the road and I do not move for it. The road goes around me, the clouds sit on me, and you grow smaller with every step you take toward my head.",a:"A mountain"},
  {q:"I am taken from a mine and shut in a wooden case, from which I am never released, and yet I am used by almost every person.",a:"Pencil lead"},
  {q:"What walks on four legs in the morning, two at noon, and three in the evening?",a:"A person, through a lifetime"},
  {q:"I am not alive, but I grow. I have no lungs, but I need air. I have no mouth, and water kills me.",a:"Fire"}
@@ -804,6 +804,65 @@ const MAGIC=[
 ];
 const CURSES=["It hums whenever buried treasure is near, loudly, at the worst times.","Its former owner knows, now, exactly who carries it.","Anyone who sleeps near it dreams someone else's memories.","It is heavier every day it goes unspent."];
 const GEAR=[{n:"Torch",c:"5 cp"},{n:"Flask of oil",c:"5 sp"},{n:"Iron spikes (10)",c:"1 gp"},{n:"Rope, 60 ft",c:"1 gp"},{n:"Rations (3)",c:"5 sp"},{n:"Crowbar",c:"5 sp"},{n:"Grappling hook",c:"1 gp"},{n:"Mirror, steel",c:"5 gp"}];
+/* ============ second edition: deeper lists, used only by dungeons whose code ends in .2 ============ */
+const TRAP_OIL2={n:"Oil Slick Threshold",tr:"A sloping doorway slicked with oil and rigged with a spark flint",ef:"DC 12 DEX or slide into the room and land prone, 1d4. Open flame ignites it: 1d6 fire to all in the doorway.",fd:"The threshold shines wet where nothing drips.",ds:"Sand, ash, or ten patient minutes with rags."};
+const TRAPS2=[
+ {n:"Sleeping Dust",tr:"A cloth sack balanced above the door and tied to the latch",ef:"All within close of the door: DC 12 CON or asleep for 1d4 rounds.",fd:"A thread runs from the latch up into the dark.",ds:"Cut the thread while holding the door still (DC 10 DEX), or open the door with a pole from the side."},
+ {n:"Swinging Log",tr:"A loose flagstone releases a log hung on chains",ef:"+5 to hit everyone standing in a line with the door, 1d8, and DC 12 STR or knocked flat.",fd:"Two bright scrapes cross the ceiling, a log's width apart.",ds:"Step over the loose stone, or wedge the chains (DC 12 DEX)."},
+ {n:"Drowning Lock",tr:"The door seals behind the party and water begins to rise through a grate in the floor",ef:"The room floods in six rounds. The far door is locked: DC 13 DEX to pick, DC 15 STR to force.",fd:"A tide line of dry scum circles the walls at head height.",ds:"Spike either door open before stepping in, or jam the grate with a cloak."},
+ {n:"Tipping Floor",tr:"The whole floor rests on a pivot under the middle of the room",ef:"When more weight stands on the far half than the near, the floor tips. DC 12 DEX or slide into the pit beneath, 1d6, and the floor swings shut above.",fd:"The gap between floor and wall is a finger wide, all the way round.",ds:"Cross one at a time along the wall, or wedge the near edge with spikes."},
+ {n:"Screaming Hinge",tr:"A door hung so that it shrieks",ef:"No damage. Roll a wandering check at once.",fd:"The hinges are clean bright iron in a doorway of rust.",ds:"Oil, fat, or two people lifting the door off its pins (DC 12 STR)."},
+ {n:"Arrow Slits",tr:"A pressure plate wakes old crossbows in the wall",ef:"Three bolts, +3 to hit, 1d6 each, at whoever stands in the middle of the room.",fd:"Finger-wide slots at chest height. One has a cobweb blown outward.",ds:"Hug the wall, or plug the slits. Each plugged slit is one bolt fewer."},
+ {n:"Glue Floor",tr:"A sheet of pale resin across the floor, soft under the dust",ef:"DC 12 STR or stuck fast until cut free. The boots are lost either way.",fd:"A rat's skeleton stands upright in the middle of the room.",ds:"Lay planks or cloaks across it, or scatter sand."},
+ {n:"Mirror Glare",tr:"A polished shield angled to catch any light carried in",ef:"Whoever carries the light: DC 12 CON or dazzled, disadvantage for 1d4 rounds. Everything in the next room now knows.",fd:"A bright point of light dances on the far wall before anyone has gone in.",ds:"Shutter the light and enter dark, or throw a cloak over the shield."}
+];
+const PUZZLES2=[
+ {n:"The Toll of Names",s:"A bronze gate with no lock. Beside it, a slot and a stack of blank clay tokens. Scratched above: PAY WITH WHAT YOU WILL NOT MISS.",a:"Scratch a false name on a token and drop it in, and the gate opens. A true name opens it too, and whoever gave it cannot say that name aloud until they leave the dungeon. Coins come back out, bent."},
+ {n:"The Sixth Cup",s:"A banquet table set for six and bolted to the floor. Five places have a cup, each with a dried ring of wine in the bottom. The sixth has a ring in the dust where a cup stood. The door has six small holes.",a:"The sixth cup is in this room in plain sight, doing some other job: holding a candle, propping a door. Set it in its place and pour anything into all six. The door drinks, and opens."},
+ {n:"When the Sun Sleeps",s:"Two doors. Over one, a carved sun, and under it the words: I OPEN WHEN MY NAMESAKE SLEEPS. Over the other, a carved closed eye and no words. Between them stands a brazier that lights itself when anyone enters.",a:"The sun sleeps in the dark. Put out the brazier and every light the party carries, and the sun door opens. The eye door opens to any push and leads to the nearest trap, or back the way they came."},
+ {n:"The Counting Stair",s:"Seven shallow steps rise to a door. Each step is carved with a number, and they are out of order: 4, 1, 6, 2, 7, 3, 5.",a:"Tread the steps in counting order, 1 to 7, which means going down as well as up. Any other order and the top step tips, sliding everyone back to the bottom. No harm. A great deal of noise."},
+ {n:"The Honest Lock",s:"A door with a brass face. Its mouth opens and it asks one question in a tired voice: WHAT DID YOU COME TO TAKE?",a:"Any true answer opens it, however ugly. A lie makes the face sigh and the lock seize for an hour. It can tell. People have been lying to it for a very long time."},
+ {n:"Sluice and Bucket",s:"A dry channel crosses the room to a waterwheel beside a shut door. A cistern drips above. Three buckets hang on the wall, and one is cracked.",a:"The wheel wants a thin steady stream, not a flood. Fill the cracked bucket and hang it over the channel: it leaks slowly enough to turn the wheel for a round. A whole bucket poured in splashes through too fast to turn it. The cistern's lever (stuck, DC 12 STR) also works, loudly."}
+];
+const RIDDLES2=[
+ {q:"I am carried into every room and never left behind. Put me out, and you will wish you had me.",a:"A torch"},
+ {q:"I have a mouth and never eat, a bed and never sleep. I run and have no feet.",a:"A river"},
+ {q:"The one who makes me does not want me. The one who buys me has no use for me. The one who uses me never knows it.",a:"A coffin"},
+ {q:"I open what was shut and shut what was open, and I am small enough to lose. Lose me, and the door wins.",a:"A key"},
+ {q:"I count without a tongue and I am always right, but only while the sun is looking at me.",a:"A sundial"},
+ {q:"I do everything you do and never make a sound. When the light goes out, I go first.",a:"Your shadow"},
+ {q:"I am tall when I am young and short when I am old, and I weep the whole way down.",a:"A candle"},
+ {q:"I eat iron and drink nothing, and I am red where the thing I ruin was grey.",a:"Rust"}
+];
+const DRESSING2=["a table set for two, one plate licked clean","a chalk outline of a door on a wall that has no door","seven left shoes in a row","a candle stub, the wick still smoking, and nobody near it","a child's height marked on the doorframe, the last mark very high","a sword driven into the floor to the hilt","a neat stack of folded clothes with nobody in them","a wall of handprints, all from the same hand","a dog's bowl, full, beside a chewed rope","a chair turned to face the corner","a trail of wax drips that stops in the middle of the floor","a key snapped off in a lock that is not there","names carved in the wall, every one crossed out but the last","a mirror with a sheet still pinned over it","a ladder leaning against the ceiling","a kettle, cold, and one cup poured"];
+const VALUABLES2=[{n:"a brass spyglass with a cracked lens",gp:40},{n:"a string of amber prayer beads",gp:65},{n:"a silver comb with three teeth missing",gp:20},{n:"a pair of gilt spurs that have never seen mud",gp:35},{n:"a flute carved from whalebone, one hole stopped with wax",gp:30},{n:"a sealed jar of saffron",gp:80},{n:"a mason's level chased with gold",gp:55},{n:"a bishop's ring too big for any finger",gp:110},{n:"a lacquered box of unsigned love letters",gp:25},{n:"a set of ivory dice, one face worn blank",gp:45},{n:"a silver bell with no clapper",gp:60},{n:"a map case of chased copper, clasps worn smooth, nothing inside",gp:50}];
+const MAGIC2=[
+ {n:"Chalk of the True Door",t:"Draw a door on any wall. For one round it is a door, to whatever lies behind that wall. Three uses."},
+ {n:"Moth Lantern",t:"It gives no light. Moths come to it from a mile off, every one flying in from the way out."},
+ {n:"Oath-Knot Rope",t:"Thirty feet. A knot tied in it comes undone only for the one who tied it."},
+ {n:"Tallow of the Slow Flame",t:"Smear it on a torch before lighting. That torch burns two real hours, not one. Enough for three torches. The flame is bluer than it should be."},
+ {n:"Gravedigger's Spade",t:"Digs through packed earth as if it were snow. It will not dig upward."},
+ {n:"Bell of the Held Breath",t:"Ring it, and nobody who hears it, friend or foe, can speak for one round."},
+ {n:"The Borrowed Face",t:"A wax mask. Wear it and you look like the last dead thing it touched, for one hour."},
+ {n:"Salt of Refusal",t:"One handful, scattered across a doorway. The dead will not cross it until it is swept away."},
+ {n:"Dowser's Nail",t:"Hang it on a thread and it points at the nearest worked gold within far."},
+ {n:"Cup of the Second Guess",t:"Drink from it after a roll you have just failed, and roll again. Then it is only a cup until the next dawn."},
+ {n:"Lodestone of the Lost",t:"Hold it and name a thing you have dropped in this place. It tugs toward it."},
+ {n:"Thimble of Mending",t:"Touch it to a broken tool, strap or blade of ordinary make, and it is whole. Seven uses, and it is warm after each one."}
+];
+const CURSES2=["The hand that picked it up cannot put it down until that hand has used it once.","Dogs and horses will not come near whoever carries it.","It is always a little wet.","Whoever carries it casts no shadow, and the dead notice.","Once a night it whispers its carrier's name, in the carrier's own voice.","Sell it, and it is back in your pack by morning, with the buyer not far behind."];
+const BOSS_GIFTS2=[
+ {n:"Unhurried",t:"Cannot be surprised, and the first attack against it in any fight has disadvantage."},
+ {n:"Ledger-Keeper",t:"Knows the name of every creature that entered the dungeon today. Once a fight it calls one by name, and that one has disadvantage on its next roll."},
+ {n:"Thrice-Warded",t:"The first three hits against it in a fight deal 1 damage each. It does not flinch."},
+ {n:"Tithe-Taker",t:"When it wounds a foe, that foe's nearest ally drops whatever they are holding."},
+ {n:"Lightbane",t:"1/day: every flame within near, lanterns included, shrinks to a spark for one round."},
+ {n:"Many-Voiced",t:"Speaks from any doorway in its territory. Its followers cannot be surprised while it lives."},
+ {n:"Rooted",t:"While it stands in its own room it cannot be moved, frightened or put to sleep."}
+];
+const INN_NAMES2=["The Blind Carter","The Pilgrim's Boot","The Salt Lamp","The Three Thieves","The Patched Sail","The Widow's Wall","The Low Door","The Quiet Wolf"];
+const TOWN_NAMES2=["Harrowgate","Low Candle","Salt Ferry","Emberly","Crow's Rest","Wintermoot","Alder Ford","Marrow Bridge","Stoneacre","Grey Tithe"];
+const KEEPER_QUIRK2=["counts the cutlery after every guest","has one room that is never rented out","keeps the fire too hot and will not say why","pours one drink for the door before opening each night","knows your order before you sit, and is wrong","bought the place with money from down below, and it shows","locks the cellar from the inside, somehow","has not left the building since the place below was sealed"];
 /*ENGINE-DATA-END*/
 
 /* ================================================================
@@ -818,7 +877,7 @@ function makeName(rng,originKey,doomKey){
   const adj=P(rng,DOOMS[doomKey].adj), place=P(rng,ORIGINS[originKey].place);
   return "The "+adj+" "+TITLE(place)+" of "+P(rng,HOLY);
 }
-function randomSeed(){const r=Math.random;return SEED_A[Math.floor(r()*SEED_A.length)]+"-"+SEED_B[Math.floor(r()*SEED_B.length)]+"-"+(10+Math.floor(r()*90));}
+function randomSeed(){const r=Math.random;return SEED_A[Math.floor(r()*SEED_A.length)]+"-"+SEED_B[Math.floor(r()*SEED_B.length)]+"-"+(10+Math.floor(r()*90))+".2";}
 
 const TWISTS=[
  g=>"The founder of this place and "+g.leaderName+" are the same person. The years in between do not bear thinking about.",
@@ -831,6 +890,14 @@ const TWISTS=[
 
 function generate(cfg){
   const depth=cfg.depth||1;
+  /* the edition is part of the code: "ember-loom-42.2" is a second-edition dungeon; a code with no suffix is first edition */
+  const ED=(x=>x?+x[1]:1)(/\.(\d)$/.exec(String(cfg.seed))), E2=ED>=2;
+  const TRAPS_=E2?TRAPS.map(t=>t.n==="Oil Slick Stair"?TRAP_OIL2:t).concat(TRAPS2):TRAPS, PUZZLES_=E2?PUZZLES.concat(PUZZLES2):PUZZLES,
+    RIDDLES_=E2?RIDDLES.concat(RIDDLES2):RIDDLES, DRESSING_=E2?DRESSING.concat(DRESSING2):DRESSING, VALUABLES_=E2?VALUABLES.concat(VALUABLES2):VALUABLES,
+    MAGIC_=E2?MAGIC.concat(MAGIC2):MAGIC, CURSES_=E2?CURSES.concat(CURSES2):CURSES, BOSS_GIFTS_=E2?BOSS_GIFTS.concat(BOSS_GIFTS2):BOSS_GIFTS,
+    INN_NAMES_=E2?INN_NAMES.concat(INN_NAMES2):INN_NAMES, TOWN_NAMES_=E2?TOWN_NAMES.concat(TOWN_NAMES2):TOWN_NAMES, KEEPER_QUIRK_=E2?KEEPER_QUIRK.concat(KEEPER_QUIRK2):KEEPER_QUIRK;
+  /* second edition: nothing repeats inside one dungeon while its list still holds something unused. The draw is the same single draw. */
+  const seenOnce=new Set(), fresh=arr=>{const key=x=>x.n||x, pool=E2?arr.filter(x=>!seenOnce.has(key(x))):arr, it=P(rng,pool.length?pool:arr); seenOnce.add(key(it)); return it;};
   const seedFull=cfg.seed+(depth>1?("::depth"+depth):"");
   const rng=makeRng(seedFull);
   const lvl=Math.min(9,(+cfg.level||1)+(depth-1));
@@ -838,12 +905,17 @@ function generate(cfg){
   const party=+cfg.party||4;
 
   /* ---- genome ---- */
-  const originKey=cfg.origin&&ORIGINS[cfg.origin]?cfg.origin:P(rng,Object.keys(ORIGINS));
-  const doomKey=cfg.doom&&DOOMS[doomKey0(cfg.doom)]?doomKey0(cfg.doom):P(rng,Object.keys(DOOMS));
+  let originKey=cfg.origin&&ORIGINS[cfg.origin]?cfg.origin:P(rng,Object.keys(ORIGINS));
+  let doomKey=cfg.doom&&DOOMS[doomKey0(cfg.doom)]?doomKey0(cfg.doom):P(rng,Object.keys(DOOMS));
   function doomKey0(d){return DOOMS[d]?d:null;}
+  const AGES=["a generation ago","in your grandparents' time","centuries past","before any living memory"];
+  let age=P(rng,AGES), name=makeName(rng,originKey,doomKey);
+  if(E2&&depth>1){ /* second edition: a campaign goes deeper into one place, so its kind, its doom, its age and its name hold all the way down */
+    const b=makeRng(cfg.seed);
+    originKey=cfg.origin&&ORIGINS[cfg.origin]?cfg.origin:P(b,Object.keys(ORIGINS));
+    doomKey=cfg.doom&&DOOMS[doomKey0(cfg.doom)]?doomKey0(cfg.doom):P(b,Object.keys(DOOMS));
+    age=P(b,AGES); name=makeName(b,originKey,doomKey);}
   const origin=ORIGINS[originKey], doom=DOOMS[doomKey];
-  const age=P(rng,["a generation ago","in your grandparents' time","centuries past","before any living memory"]);
-  const name=makeName(rng,originKey,doomKey);
   const once=origin.once||"a "+origin.label.toLowerCase(), fell=doom.fell.replace("{age}",age);
   const intro="This was "+once+" once. "+fell+". The surface world sealed the doors and tried to forget. The doors did not stay sealed.";
 
@@ -998,23 +1070,30 @@ function generate(cfg){
     e.type=roll<.55?"open":roll<.70?"door":roll<.80?"stuck":roll<.90?"secret":roll<.96?"locked":"barred";
   }
   edges.filter(e=>e.a===0||e.b===0).forEach(e=>{if(e.type==="secret"||e.type==="locked")e.type="door";});
+  if(E2){ /* second edition: a barred door is a way back, never the only way in. Where the bars would cut rooms off, the door is merely stuck. */
+    for(let g=0;g<40;g++){const d=bfs(0,x=>x.type==="barred");if(!d.some(v=>v<0))break;
+      const e=edges.find(x=>x.type==="barred"&&(d[x.a]<0)!==(d[x.b]<0));if(!e)break;e.type="stuck";}}
   /* boss must be reachable without secrets: promote blocking secrets */
   const noSecret=e=>e.type==="secret";
   let d2=bfs(0,noSecret);
   let guard2=0;
   while(d2[lairId]<0&&guard2++<20){
     const s=edges.find(e=>e.type==="secret");if(!s)break;s.type="door";d2=bfs(0,noSecret);}
+  if(E2){for(let g=0;g<40&&bfs(0,e=>e.type==="secret"||e.type==="barred")[lairId]<0;g++){ /* and the boss can be reached without a secret door or a barred one */
+      const s=edges.find(e=>e.type==="secret"||e.type==="barred");if(!s)break;s.type=s.type==="secret"?"door":"stuck";}}
   /* every room reachable at all (secrets allowed) else open something */
   let dAll=bfs(0);
   rooms.forEach((r,i)=>{if(dAll[i]<0){const anyE=edges.find(e=>e.a===i||e.b===i);if(anyE)anyE.type="open";}});
   /* locks: place keys reachable without crossing that lock or any secret */
-  const lockEdges=edges.filter(e=>e.type==="locked");
+  const lockEdges=edges.filter(e=>e.type==="locked"), keyed=new Set();
   for(const le of lockEdges){
-    const reach=bfs(0,e=>e===le||e.type==="secret");
+    /* second edition: a key lies only where the party can get to with the keys already placed (a barred door counts as shut),
+       so no two locks can hold each other's keys */
+    const reach=E2?bfs(0,e=>e.type==="secret"||e.type==="barred"||(e.type==="locked"&&!keyed.has(e))):bfs(0,e=>e===le||e.type==="secret");
     const cand=rooms.filter((r,i)=>i!==0&&reach[i]>=0&&i!==lairId);
     if(!cand.length){le.type="stuck";continue;}
     const kr=P(rng,cand);
-    le.keyIn=kr.id;le.keySide=wallA(le);
+    le.keyIn=kr.id;le.keySide=wallA(le);keyed.add(le);
   }
 
   /* ---- factions ---- */
@@ -1036,13 +1115,16 @@ function generate(cfg){
       const leaderBase=bases[bases.length-1]||base;
       const leader={ ...leaderBase, name:P(rng,FIRST)+" "+P(rng,EPITHET), of:leaderBase.name,
         lv:Math.min(9,leaderBase.lv+1), hp:Math.round(leaderBase.hp*1.6), ac:leaderBase.ac+1,
-        gift:P(rng,BOSS_GIFTS)};
+        gift:fresh(BOSS_GIFTS_)};
       factions.push({id:f,kind:kind.k,name:nm,type:kind.type,base,leader,
         goal:P(rng,kind.goal),att:kind.att,canAlly:rng()<.75,allyCond:kind.ally,
         home:homes[f]?homes[f].id:lairId,rooms:[],strength:0});
     }
     {const used=new Set(); factions.forEach(f=>{let [first,...rest]=f.leader.name.split(" ");
       if(used.has(first)){const free=FIRST.find(x=>!used.has(x)); if(free){first=free; f.leader.name=[first,...rest].join(" ");}} used.add(first);});}
+    if(E2){ /* second edition: no two leaders share a byname either */
+      const by=new Set(); factions.forEach(f=>{const sp=f.leader.name.indexOf(" "); let b=f.leader.name.slice(sp+1);
+        if(by.has(b)){const free=EPITHET.find(x=>!by.has(x)); if(free){b=free; f.leader.name=f.leader.name.slice(0,sp)+" "+b;}} by.add(b);});}
     /* relations */
     for(let i=0;i<factions.length;i++)for(let j=i+1;j<factions.length;j++){
       const rel=P(rng,["At open war with","In an uneasy truce with","Preying on","Refusing to acknowledge"]);
@@ -1064,15 +1146,19 @@ function generate(cfg){
     const tag=P(rng,doom.boss);
     const pool=MONSTERS.filter(m=>m.tg.includes(tag)&&m.lv>=tier.max-1&&m.lv<=tier.max+2);
     const b=pool.length?P(rng,pool):MON.wight;
-    boss={roomId:lairId,mon:{...b,name:b.name+" "+P(rng,EPITHET),of:b.name,lv:Math.min(9,b.lv+1),hp:Math.round(b.hp*1.6),ac:b.ac+1,gift:P(rng,BOSS_GIFTS)},fac:null};
+    boss={roomId:lairId,mon:{...b,name:b.name+" "+P(rng,EPITHET),of:b.name,lv:Math.min(9,b.lv+1),hp:Math.round(b.hp*1.6),ac:b.ac+1,gift:fresh(BOSS_GIFTS_)},fac:null};
   }
 
   /* ---- populate rooms ---- */
   const usedMagic=new Set(), placedItems=[];
   let puzzleBudget=count>=16?2:1, riddleUsed=false;
-  const pickMagic=()=>{const pool=MAGIC.filter((m,i)=>!usedMagic.has(i));if(!pool.length)return null;
-    const idx=MAGIC.indexOf(P(rng,pool));usedMagic.add(idx);
-    const it={ ...MAGIC[idx] };if(rng()<.25){it.curse=P(rng,CURSES);}return it;};
+  /* second edition, campaign: each level draws its magic from its own four places in one shuffled list, so nothing repeats for six levels */
+  const magicOrder=E2&&cfg.mode==="campaign"?SH(makeRng(cfg.seed+"::magic"),MAGIC_.map((x,i)=>i)):null;
+  const pickMagic=()=>{let pool=MAGIC_.filter((m,i)=>!usedMagic.has(i));
+    if(magicOrder){const mine=new Set([0,1,2,3].map(k=>magicOrder[((depth-1)*4+k)%magicOrder.length])),p2=pool.filter(m=>mine.has(MAGIC_.indexOf(m)));if(p2.length)pool=p2;}
+    if(!pool.length)return null;
+    const idx=MAGIC_.indexOf(P(rng,pool));usedMagic.add(idx);
+    const it={ ...MAGIC_[idx] };if(rng()<.25){it.curse=P(rng,CURSES_);}return it;};
   const coinTxt=g=>g+" gp in mixed coin";
   let tid=0;const T=(txt,gp,kind)=>({id:"t"+(tid++),txt,gp:gp||0,kind:kind||"coin"});
 
@@ -1088,7 +1174,7 @@ function generate(cfg){
     const fromDoom=rng()<.5, touch=fromDoom?P(rng,doom.touch):P(rng,origin.touch);
     const opener=P(rng,CLASS_LINES[cls]);
     r.box=opener+" "+touch; r.touch=touch; r.touchPool=fromDoom?"doom":"origin"; r.opener=opener;
-    r.detail=rng()<.5?P(rng,DRESSING):null;
+    r.detail=rng()<.5?fresh(DRESSING_):null;
     r.treasure=[];r.exits=[];
     if(doom.env.water&&(cls==="well"||rng()<.22))r.flooded=true;
     if(doom.env.rubble&&rng()<.25)r.rubble=true;
@@ -1122,24 +1208,24 @@ function generate(cfg){
       }
     }
     /* traps */
-    if(cls!=="entry"&&cls!=="lair"&&rng()<0.2){r.trap=P(rng,TRAPS);}
+    if(cls!=="entry"&&cls!=="lair"&&rng()<0.2){r.trap=fresh(TRAPS_);}
     /* puzzles and riddles */
     if(puzzleBudget>0&&["library","shrine","vault","hall"].includes(cls)&&rng()<.5){
-      if(!riddleUsed&&rng()<.4){r.riddle=P(rng,RIDDLES);riddleUsed=true;}
-      else r.puzzle=P(rng,PUZZLES);
+      if(!riddleUsed&&rng()<.4){r.riddle=P(rng,RIDDLES_);riddleUsed=true;}
+      else r.puzzle=fresh(PUZZLES_);
       puzzleBudget--;}
     /* treasure */
     const fHome=factions.find(f=>f.home===r.id);
     if(r.id===boss.roomId){
       const g=RI(rng,COIN.major[0],COIN.major[1]);r.treasure.push(T(coinTxt(g),g));
-      const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));
+      const v=fresh(VALUABLES_);r.treasure.push(T(v.n,v.gp,"valuable"));
       const m=pickMagic();if(m){r.treasure.push(T(m.n+": "+m.t+(m.curse?" Cursed: "+m.curse:""),0,"magic"));placedItems.push(m.n);}
     }else if(fHome){
       const g=RI(rng,COIN.moderate[0],COIN.moderate[1]);r.treasure.push(T("the hoard of "+theLower(fHome.name)+": "+coinTxt(g),g));
-      if(rng()<.6){const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));}
+      if(rng()<.6){const v=fresh(VALUABLES_);r.treasure.push(T(v.n,v.gp,"valuable"));}
     }else if(cls==="vault"||rng()<.4){
       const g=RI(rng,COIN.minor[0],COIN.minor[1]);r.treasure.push(T(coinTxt(g),g));
-      if(cls==="vault"&&rng()<.7){const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));}
+      if(cls==="vault"&&rng()<.7){const v=fresh(VALUABLES_);r.treasure.push(T(v.n,v.gp,"valuable"));}
     }
   }
   /* the doom and origin lines are strong once and dull by the fifth reading: keep each one the first time only */
@@ -1208,7 +1294,7 @@ function generate(cfg){
 
   /* ---- town (one-shot) ---- */
   let town=null;
-  const townName=P(rng,TOWN_NAMES), innName=P(rng,INN_NAMES);
+  const townName=P(rng,TOWN_NAMES_), innName=P(rng,INN_NAMES_);
   if(cfg.mode==="oneshot"){
     const patronName=P(rng,FIRST)+" "+P(rng,EPITHET);
     const wantItem=placedItems.length&&rng()<.7?placedItems[0]:null;
@@ -1220,11 +1306,44 @@ function generate(cfg){
     rumors.push({txt:P(rng,["An old-timer swears: ","The keeper will tell you, for a drink: ","A scrawl in the outhouse reads: "])+twistTxt,truth:"h"});
     const falseDoom=P(rng,Object.keys(DOOMS).filter(k=>k!==doomKey));
     rumors.push({txt:"Everyone knows it was "+DOOMS[falseDoom].np+" that emptied the place. Everyone is wrong.",truth:"f"});
-    town={name:townName,inn:innName,keeper:P(rng,FIRST)+", who "+P(rng,KEEPER_QUIRK),
+    town={name:townName,inn:innName,keeper:P(rng,FIRST)+", who "+P(rng,KEEPER_QUIRK_),
       patron:{name:patronName,want,reward},rumors:SH(rng,rumors).slice(0,3),
       shop:SH(rng,GEAR).slice(0,4)};
   }
-  const twist=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomStill:doom.still,townName:town?town.name:null,innName:town?town.inn:null});
+  if(E2&&town){ /* second edition: the innkeeper and the patron share no first name with anyone, and the patron no byname with a leader */
+    const taken=new Set(factions.map(f=>f.leader.name.split(" ")[0])), own=n=>{if(!taken.has(n)){taken.add(n);return n;}const f=FIRST.find(x=>!taken.has(x))||n;taken.add(f);return f;};
+    const k0=town.keeper.split(",")[0];town.keeper=own(k0)+town.keeper.slice(k0.length);
+    const pn=town.patron.name, sp=pn.indexOf(" "), by=new Set(factions.map(f=>f.leader.name.slice(f.leader.name.indexOf(" ")+1))); let pb=pn.slice(sp+1);
+    if(by.has(pb)){const free=EPITHET.find(x=>!by.has(x)); if(free)pb=free;}
+    town.patron.name=own(pn.slice(0,sp))+" "+pb;}
+  const twistAt=Math.floor(rng()*TWISTS.length);
+  let twist=TWISTS[twistAt]({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomStill:doom.still,townName:town?town.name:null,innName:town?town.inn:null});
+  if(E2)twist=plantSigns(twistAt,twist);
+  /* second edition: the truth of the place leaves signs in its rooms, so there is something to find */
+  function plantSigns(i,tw){
+    const sign=(r,t)=>{if(r)r.clue=r.clue?r.clue+" "+t:t;}, d=bfs(0), lair=rooms[lairId];
+    const byDist=rooms.filter(r=>r.id!==0&&r.id!==lairId&&d[r.id]>=0).sort((x,y)=>d[y.id]-d[x.id]||x.id-y.id);
+    const firstOf=cs=>rooms.find(r=>cs.includes(r.cls)&&r.id!==lairId&&r.id!==0)||byDist[byDist.length>>1]||rooms[0];
+    const leader=bossFaction?bossFaction.leader.name:boss.mon.name;
+    if(i===0){sign(lair,"A carved likeness of the founder stands over the far door. The face is "+leader+"'s, a great deal younger.");
+      sign(firstOf(["shrine","library","hall"]),"The founding stone is cut with a name. Someone has scratched it out, and the scratches are fresh.");}
+    else if(i===1){sign(byDist[0]||lair,"What ended this place is not finished. The damage in here is newer than the dust lying on it.");
+      sign(rooms[0],"The old warnings at the door have been painted over, and then painted over again.");}
+    else if(i===2){const r=byDist[1]||byDist[0]||lair;r.shaft=true;
+      sign(r,"A shaft opens in the ceiling, with rungs worn bright by recent hands. Far above there is daylight, and the smell of a stable.");
+      if(town)town.sign="Behind "+theLower(town.inn)+" stands a well-house that nobody uses. Its lock is freshly oiled.";}
+    else if(i===3){sign(firstOf(["vault","store"]),"The great chests stand open and swept clean. The drag marks leading out are generations old.");
+      sign(lair,"One thing in here was never meant to be carried off. It is chained to the floor, and the chains were made to hold it in, not to keep thieves out.");}
+    else if(i===4){const f=factions.find(x=>x!==bossFaction)||bossFaction;
+      if(f){tw="The leader of "+theLower(f.name)+" is already dead. Something else answers when its followers report.";
+        sign(rooms[f.home],"Orders are pushed out under a door that nobody has seen open. The handwriting changed a month ago.");
+        sign(rooms.find(r=>r.faction===f.id&&r.id!==f.home&&r.id!==lairId),"Two of them are whispering that the leader no longer eats.");}
+      else sign(lair,"Nobody here has ever seen the thing they take their orders from.");}
+    else if(i===5){rooms[0].treasure.push(T("a plain iron key on a nail by the door (it opens every locked door in this place; nobody takes it, because nobody believes it)",0,"key"));
+      sign(rooms[0],"A plain iron key hangs on a nail by the door, in full view. It is the master key. Everyone who came this way decided it was a trap.");
+      const le=edges.find(e=>e.type==="locked");if(le)sign(rooms[le.a],"The lock here is worn bright around the keyhole, in the shape of one particular key.");}
+    return tw;
+  }
 
   /* stairs down for campaign mode */
   let stairsDown=null;
@@ -1232,7 +1351,16 @@ function generate(cfg){
     const dd=bfs(0);let far=lairId;rooms.forEach((r,i)=>{if(i!==lairId&&dd[i]>=0&&dd[i]>=dd[far]-1&&i!==0)far=i;});
     stairsDown=far;rooms[far].stairsDown=true;}
 
-  return{seed:cfg.seed,seedFull,depth,cfg:{...cfg,level:lvl,baseLevel:(+cfg.level||1)},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist,once,fell},
+  if(E2){ /* second edition: rooms of one kind are told apart by where they lie, the way the map shows them */
+    const kinds={};rooms.forEach(r=>{(kinds[r.name]=kinds[r.name]||[]).push(r);});
+    const cx=r=>r.bbox.x+r.bbox.w/2, cy=r=>r.bbox.y+r.bbox.h/2;
+    for(const k of Object.keys(kinds)){const g=kinds[k], n=g.length; if(n<2)continue;
+      const wide=(Math.max(...g.map(cx))-Math.min(...g.map(cx)))>=(Math.max(...g.map(cy))-Math.min(...g.map(cy)));
+      const s=g.slice().sort((x,y)=>wide?cx(x)-cx(y)||x.id-y.id:cy(x)-cy(y)||x.id-y.id), w=wide?["West","East"]:["North","South"], seen={};
+      s.forEach((r,i)=>{let where=n===2?w[i]:(n%2===1&&i===(n-1)/2)?"Middle":i===0?(n>3?"Far "+w[0]:w[0]):i===n-1?(n>3?"Far "+w[1]:w[1]):i<n/2?(i===1?w[0]:"Inner "+w[0]):(i===n-2?w[1]:"Inner "+w[1]);
+        seen[where]=(seen[where]||0)+1; if(seen[where]>1)where+=" "+["","","Second","Third","Fourth"][Math.min(4,seen[where])];
+        r.kind=k; r.name=where+" "+k;});}}
+  return{seed:cfg.seed,seedFull,depth,ed:ED,cfg:{...cfg,level:lvl,baseLevel:(+cfg.level||1)},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist,once,fell},
     rooms,edges,factions,boss,wander,town,stairsDown,grid:{w:GW,h:GH},lairId};
 }
 
@@ -1643,6 +1771,7 @@ function renderPanel(){
     for(const x of r.exits){if(x.secret&&!dm)continue;
       h+='<div class="exitline"'+((dm||S.revealed.has(x.to-1))?' data-goto-room="'+(x.to-1)+'" title="Go to room '+x.to+'"':'')+'>'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
     if(dm&&r.secretNote)h+='<div class="secretline" style="margin-top:4px">'+esc(r.secretNote)+'</div>';
+    if(dm&&r.clue)h+='<div class="klabel">A sign of the truth</div><div class="dmnote">'+esc(r.clue)+'</div>';
     if(r.stairsDown){h+='<div class="klabel">Below</div><div class="dmnote">A stair descends into a deeper level.</div>';
       if(m.cfg.mode==="campaign")h+='<button class="primary" id="btnDescend" style="margin-top:4px">Descend to depth '+(m.depth+1)+'</button>';}
     if(r.enc&&(dm||(S.revealed.has(r.id)&&S.role!=="player"))){
@@ -1674,6 +1803,7 @@ function renderPanel(){
       h+='<div class="card"><h3>'+esc(t.inn)+'</h3><div class="meta">kept by '+esc(t.keeper)+'</div>';
       h+='<div class="dmnote"><b>'+esc(t.patron.name)+'</b> will pay <span class="gp">'+t.patron.reward+' gp</span> to '+esc(t.patron.want)+'.</div>';
       t.rumors.forEach(r=>{h+='<div class="rumor">'+esc(r.txt)+(dm?' <span class="truth '+r.truth+'">'+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+'</span>':'')+'</div>';});
+      if(dm&&t.sign)h+='<div class="dmnote secretline">'+esc(t.sign)+'</div>';
       h+='<div class="tiny" style="margin-top:6px">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'</div></div>';}
     if(m.factions.length&&S.role!=="player"){h+='<div class="klabel">Factions</div>';
       m.factions.forEach((f,i)=>{
@@ -1834,8 +1964,12 @@ function newDungeon(cfg,revealHex){
   syncHash();tblPush();tblSend({t:"clear"});
   eggAfterBuild();
 }
+/* a typed code: an old code, or the one on screen, builds what it always built; a new name of your own gets the current edition */
+function codeFor(raw){const s=String(raw||"").trim(); if(!s)return AC.randomSeed();
+  if(/\.\d$/.test(s)||/^[a-z]+-[a-z]+-\d\d$/.test(s)||EGG_QUIRE.has(eggSeed(s))||eggSeed(s)==="xyzzy"||(S.model&&S.model.seed===s))return s;
+  return s+".2";}
 function currentCfg(){
-  return{seed:$("#seedInput").value.trim()||AC.randomSeed(),depth:1,
+  return{seed:codeFor($("#seedInput").value),depth:1,
     party:+$("#cfgParty").value,level:+$("#cfgLevel").value,size:$("#cfgSize").value,
     mode:$("#cfgMode").value,factions:$("#cfgFactions").value,
     origin:$("#cfgOrigin").value,doom:$("#cfgDoom").value};
@@ -1955,12 +2089,14 @@ function expDM(){
     if(r.riddle)h+='<p><span class="k">Riddle:</span> <i>'+esc(r.riddle.q)+'</i> <span class="sec">Answer: '+esc(r.riddle.a)+'</span></p>';
     if(r.treasure.length)h+='<p><span class="k">Treasure:</span> '+r.treasure.map(t=>esc(t.txt)+(t.gp?" ("+t.gp+" gp)":"")).join("; ")+'</p>';
     if(r.secretNote)h+='<p class="sec"><span class="k">Secret:</span> '+esc(r.secretNote)+'</p>';
+    if(r.clue)h+='<p><span class="k">A sign of the truth:</span> '+esc(r.clue)+'</p>';
     if(r.stairsDown)h+='<p><span class="k">Below:</span> a stair descends to depth '+(m.depth+1)+'.</p>';
     h+='</div>';});
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(theLower(t.inn))+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
+    if(t.sign)h+='<p class="sec">'+esc(t.sign)+'</p>';
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.5. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v4.0. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_game_master.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -2001,6 +2137,7 @@ function aiGMText(){
     L.push("The inn is "+theLower(t.inn)+", kept by "+t.keeper+". "+t.patron.name+" will pay "+t.patron.reward+" gp to "+t.patron.want+".");
     L.push("Rumors (TRUE/FALSE is secret):");
     t.rumors.forEach(r=>L.push("- “"+r.txt+"” ["+(r.truth==="t"?"TRUE":r.truth==="f"?"FALSE":"HALF-TRUE")+"]"));
+    if(t.sign)L.push("SECRET (in town, findable): "+t.sign);
     L.push("For sale: "+t.shop.map(s=>s.n+" ("+s.c+")").join(", ")+".");}
   const stat=c=>{const t=AC.statText(c,S.sys);let s="  Stats: "+t.l1+"; "+t.l2+(t.l3?"; "+t.l3:"");
     (c.ab||[]).forEach(a=>s+="\n  "+a.n+": "+a.t);if(c.gift)s+="\n  Special ("+c.gift.n+"): "+c.gift.t;return s;};
@@ -2027,10 +2164,11 @@ function aiGMText(){
     if(r.riddle)L.push("Riddle: "+r.riddle.q+" ANSWER: "+P(r.riddle.a));
     if(r.treasure.length)L.push("Treasure: "+P(r.treasure.map(t=>P(t.txt).replace(/\.$/,"")+(t.gp&&!/\d+ gp/.test(t.txt)?" ("+t.gp+" gp)":"")).join("; ")));
     if(r.secretNote)L.push("SECRET: "+r.secretNote);
+    if(r.clue)L.push("A sign of the truth (I can find it if I look; describe it when I do): "+r.clue);
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v3.5. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v4.0. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");

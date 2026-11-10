@@ -1,6 +1,6 @@
 # 🏰 Abyssal Cartographer
 
-One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same seed always rebuilds the same dungeon, so the URL is the save file and the share link.
+One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same code always rebuilds the same dungeon, so the address is the save file and the share link.
 
 Shadowdark-native, with a 5e conversion toggle. Run it for your friends, or play it yourself with an AI as game master.
 
@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v3.5 (Current)
+### v4.0 (Current)
+The second edition of the generator. A dungeon's edition is part of its code: `ember-loom-42.2` is a second-edition dungeon, and a code with no suffix builds the first-edition dungeon it always built, so old links, saved games and printed guides still match. New dungeons are made in the second edition. What it changes: no two locked doors can hold each other's keys; a barred door is never the only way anywhere; no two leaders share a power, nobody shares a name, and no trap or puzzle repeats in one dungeon; rooms of one kind are told apart by where they lie (North Stores, South Stores); the truth of the place leaves signs in its rooms; the lists are deeper (traps, puzzles, riddles, details, valuables, magic, curses, powers, inns, towns); a campaign goes deeper into one place instead of a new one each level. In every edition, one riddle that was close to one in a novel still in copyright is replaced by an original.
+
+### v3.5
 Reading and reach. The text you read aloud is large and upright, small type is raised across the game, and Settings has a text size control. Rooms, exits and doorways can be chosen from the keyboard, Escape closes whatever is open, and the small messages are announced to screen readers. The first screen says what this is and offers sound once. The Overview follows the order of play, with the town first, and gives a rough guide to how long the dungeon takes. A player's screen no longer names a room's creatures before the game master has. "Dungeon code" replaces "seed", and Settings is headed Settings. The dungeon generator is untouched.
 
 ### v3.4
