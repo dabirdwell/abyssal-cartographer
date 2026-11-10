@@ -14,6 +14,7 @@ node tests/sound.test.js          AbyssalCartographer.html out/ [kokoro]   # sou
 node tests/truth-and-clock.test.js AbyssalCartographer.html out/   # v3.4: the key agrees with the map (door walls, shared doorways, barred doors, passages), the torch by the clock, reload and Load, print weight
 node tests/reading-and-reach.test.js AbyssalCartographer.html out/   # v3.5: type sizes, text size control, keyboard, Escape, announcements, the sound offer, order of play, phone touch sizes
 node tests/second-edition.test.js AbyssalCartographer.html out/   # v4.0: the first edition still builds what v3.4 built (490 dungeons against a fixture); the second edition keeps its promises (700 dungeons); campaigns; codes in the browser. Add 'fixture' to rewrite the fixture from a file.
+node tests/wonder-and-characters.test.js AbyssalCartographer.html out/   # v4.1 and v4.2: the map that draws itself, furniture, reduced motion, the notes to whoever reads, print; four ready-made characters, every number against a hand-worked table, and the credit line word for word
 (cd hosted && node test_hosted.mjs ../AbyssalCartographer.html)        # the hosted game master against a fake Claude
 ```
 

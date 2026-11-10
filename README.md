@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v4.1 (Current)
+### v4.2 (Current)
+Four ready-made characters, so the players have someone to be: a human fighter, a hill dwarf cleric, a lightfoot halfling rogue and a high elf wizard, fifth edition, first level, each on a printed card with a few lines on how to play it. Export → *Four ready-made characters (5e)*, or the button on the player's page. Every number on a card is worked out by the page from the character's scores, armor and training, and a test checks each against a table worked out by hand. The AI game master is told it may offer them.
+
+### v4.1
 Wonder. A new dungeon draws itself in ink, outward from the entrance, and a room inks in when it is lit (both stand still for anyone who has asked for reduced motion). Each room shows what stands in it: beds, coffins, pillars, shelves, an altar, a well. The printed map carries a compass, and the patron's offer on the player handout is in full-size type. The AI game master is handed a short note from the mapmaker. There is a letter in the source for whoever reads it, and one line in the console. On a phone the controls take less of the first screen.
 
 ### v4.0
@@ -130,6 +133,10 @@ Initial release.
 The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](LICENSE).
 
 This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.
+
+### Ready-made characters
+
+This work includes material taken from the System Reference Document 5.1 (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
 ### Voices
 
