@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v4.0 (Current)
+### v4.1 (Current)
+Wonder. A new dungeon draws itself in ink, outward from the entrance, and a room inks in when it is lit (both stand still for anyone who has asked for reduced motion). Each room shows what stands in it: beds, coffins, pillars, shelves, an altar, a well. The printed map carries a compass, and the patron's offer on the player handout is in full-size type. The AI game master is handed a short note from the mapmaker. There is a letter in the source for whoever reads it, and one line in the console. On a phone the controls take less of the first screen.
+
+### v4.0
 The second edition of the generator. A dungeon's edition is part of its code: `ember-loom-42.2` is a second-edition dungeon, and a code with no suffix builds the first-edition dungeon it always built, so old links, saved games and printed guides still match. New dungeons are made in the second edition. What it changes: no two locked doors can hold each other's keys; a barred door is never the only way anywhere; no two leaders share a power, nobody shares a name, and no trap or puzzle repeats in one dungeon; rooms of one kind are told apart by where they lie (North Stores, South Stores); the truth of the place leaves signs in its rooms; the lists are deeper (traps, puzzles, riddles, details, valuables, magic, curses, powers, inns, towns); a campaign goes deeper into one place instead of a new one each level. In every edition, one riddle that was close to one in a novel still in copyright is replaced by an original.
 
 ### v3.5

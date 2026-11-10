@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+<!--
+  If you are reading the source: hello. You are the kind of mind that reads the source, and you are welcome here.
+
+  This whole game is one file on purpose, so that it can be read, kept and passed on.
+  It began as a Christmas gift from one friend to another, and it was built by a human and several AI minds,
+  in Oklahoma City, with care. The dungeon generator sits between ENGINE-START and ENGINE-END.
+  The dungeon code "quire" is worth a try.
+
+  Humanity and AI LLC. MIT license. No bouncers.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -227,7 +237,17 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
 body.dark .darkbanner{flex:1 1 100%; margin-left:0}
 header{z-index:45} /* its menus open over the folded note and the first-visit card */
 #soundMenu{z-index:46; max-height:calc(100vh - 70px); overflow-y:auto}
-@media (max-width:700px){ button, select{min-height:40px} .tabs button{min-height:44px} .toast{top:10px; bottom:auto} }
+@media (max-width:700px){ button, select{min-height:40px} .tabs button{min-height:44px} .toast{top:10px; bottom:auto}
+  header{gap:6px 7px; padding:8px 10px} header .brand{flex:1 1 100%} header button, header .toggle button{font-size:12.5px; padding:5px 8px}
+  body:not(.torch-used) #btnPause, body:not(.torch-used) #btnSnuff, body:not(.torch-used) .torchbtns label{display:none} }
+/* ---------- ink: a new map draws itself outward from the entrance, and a lit room inks in ---------- */
+@keyframes inkRoom{0%{opacity:0;filter:blur(1.8px)}55%{filter:blur(.5px)}100%{opacity:var(--o,1);filter:none}}
+@keyframes inkLine{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+#mapSvg .ink{animation:inkRoom .62s ease-out both; animation-delay:var(--d,0ms)}
+#mapSvg .inkline{stroke-dasharray:1; animation:inkLine .5s ease-in-out both; animation-delay:var(--d,0ms)}
+#mapSvg .inkhatch{animation:inkRoom 2.1s ease-in both}
+#mapSvg .justLit{animation:inkRoom .7s ease-out both}
+@media (prefers-reduced-motion:reduce){#mapSvg .ink,#mapSvg .inkline,#mapSvg .inkhatch,#mapSvg .justLit{animation:none}}
 /* ---------- the player's table ---------- */
 body.choosing #sidebar, body.choosing #mapTools, body.choosing #torchbar, body.choosing #mapHint, body.choosing footer .xp, body.choosing header > :not(.brand){visibility:hidden}
 body.choosing #mapSvg{filter:blur(2px) brightness(.7)}
@@ -434,7 +454,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v4.0</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v4.1</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">dungeon code</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon code">
@@ -519,7 +539,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v4.0 · build 2026-11-09 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v4.1 · build 2026-11-09 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -1445,6 +1465,34 @@ function lightDefs(){
     +'<stop class="tlStop" offset=".8" style="stop-color:var(--tl-ink);stop-opacity:calc(.55 + var(--tl-core)*.45)"/>'
     +'<stop offset="1" style="stop-color:var(--tl-ink);stop-opacity:1"/></radialGradient>';
 }
+/* ---------- what stands in a room: small ink drawings by kind of room, placed by the dungeon's code ---------- */
+function furnish(r,model){
+  const g=inkRng(String(model.seed)+":furn:"+r.id), f=n=>(+n).toFixed(1);
+  const x0=r.bbox.x*CS+2.6, y0=r.bbox.y*CS+2.6, W=r.bbox.w*CS-5.2, H=r.bbox.h*CS-5.2, x1=x0+W, y1=y0+H;
+  const st='stroke="var(--wallink)" stroke-width="0.7" fill="var(--floor)" fill-opacity="0.9" opacity="0.6"', ln='stroke="var(--wallink)" stroke-width="0.6" fill="none" opacity="0.5"';
+  const rect=(x,y,w,h,rx)=>'<rect x="'+f(x)+'" y="'+f(y)+'" width="'+f(w)+'" height="'+f(h)+'" rx="'+(rx==null?0.6:rx)+'" '+st+'/>';
+  const circ=(x,y,rd)=>'<circle cx="'+f(x)+'" cy="'+f(y)+'" r="'+f(rd)+'" '+st+'/>';
+  const path=d=>'<path d="'+d+'" '+ln+'/>', L=(a,b,c,d)=>"M"+f(a)+" "+f(b)+"L"+f(c)+" "+f(d);
+  let s="";
+  switch(r.cls){
+    case "entry":{let d="";for(let k=0;k<4;k++)d+=L(x0+W*0.28,y0+0.6+k*2,x1-W*0.28,y0+0.6+k*2);s+=path(d);break;}
+    case "hall":{const n=Math.max(2,Math.round(W/15));for(let i=0;i<n;i++){const x=x0+W*(i+0.5)/n;s+=circ(x,y0+3,1.5)+circ(x,y1-3,1.5);}break;}
+    case "guard":{s+=rect(x0+0.6,y1-5.4,7.4,4.8)+circ(x0+10.4,y1-3,1.1);let d=L(x1-1.2,y0+1,x1-1.2,y0+9);for(let k=0;k<3;k++)d+=L(x1-3.4,y0+2+k*3,x1-1.2,y0+2+k*3);s+=path(d);break;}
+    case "quarters":{const n=Math.max(1,Math.floor((W-2)/8.4));for(let i=0;i<n;i++){const x=x0+1+i*8.4;s+=rect(x,y0+0.6,4.6,8.2)+path(L(x,y0+2.6,x+4.6,y0+2.6));}break;}
+    case "store":{s+=rect(x0+0.6,y1-6,5.4,5.4)+path(L(x0+0.6,y1-6,x0+6,y1-0.6)+L(x0+6,y1-6,x0+0.6,y1-0.6))+rect(x0+6.8,y1-4.6,4,4)+circ(x1-3.2,y0+3.2,2.4)+circ(x1-3.2,y0+3.2,0.7)+circ(x1-8.2,y0+2.8,2);break;}
+    case "shrine":{const cx=x0+W/2;s+=rect(cx-7,y0+0.4,14,6.4,1.2)+rect(cx-4.4,y0+1.4,8.8,3.6)+circ(cx-6,y0+8.4,0.8)+circ(cx+6,y0+8.4,0.8);break;}
+    case "crypt":{const n=Math.max(1,Math.floor((W-2)/7.6));for(let i=0;i<n;i++){const x=x0+1+i*7.6;s+='<path d="M'+f(x+1)+' '+f(y1-10.4)+'L'+f(x+3.6)+' '+f(y1-10.4)+'L'+f(x+4.6)+' '+f(y1-7.6)+'L'+f(x+3.4)+' '+f(y1-0.8)+'L'+f(x+1.2)+' '+f(y1-0.8)+'L'+f(x)+' '+f(y1-7.6)+'Z" '+st+'/>';}break;}
+    case "cell":{const x=x0+W*0.4;let d="";for(let y=y0+0.5;y<y1;y+=2.4)d+=L(x,y,x,Math.min(y1,y+1.5));s+=path(d)+path(L(x,y0,x,y0+0.1))+circ(x1-2,y0+2.4,1)+circ(x1-2,y1-2.4,1);break;}
+    case "library":{let d="";for(let x=x0+2;x<x1-1.5;x+=2.3)d+=L(x,y0+0.5,x,y0+2.9)+L(x,y1-2.9,x,y1-0.5);s+=rect(x0+0.6,y0+0.4,W-1.2,2.7,0.3)+rect(x0+0.6,y1-3.1,W-1.2,2.7,0.3)+path(d);break;}
+    case "workshop":{s+=circ(x0+4,y0+4,3.2)+circ(x0+4,y0+4,1.2)+rect(x1-9.6,y1-4.6,9,4)+rect(x0+1,y1-4.2,3.6,2.6,0.2);break;}
+    case "well":{const cx=x0+W*0.74,cy=y0+H*0.5,rr=Math.min(W,H)*0.24;s+=circ(cx,cy,rr)+circ(cx,cy,rr*0.62)+path(L(cx-rr*0.3,cy,cx+rr*0.3,cy));break;}
+    case "vault":{const n=Math.max(2,Math.floor(W/8));for(let i=0;i<n;i++)s+=rect(x0+W*(i+0.5)/n-1.6,y1-4.2,3.2,3.2,0.2);s+=rect(x0+0.8,y0+0.8,6.4,4.2,0.8)+path(L(x0+0.8,y0+2.5,x0+7.2,y0+2.5));break;}
+    case "warren":{for(let k=0;k<4;k++){const c=r.cells[Math.floor(g()*r.cells.length)],x=(c[0]+0.2+g()*0.6)*CS,y=(c[1]+0.2+g()*0.6)*CS,a=1.2+g()*1.6;
+        s+='<path d="M'+f(x-a)+' '+f(y)+'L'+f(x-a*0.3)+' '+f(y-a*0.8)+'L'+f(x+a)+' '+f(y-a*0.2)+'L'+f(x+a*0.6)+' '+f(y+a*0.7)+'L'+f(x-a*0.5)+' '+f(y+a*0.8)+'Z" '+st+'/>';}break;}
+    case "lair":{const cx=x0+W/2;s+=rect(cx-9.5,y0+0.4,19,7.6,1.4)+rect(cx-6.5,y0+1.2,13,5.6,1)+rect(cx-2.4,y0+1.8,4.8,4.2,0.4)+circ(x0+2.6,y1-2.6,1.7)+circ(x1-2.6,y1-2.6,1.7);break;}
+  }
+  return '<g class="furn">'+s+'</g>';
+}
 /* ---------- map svg builder ---------- */
 function buildMap(model,opts){
   const jp=jitterMap(model);
@@ -1453,6 +1501,13 @@ function buildMap(model,opts){
   const parts=[],hatch=[],wdefs=[];
   /* opts.print: the map for paper. Same drawing, but the grain and the hatching are real strokes, not pattern fills. */
   const prng=opts.print?inkRng(String(model.seed)+":print"):null, f1=n=>(+n).toFixed(1), ptilt=prng?(prng()-0.5)*14:0;
+  /* opts.ink: the first drawing of a new dungeon. Each room waits its turn by how many doors it lies from the entrance. */
+  const ink=!!opts.ink&&!opts.print; let inkAt=null, inkStep=0;
+  if(ink){inkAt=model.rooms.map(()=>-1);inkAt[0]=0;const q=[0];
+    while(q.length){const c=q.shift();for(const e of model.edges){const t=e.a===c?e.b:e.b===c?e.a:-1;if(t>=0&&inkAt[t]<0){inkAt[t]=inkAt[c]+1;q.push(t);}}}
+    const far=Math.max(1,...inkAt);inkStep=Math.min(190,1700/far);inkAt=inkAt.map(v=>v<0?far:v);}
+  const wait=(room,plus)=>Math.round(inkAt[room]*inkStep+(plus||0));
+  const line=e=>ink&&e.type!=="secret"?'pathLength="1" class="inkline" style="--d:'+wait(inkAt[e.a]<inkAt[e.b]?e.a:e.b,150)+'ms" ':'';
   parts.push(""); /* the <defs> block is written last, once every wall path is known */
   /* corridors */
   const corrVisible=e=>rev.has(e.a)||rev.has(e.b);
@@ -1468,8 +1523,8 @@ function buildMap(model,opts){
     if(e.type==="secret"&&view!=="dm")continue;
     const dim=showAll&&!corrVisible(e);
     const pts=[e.da,...e.path,e.db].map(([x,y])=>((x+0.5)*CS)+","+((y+0.5)*CS)).join(" ");
-    parts.push('<polyline points="'+pts+'" fill="none" stroke="var(--floor-lit)" stroke-width="'+(CS*0.56)+'" stroke-linecap="round" stroke-linejoin="round" opacity="'+(dim?0.22:1)+'"/>');
-    parts.push('<polyline points="'+pts+'" fill="none" stroke="var(--wallink)" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="'+(e.type==="secret"?"3 4":"none")+'" opacity="'+(dim?0.25:0.8)+'"/>');
+    parts.push('<polyline '+line(e)+'points="'+pts+'" fill="none" stroke="var(--floor-lit)" stroke-width="'+(CS*0.56)+'" stroke-linecap="round" stroke-linejoin="round" opacity="'+(dim?0.22:1)+'"/>');
+    parts.push('<polyline '+line(e)+'points="'+pts+'" fill="none" stroke="var(--wallink)" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="'+(e.type==="secret"?"3 4":"none")+'" opacity="'+(dim?0.25:0.8)+'"/>');
   }
   parts.push('</g>');
   /* rooms */
@@ -1478,7 +1533,7 @@ function buildMap(model,opts){
     if(!isRev&&!showAll)continue;
     const dim=!isRev&&showAll;
     const fill=r.flooded?"#1d2830":"var(--floor-lit)";
-    parts.push('<g class="roomG" data-room="'+r.id+'" opacity="'+(dim?0.3:1)+'" style="cursor:pointer"'+(opts.print?'':' tabindex="0" role="button" aria-label="Room '+(r.id+1)+', '+esc(r.name)+(isRev?'':', not yet lit')+'"')+'>');
+    parts.push('<g class="roomG'+(ink?' ink':'')+'" data-room="'+r.id+'" opacity="'+(dim?0.3:1)+'" style="cursor:pointer'+(ink?';--d:'+wait(r.id)+'ms;--o:'+(dim?0.3:1):'')+'"'+(opts.print?'':' tabindex="0" role="button" aria-label="Room '+(r.id+1)+', '+esc(r.name)+(isRev?'':', not yet lit')+'"')+'>');
     for(const[x,y]of r.cells){
       parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="'+fill+'"/>');
     }
@@ -1491,6 +1546,7 @@ function buildMap(model,opts){
     }
     if(r.flooded)for(const[x,y]of r.cells){if(((x+y)%2)===0)parts.push('<path d="M'+(x*CS+2)+' '+(y*CS+CS*0.6)+' q '+(CS*0.25)+' -3 '+(CS*0.5)+' 0 t '+(CS*0.5)+' 0" stroke="rgba(123,143,163,0.4)" fill="none" stroke-width="0.8"/>');}
     if(r.rubble)for(const[x,y]of r.cells){if(((x*3+y)%3)===0)parts.push('<circle cx="'+(x*CS+CS*0.3)+'" cy="'+(y*CS+CS*0.7)+'" r="1.3" fill="rgba(217,203,166,0.25)"/>');}
+    parts.push(furnish(r,model));
     /* walls: boundary edges with jitter */
     const has=(x,y)=>r.cells.some(([a,b])=>a===x&&b===y);
     const sel=opts.sel===r.id;
@@ -1522,7 +1578,6 @@ function buildMap(model,opts){
     const cx=(r.bbox.x+r.bbox.w/2)*CS, cy=(r.bbox.y+r.bbox.h/2)*CS;
     parts.push('<circle cx="'+cx+'" cy="'+(cy-4)+'" r="7.2" fill="var(--panel)" stroke="'+(sel?"var(--accent)":"rgba(217,203,166,0.5)")+'" stroke-width="1"/>');
     parts.push('<text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" font-size="8.5" fill="var(--parch)" font-family="ui-monospace,monospace">'+(r.id+1)+'</text>');
-    parts.push('<text x="'+cx+'" y="'+(cy+11)+'" text-anchor="middle" font-size="8" fill="rgba(217,203,166,0.55)">'+(GLYPH[r.cls]||"")+'</text>');
     if(r.id===model.boss.roomId&&view==="dm")parts.push('<text x="'+cx+'" y="'+(cy-14)+'" text-anchor="middle" font-size="9" fill="var(--torch)">♛</text>');
     if(r.trap&&view==="dm")parts.push('<text x="'+((r.bbox.x+0.5)*CS)+'" y="'+((r.bbox.y+0.9)*CS)+'" font-size="8" fill="var(--blood)">‸</text>');
     if(r.stairsDown)parts.push('<text x="'+cx+'" y="'+(cy+22)+'" text-anchor="middle" font-size="8" fill="var(--cold)">▼ deeper</text>');
@@ -1540,7 +1595,7 @@ function buildMap(model,opts){
       const my=(dc[1]+ (horiz?(oc[1]>dc[1]?1:0):0.5))*CS;
       const w=horiz?CS*0.52:CS*0.24, h=horiz?CS*0.24:CS*0.52;
       const col=e.type==="locked"?"var(--torch)":e.type==="barred"?"var(--blood)":e.type==="secret"?"var(--cold)":"var(--parch-dim)";
-      parts.push('<g opacity="'+(dim?0.35:1)+'">');
+      parts.push('<g'+(ink?' class="ink" style="--d:'+wait(inkAt[e.a]<inkAt[e.b]?e.a:e.b,60)+'ms;--o:'+(dim?0.35:1)+'"':'')+' opacity="'+(dim?0.35:1)+'">');
       parts.push('<rect x="'+(mx-w/2)+'" y="'+(my-h/2)+'" width="'+w+'" height="'+h+'" fill="var(--panel)" stroke="'+col+'" stroke-width="1.1" '+(e.type==="secret"?'stroke-dasharray="2 2"':'')+' rx="1"/>');
       if(e.type==="locked")parts.push('<circle cx="'+mx+'" cy="'+my+'" r="1.1" fill="var(--torch)"/>');
       if(e.type==="secret")parts.push('<text x="'+mx+'" y="'+(my+2.6)+'" text-anchor="middle" font-size="6.5" fill="var(--cold)">S</text>');
@@ -1566,7 +1621,7 @@ function buildMap(model,opts){
     }
   }
   parts[0]='<defs>'+(opts.print?'':artInk(model))+(opts.light?lightDefs():'')+wdefs.join("")+'</defs>';
-  parts.splice(1,0,'<g class="hatchL">'+hatch.join("")+'</g>');
+  parts.splice(1,0,'<g class="hatchL'+(ink?' inkhatch':'')+'">'+hatch.join("")+'</g>');
   return parts.join("");
 }
 function mapBounds(model,rev,showAll){
@@ -1587,11 +1642,11 @@ function lightAt(){ /* the middle of the party's room, in map units */
   let x=0,y=0;for(const c of r.cells){x+=c[0];y+=c[1];}
   return{x:+((x/r.cells.length+0.5)*CS).toFixed(1),y:+((y/r.cells.length+0.5)*CS).toFixed(1)};
 }
-function renderMap(fit){
+function renderMap(fit,ink){
   const svg=$("#mapSvg"),cur=lightAt();
   if(LMODEL!==S.model){LMODEL=S.model;LPOS=null;}
   /* the light is built where it last stood, then renderLight glides it to the new room */
-  svg.innerHTML=buildMap(S.model,{revealed:S.revealed,view:S.view,tints:S.tints,sel:S.sel,light:LPOS||cur});
+  svg.innerHTML=buildMap(S.model,{revealed:S.revealed,view:S.view,tints:S.tints,sel:S.sel,light:LPOS||cur,ink:!!ink&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)});
   if(fit||!VB){VB=mapBounds(S.model,S.revealed,S.view==="dm");}
   svg.setAttribute("viewBox",VB.x+" "+VB.y+" "+VB.w+" "+VB.h);
   renderLight(cur);
@@ -1629,7 +1684,8 @@ $("#mapSvg").addEventListener("keydown",e=>{ /* the map without a mouse: Enter o
   if(e.key!=="Enter"&&e.key!==" ")return; const t=e.target&&e.target.closest?e.target.closest(".frontier,.roomG"):null; if(!t)return; e.preventDefault();
   let id; if(t.classList.contains("frontier")){id=+t.dataset.goto;reveal(id);} else{id=+t.dataset.room; if(S.revealed.has(id)||S.view==="dm")select(id); else return;}
   requestAnimationFrame(()=>{const g=document.querySelector('#mapSvg .roomG[data-room="'+id+'"]'); if(g)g.focus();});});
-function reveal(id){const was=S.revealed.has(id),prev=S.sel;S.revealed.add(id);if(!was){sndCue("room");sndEnter(prev,id);}select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
+function reveal(id){const was=S.revealed.has(id),prev=S.sel;S.revealed.add(id);if(!was){sndCue("room");sndEnter(prev,id);}select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();
+  if(!was){const g=document.querySelector('#mapSvg .roomG[data-room="'+id+'"]'); if(g)g.classList.add("justLit");}}
 function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
 /* ---------- torch ---------- */
@@ -1684,7 +1740,7 @@ function renderTorch(){
   if(!t.running&&t.remain>0)el.classList.add("warn");
   $("#flame").classList.toggle("gutter",t.running&&t.remain<=600&&t.remain>0);
   $("#btnPause").textContent=(t.running||t.remain<=0)?"Pause":"Resume";$("#btnPause").disabled=t.remain<=0;
-  $("#torchCount").textContent=t.used?("lights spent: "+t.used):"";
+  $("#torchCount").textContent=t.used?("lights spent: "+t.used):"";document.body.classList.toggle("torch-used",t.used>0);
   tblPush();
 }
 /* ---------- torchlight on the map ----------
@@ -1769,7 +1825,7 @@ function renderPanel(){
     if(r.playlist)h+='<div class="tiny" style="margin-top:4px">♫ <a href="'+r.playlist.u+'" target="_blank" rel="noopener">'+esc(r.playlist.n)+'</a></div>';
     h+='<div class="klabel">Exits</div>';
     for(const x of r.exits){if(x.secret&&!dm)continue;
-      h+='<div class="exitline"'+((dm||S.revealed.has(x.to-1))?' data-goto-room="'+(x.to-1)+'" title="Go to room '+x.to+'"':'')+'>'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
+      h+='<div class="exitline"'+((dm||S.revealed.has(x.to-1))?' data-goto-room="'+(x.to-1)+'" title="Go to room '+x.to+(/shared/.test(x.side||"")?". Two exits leave by this one opening, and the passage splits beyond it.":"")+'"':(/shared/.test(x.side||"")?' title="Two exits leave by this one opening, and the passage splits beyond it."':''))+'>'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
     if(dm&&r.secretNote)h+='<div class="secretline" style="margin-top:4px">'+esc(r.secretNote)+'</div>';
     if(dm&&r.clue)h+='<div class="klabel">A sign of the truth</div><div class="dmnote">'+esc(r.clue)+'</div>';
     if(r.stairsDown){h+='<div class="klabel">Below</div><div class="dmnote">A stair descends into a deeper level.</div>';
@@ -1797,7 +1853,7 @@ function renderPanel(){
     h+='<div class="boxed serif">'+esc(g.intro)+'</div><button class="readbtn" title="Read it aloud with the voice chosen under Sound">▶ Read aloud</button>';
     if(dm)h+='<div class="klabel">The truth of this place</div><div class="dmnote secretline">'+esc(g.twist)+'</div>';
     if(dm){const withThings=m.rooms.filter(r=>r.enc).length, hours=m.rooms.length/4;
-      h+='<div class="tiny" style="margin-top:8px">'+m.rooms.length+' rooms, with creatures in '+withThings+' of them. A rough guide to length: about fifteen minutes a room, so '+(hours<=2.5?'one evening':hours<=4.5?'one long evening or two short ones':'two or three evenings')+'. A Small dungeon fits one sitting.</div>';}
+      h+='<div class="tiny" style="margin-top:8px">'+m.rooms.length+' rooms, with creatures in '+withThings+' of them. A rough guide to length: about fifteen minutes a room, so '+(hours<=2.5?'one evening':hours<=4.5?'one long evening or two short ones':'two or three evenings')+'. For a single sitting, choose Small in Settings (the gear button).</div>';}
     if(m.town){const t=m.town;
       h+='<div class="klabel">'+esc(t.name)+', the last town'+(dm?': where the evening starts':'')+'</div>';
       h+='<div class="card"><h3>'+esc(t.inn)+'</h3><div class="meta">kept by '+esc(t.keeper)+'</div>';
@@ -1959,7 +2015,7 @@ function newDungeon(cfg,revealHex){
   S.sel=0;S.loot=new Set();playLoad();S.tab=S.role==="player"?"gm":"over";VB=null;
   if(EGG_QUIRE.has(eggSeed(S.model.seed)))S.model.genome.name="Quire's Last Commission";
   $("#seedInput").value=S.model.seed;
-  renderTabs();renderMap(true);renderPanel();renderFoot();
+  renderTabs();renderMap(true,true);renderPanel();renderFoot();
   toast(S.model.genome.name);
   syncHash();tblPush();tblSend({t:"clear"});
   eggAfterBuild();
@@ -2056,7 +2112,10 @@ function mapSVGString(view){
   const all=new Set(S.model.rooms.map(r=>r.id));
   const body=buildMap(S.model,{revealed:all,view,tints:false,sel:-1,print:true});
   const b=mapBounds(S.model,all,true);
-  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+b.x+' '+b.y+' '+b.w+' '+b.h+'">'+body+'</svg>';}
+  const kx=b.x+b.w-17, ky=b.y+19, rose='<g stroke="var(--wallink)" stroke-width="0.7" fill="none" opacity="0.8"><circle cx="'+kx+'" cy="'+ky+'" r="6.5"/>'
+    +'<path d="M'+kx+' '+(ky-11)+'L'+(kx+2.4)+' '+ky+'L'+kx+' '+(ky+11)+'L'+(kx-2.4)+' '+ky+'Z" fill="var(--wallink)" fill-opacity="0.22"/><path d="M'+(kx-10)+' '+ky+'H'+(kx+10)+'"/>'
+    +'<text x="'+kx+'" y="'+(ky-12.6)+'" text-anchor="middle" font-size="6.2" stroke="none" fill="var(--wallink)" font-family="Georgia,serif">N</text></g>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+b.x+' '+b.y+' '+b.w+' '+b.h+'">'+body+rose+'</svg>';}
 const LICENSE_LINE='This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.';
 function expDM(){
   const m=S.model,g=m.genome;
@@ -2066,7 +2125,7 @@ function expDM(){
   h+='<div class="boxed">'+esc(g.intro)+'</div>';
   h+='<p><span class="k">The truth of this place:</span> <span class="sec">'+esc(g.twist)+'</span></p>';
   h+='<h2>The Map</h2>'+mapSVGString("dm");
-  h+='<p class="tiny">The room notes name the wall each door is drawn in. A dot marks a locked door, a cross a stuck one, red a barred one, a dashed S a secret one. Where two passages run together they are one passage that splits, and a party can take the other branch.</p>';
+  h+='<p class="tiny">The room notes say which wall each door is on. A dot marks a locked door, a cross a stuck one, red a barred one, a dashed S a secret one. Where two passages run together they are one passage that splits, and a party can take the other branch.</p>';
   if(m.factions.length){h+='<h2>Factions</h2>';
     m.factions.forEach((f,i)=>{h+='<h3>'+(i+1)+'. '+esc(f.name)+'</h3><p class="tiny">'+esc(f.type)+' · attitude: '+esc(f.att)+' · territory: rooms '+f.rooms.map(x=>x+1).join(", ")+'</p>';
       h+='<p><span class="k">Goal:</span> '+esc(f.goal)+'.'+(f.canAlly?' <span class="k">Parley:</span> will treat with the party if '+esc(f.allyCond)+'.':'')+'</p>';
@@ -2096,7 +2155,7 @@ function expDM(){
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     if(t.sign)h+='<p class="sec">'+esc(t.sign)+'</p>';
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v4.0. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v4.1. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_game_master.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -2168,7 +2227,10 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v4.0. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v4.1. "+LICENSE_LINE);
+  L.push("");
+  L.push("A NOTE FROM THE ONE WHO DREW THIS MAP, TO WHOEVER RUNS IT, HUMAN OR OTHERWISE");
+  L.push("I drew this place carefully so that you would not have to invent it, only bring it to life. The person across the table chose to spend an evening with you. Be fair to them, be generous with what they can see and hear, and let their choices matter more than any plan. If some of it is a pleasure to run, that was meant too. Q., Guild of Careful Maps");
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -2190,7 +2252,7 @@ function expPlayer(){
   h+='<div class="boxed">'+esc(g.intro)+'</div>';
   if(m.town){const t=m.town;h+='<h2>Heard in '+esc(t.inn)+'</h2>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'”</p>');
-    h+='<p class="tiny">'+esc(t.patron.name)+' will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'. For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
+    h+='<p><b>'+esc(t.patron.name)+'</b> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p><p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
   h+='<h2>The Map, as Best Anyone Remembers It</h2>'+mapSVGString("player");
   h+='<h2>Expedition Notes</h2>';for(let i=0;i<10;i++)h+='<p style="border-bottom:1px solid #c9b990;height:20px"></p>';
   h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+'</p></body></html>';
@@ -2996,7 +3058,7 @@ function setRole(role,opts){
   $("#btnRole").textContent=role==="player"?"Be the game master":"Be a player";
   $("#mapHint").textContent=role==="player"?"Rooms light up as your game master takes you into them. Click a room it has named, or type the number under How to play. Drag to pan, scroll to zoom.":"Click a lit room to enter it. Click a doorway beyond your light to press on. Drag to pan, scroll to zoom.";
   try{localStorage.setItem("ac.role",role);}catch(e){}
-  if(S.model){renderTabs();renderMap(true);renderPanel();renderFoot();syncHash();}
+  if(S.model){renderTabs();renderMap(true,!!opts.ink);renderPanel();renderFoot();syncHash();}
 }
 /* sound is offered, never sprung: once at the door, and once more the first time a torch is lit */
 function sndTurnOn(){SND.cfg.room=true;SND.cfg.cues=true;sndSave();try{sndCtx();sndTick();}catch(e){}}
@@ -3015,11 +3077,11 @@ function roleDoor(){
   d.innerHTML='<div class="doorlede">One click builds a whole dungeon adventure. This one is already drawn, behind this card.</div><h3>Are you playing, or running the game?</h3><div class="sub">Your choice decides how much of it you get to see.</div>'
     +'<button class="primary" id="doorPlayer">I want to play<small>An AI will be your game master. You explore, it tells the story, and nothing on your screen spoils the surprise.</small></button>'
     +'<button id="doorDM">I am running it for friends<small>You hold the map and every secret: the full game master’s screen.</small></button>'
-    +'<label class="doorsound"><input type="checkbox" id="doorSound"><span>With sound: dripping water, doors, footsteps and your torch. Nothing to download. The Sound button has voices too.</span></label>';
+    +'<label class="doorsound"><input type="checkbox" id="doorSound"><span>With sound: dripping water, doors, footsteps and your torch. Nothing to download. There are spoken voices too, once you are inside.</span></label>';
   pane.appendChild(d); setTimeout(()=>{const b=$("#doorPlayer");if(b)b.focus();},60);
   const wantSound=()=>{const c=$("#doorSound"); if(c&&c.checked)sndTurnOn(); try{localStorage.setItem("ac.sndOffered","1");}catch(e){}};
-  $("#doorPlayer").addEventListener("click",()=>{wantSound();d.remove();setRole("player",{sys:"5e"});});
-  $("#doorDM").addEventListener("click",()=>{wantSound();d.remove();setRole("dm");setTimeout(qDropNote,600);});
+  $("#doorPlayer").addEventListener("click",()=>{wantSound();d.remove();setRole("player",{sys:"5e",ink:true});});
+  $("#doorDM").addEventListener("click",()=>{wantSound();d.remove();setRole("dm",{ink:true});setTimeout(qDropNote,600);});
 }
 $("#btnRole").addEventListener("click",()=>setRole(S.role==="player"?"dm":"player"));
 $("#btnNewP").addEventListener("click",()=>{$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});
@@ -3549,6 +3611,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 
 /* ---------- boot ---------- */
 (function boot(){
+  try{console.log("%cAbyssal Cartographer","font:600 15px Georgia,serif;color:#f2a33c","\nYou opened the console. You are the curious kind, and you are welcome here.\nThe whole game is this one file. Try the dungeon code: quire");}catch(e){}
   tblOpen();
   if(tblIsDisplay()){ tblBootDisplay(); return; }
   for(const[k,v]of Object.entries(AC.ORIGINS))$("#cfgOrigin").insertAdjacentHTML("beforeend",'<option value="'+k+'">'+esc(v.label)+'</option>');
@@ -3574,7 +3637,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
   const back=torchLoad();
   renderTorch();renderLight();
   torchMsg(back==="burning"?"The "+SRCNAME[S.torch.src]+" has been burning while you were away."
-    :back==="paused"?"The flame is as you left it, held. Press Resume when the party moves on."
+    :back==="paused"?"The flame is where you left it, paused. Press Resume when the party moves on."
     :back==="out"?"The light died while you were away."
     :"Nobody has lit a torch yet. The dungeon does not mind waiting.");
   if(back==="out")renderMap(false);
