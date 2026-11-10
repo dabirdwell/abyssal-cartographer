@@ -84,7 +84,7 @@ async function burnTo(p, secondsLeft) {
   const dmGuide = path.join(OUT, 'dm_guide_export.html'); await dlw.saveAs(dmGuide);
   const guide = fs.readFileSync(dmGuide, 'utf8');
   ok(!/class="tlL"/.test(guide) && !/id="tlG"/.test(guide) && !/id="tlD"/.test(guide), 'print export carries no torchlight');
-  ok(/class="hatchL"/.test(guide) && /id="hatchA"/.test(guide) && /href="#wp0"/.test(guide), 'print export carries the hatching');
+  ok(/class="hatchL"/.test(guide) && !/<pattern/.test(guide) && /href="#wp0"/.test(guide), 'print export carries the hatching, as strokes and with no pattern fills');
   await ctx.close();
 
   // (f) the exported guide, rendered

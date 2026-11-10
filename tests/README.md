@@ -11,7 +11,8 @@ node tests/offline.test.js        AbyssalCartographer.html out/   # every outsid
 node tests/save.test.js           AbyssalCartographer.html out/   # the save-for-offline link, served like GitHub Pages and from disk
 node tests/local-model.test.js    AbyssalCartographer.html out/   # a local model reached from the https address and the saved copy: Chrome's permission, labels, hints, errors
 node tests/sound.test.js          AbyssalCartographer.html out/ [kokoro]   # sound: voice, room sounds, torch, cues, read-aloud; add 'kokoro' to download and run the real voice model (needs internet)
-node hosted/test_hosted.mjs       AbyssalCartographer.html        # the hosted game master against a fake Claude
+node tests/truth-and-clock.test.js AbyssalCartographer.html out/   # v3.4: the key agrees with the map (door walls, shared doorways, barred doors, passages), the torch by the clock, reload and Load, print weight
+(cd hosted && node test_hosted.mjs ../AbyssalCartographer.html)        # the hosted game master against a fake Claude
 ```
 
 Each prints PASS/FAIL lines and ends with `FAILS: n`. Screenshots land in `out/`.

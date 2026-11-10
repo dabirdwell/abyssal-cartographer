@@ -292,7 +292,7 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   footer{position:static; font-size:11px}
   .toast{bottom:14px; max-width:86vw}
 }
-@media print{ body{display:none} }
+@media print{ body>*{display:none!important} body{display:block;background:#fff;overflow:visible;height:auto} body::before{content:"This screen is not made for paper. To print this dungeon, open Export and choose the game master’s guide or the player handout.";display:block;color:#000;font:16px/1.5 Georgia,serif;padding:48px} }
 
 /* ===== The Margins: Quire's guidance layer ===== */
 .qnote{position:absolute; right:14px; bottom:34px; z-index:40; width:240px;
@@ -420,7 +420,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.2</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.4</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
@@ -440,13 +440,14 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <div class="menuwrap">
     <button id="btnExport">Export ▾</button>
     <div class="menu" id="exportMenu">
-      <button data-x="dm">DM guide (print ready)</button>
+      <button data-x="dm">Game master’s guide (print ready)</button>
       <button data-x="player">Player handout</button>
       <button data-x="ai">Play with an AI game master</button>
       <button data-x="plink">Link for a player (no secrets shown)</button>
       <button data-x="table">Player display for a TV or iPad</button>
       <button data-x="save">Save the whole game for offline play</button>
-      <button data-x="json">JSON (full data)</button>
+      <button data-x="json">Save this game to a file</button>
+      <button data-x="load">Load a saved game from a file</button>
     </div>
   </div>
   <button id="btnQuire" class="qping" title="Notes from the Guild of Careful Maps">✎ Margins</button>
@@ -478,7 +479,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <div id="mapPane">
     <div id="mapTools">
       <div class="toggle" id="viewToggle" role="group" aria-label="View mode">
-        <button data-view="dm" class="on">DM view</button><button data-view="player">Player view</button>
+        <button data-view="dm" class="on">Game master’s view</button><button data-view="player">Player view</button>
       </div>
       <button id="btnRevealAll">Reveal all</button>
       <button id="btnFog">Reset fog</button>
@@ -504,7 +505,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.2 · build 2026-11-06 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.4 · build 2026-11-09 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
@@ -512,7 +513,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
     <h2 class="smallcaps">Expedition terms</h2>
     <div class="frow"><label>Party size</label><select id="cfgParty"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
     <div class="frow"><label>Party level<span class="hint">Shadowdark levels 0 to 9</span></label><select id="cfgLevel"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
-    <div class="frow"><label>Dungeon size</label><select id="cfgSize"><option value="s">Small (8 to 12 rooms)</option><option value="m" selected>Medium (13 to 18 rooms)</option><option value="l">Large (20 to 28 rooms)</option></select></div>
+    <div class="frow"><label>Dungeon size</label><select id="cfgSize"><option value="s">Small (7 to 11 rooms)</option><option value="m" selected>Medium (12 to 17 rooms)</option><option value="l">Large (19 to 27 rooms)</option></select></div>
     <div class="frow"><label>Mode<span class="hint">One-shot adds a town with rumors and a patron. Campaign adds stairs that descend forever.</span></label><select id="cfgMode"><option value="oneshot" selected>One-shot (town + dungeon)</option><option value="delve">Delve (dungeon only)</option><option value="campaign">Campaign (endless depth)</option></select></div>
     <div class="frow"><label>Origin<span class="hint">What this place was built as</span></label><select id="cfgOrigin"><option value="">Let fate decide</option></select></div>
     <div class="frow"><label>Doom<span class="hint">What befell it</span></label><select id="cfgDoom"><option value="">Let fate decide</option></select></div>
@@ -537,6 +538,10 @@ const P=(rng,arr)=>arr[Math.floor(rng()*arr.length)];
 const RI=(rng,a,b)=>a+Math.floor(rng()*(b-a+1));
 const SH=(rng,arr)=>{const c=arr.slice();for(let i=c.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
 const CAP=s=>s.charAt(0).toUpperCase()+s.slice(1);
+/* a name inside a sentence: "The Gilded Rat" reads "the Gilded Rat" after a verb */
+const theLower=s=>/^The /.test(s)?"the "+s.slice(4):s;
+/* every word of a place name capitalized, both halves of a hyphenated word too: "Counting House", "Deep-Hold" */
+const TITLE=s=>s.split(" ").map(w=>w.split("-").map(CAP).join("-")).join(" ");
 
 /* ============ names ============ */
 const SEED_A=["drowned","ashen","hollow","gilded","silent","broken","weeping","iron","pale","crooked","sunken","black","salt","ember","thorn","grim","vesper","mourning","cold","lantern"];
@@ -546,7 +551,7 @@ const EPITHET=["the Unfed","of the Nine Keys","Blacktooth","the Quiet","Half-Dro
 const HOLY=["Saint Vess","Saint Odile","the Gray Abbot","Mother Halda","the First Warden","King Osmund","the Tyrant Malvo","Lady Merett","the Forgotten Choir","Magister Crole","the Salt Prophet","Abbess Rune"];
 const TOWN_NAMES=["Thornhaven","Millbrook","Ravenshollow","Duskwall","Ironford","Ashwick","Grimholt","Shadowfen","Bracken Cross","Old Tolley","Wyrmsford","Cinder Hollow"];
 const INN_NAMES=["The Rusty Nail","Wanderer's Rest","The Broken Crown","The Last Lantern","The Gilded Rat","The Drowned Bell","The Nine Candles","The Sleeping Ox"];
-const KEEPER_QUIRK=["waters the ale and dares you to say so","keeps a crossbow under the bar named Patience","writes every rumor in a ledger and charges to read it","lost three fingers to the place you are asking about","insists the dungeon is a mine, always was, and changes the subject","feeds the dogs better than the guests","hums the same four notes all night","never says the dungeon's name out loud"];
+const KEEPER_QUIRK=["waters the ale and dares you to say so","keeps a crossbow named Patience under the bar","writes every rumor in a ledger and charges to read it","lost three fingers to the place you are asking about","insists the dungeon is a mine, always was, and changes the subject","feeds the dogs better than the guests","hums the same four notes all night","never says the dungeon's name out loud"];
 
 /* ============ room classes ============ */
 const CLASSES={
@@ -566,20 +571,20 @@ const CLASSES={
   lair:{n:"Inner Sanctum",w:[4,4],cap:1}
 };
 const CLASS_LINES={
-  entry:["Worn steps descend out of the daylight and the air changes on the third stair.","The doors here were forced long ago and hang open like a held breath.","Old boot prints in the dust go in. Fewer come back out."],
-  hall:["Pillars march into the dark on either side of you.","The ceiling is lost above your light. Every sound comes back twice.","A long chamber built for processions that no longer come."],
-  guard:["Arrow slits watch the approach. Someone meant this room to be paid for in blood.","A toppled brazier and a scatter of broken spear hafts tell of a last stand.","Weapon racks line the wall, mostly emptied in a hurry."],
-  quarters:["Rows of bunks rot quietly. Someone's whole life is still folded at the foot of one.","Personal things lie where they were dropped: a comb, a die, a child's letter.","The beds are made. That is somehow worse."],
-  store:["Crates and barrels crowd the room, swollen with damp.","Collapsed shelving has spilled its goods into a single gray heap.","Sacks slump against the walls. One of them has been chewed open from the inside."],
-  shrine:["An altar stands at the far end, and the silence here is a listening silence.","Candle stubs by the hundred cover every surface, burned down to wax pools.","Symbols cover the walls, scratched over other, older symbols."],
-  crypt:["Stone coffins line the walls in patient rows.","Niches climb the walls, each holding its sleeper. Some niches are empty.","Names on the tombs have been scratched out, every one."],
-  cell:["Iron doors stand in a row, most ajar, one still locked.","Scratch marks climb the inside of the cell doors.","Straw, chains, and the particular cold of places built to hold people."],
-  library:["Shelves sag under books that crumble at a touch.","Reading stands hold open volumes, pages turned by no wind you can feel.","Ledgers, letters, and maps: somebody here wrote everything down."],
-  workshop:["Benches hold tools laid out mid-task, as if the workers only just stepped away.","A cold forge, a full quench barrel, and the smell of old iron.","Half-finished work sits clamped in vises, waiting for hands."],
-  well:["Black water fills the center of the room, and your light does not find its bottom.","A ring of stone surrounds still water. Something disturbed it recently.","Channels in the floor once carried water somewhere it no longer goes."],
-  vault:["A strongroom, built to keep things in or out. The door cost more than most houses.","Empty pedestals stand in careful rows, each labeled in a dead script.","One chest sits alone in the middle of the floor, suspiciously pristine."],
-  warren:["The worked stone gives way to raw tunnel, gnawed rather than carved.","The walls here are wrong: melted, or grown, or chewed.","No mason made this passage. It smells of the thing that did."],
-  lair:["You feel it before you see anything: this is the center, and it knows you have come.","Trophies of the taken decorate the walls with terrible care.","The air itself leans on you here. Your light seems smaller."]
+  entry:["Worn steps descend out of the daylight. The air changes on the third stair.","The doors here were forced long ago and hang open like a held breath.","Old boot prints in the dust go in. Fewer come back out.","A rope tied to an iron ring hangs down the stair and ends in a frayed knot.","Daylight reaches exactly this far and no farther, and the line it draws on the floor is sharp."],
+  hall:["Pillars march into the dark on either side of you.","The ceiling is lost above your light. Every sound comes back twice.","A long chamber built for processions that no longer come.","Banners hang in rags from the beams, their colors gone to the same gray.","A long table runs the length of the room, its benches shoved back in a hurry."],
+  guard:["Arrow slits watch the approach. Someone meant this room to be paid for in blood.","A toppled brazier, a scatter of broken spear hafts: someone made a last stand here.","Weapon racks line the wall, mostly emptied in a hurry.","A bench by the door is worn smooth where guards sat out their watches.","A dice game lies abandoned on an upturned crate. The last throw was a pair of ones."],
+  quarters:["Rows of bunks rot quietly. Someone's whole life is still folded at the foot of one.","Personal things lie where they were dropped: a comb, a die, a child's letter.","The beds are made. That is somehow worse.","Footlockers stand open and rifled, their contents strewn across the floor.","Straw pallets lie in rows, each still pressed into the shape of whoever slept there last."],
+  store:["Crates and barrels crowd the room, swollen with damp.","Collapsed shelving has spilled its goods into a single gray heap.","Sacks slump against the walls. One of them has been chewed open from the inside.","Jars of preserves stand on a shelf, their contents gone black.","A ledger hangs from a nail by the door. The last page tallies what is left, and the answer is nothing."],
+  shrine:["An altar stands at the far end. The silence here is a listening silence.","Candle stubs by the hundred cover every surface, burned down to wax pools.","Symbols cover the walls, scratched over other, older symbols.","A small statue stands in a niche, its face worn smooth by many hands.","Offerings are heaped before the altar: bread turned to stone, coins, a child's shoe."],
+  crypt:["Stone coffins line the walls in patient rows.","Niches climb the walls, each holding its sleeper. Some hold nothing.","Names on the tombs have been scratched out, every one.","The coffin lids are carved with faces, and every face is turned toward the door.","A stone bench waits for mourners, and someone has scratched a tally of visits into it."],
+  cell:["Iron doors stand in a row, most ajar, one still locked.","Scratch marks climb the inside of the cell doors.","Straw, chains, and the particular cold of places built to hold people.","A window slot high in the wall lets in no light at all.","A tin cup lies on its side in every cell, all of them turned the same way."],
+  library:["Shelves sag under books that crumble at a touch.","Reading stands hold open volumes, pages turned by no wind you can feel.","Ledgers, letters, and maps: somebody here wrote everything down.","A ladder leans against the highest shelf, its top rung snapped.","Loose pages carpet the floor, and every one you turn over is blank."],
+  workshop:["Benches hold tools laid out mid-task, as if the workers only just stepped away.","A cold forge, a full quench barrel, and the smell of old iron.","Half-finished work sits clamped in vises, waiting for hands.","Molds and patterns hang from the ceiling, turning slowly in a draft you cannot feel.","Something unfinished sits on the workbench under a cloth, and you do not like its shape."],
+  well:["Black water fills the center of the room, and your light does not find its bottom.","A ring of stone surrounds still water. Something disturbed it recently.","Channels in the floor once carried water somewhere it no longer goes.","A bucket on a chain hangs over the water, swinging gently on its own.","Steps lead down into the water and keep going."],
+  vault:["A strongroom, built to keep things in or out. The door cost more than most houses.","Empty pedestals stand in careful rows, each labeled in a dead script.","One chest sits alone in the middle of the floor, too clean to trust.","Iron bands crisscross the walls, as if the room itself were a strongbox.","Numbered boxes line the shelves, and every box has been opened and closed again."],
+  warren:["The worked stone gives way to raw tunnel, gnawed rather than carved.","The walls here are wrong: melted, or grown, or chewed.","No mason made this passage. It smells of the thing that did.","The tunnel narrows until you have to turn sideways, then opens into something wider.","Bones are packed into the walls like mortar."],
+  lair:["You feel it before you see anything: this is the center, and it knows you have come.","Trophies of the taken decorate the walls with terrible care.","The air itself leans on you here. Your light seems smaller.","The floor is worn into a path that circles the room, around and around.","Everything here has been arranged, and you are standing in a gap that was left for you."]
 };
 const SENSES={
   entry:{sound:"Wind from above, dripping below",smell:"Wet stone and cold ash"},
@@ -613,49 +618,49 @@ const PLAYLIST_MAP={hall:"entry",quarters:"guard",workshop:"store",well:"crypt",
 /* ============ origins ============ */
 const ORIGINS={
   temple:{label:"Temple",place:["reliquary","sanctum","choir","tithe-house","psalmhold"],classes:{shrine:5,hall:3,library:2,quarters:2,cell:1,crypt:2,vault:2,store:1},
-    touch:["Whatever was worshipped here was fed regularly, and the feeding trough was the altar.","Prayer scripts run along the walls at ankle height, meant to be read while kneeling.","The god's face has been chiseled off every relief, but the hands remain."]},
+    touch:["Whatever was worshipped here was fed regularly, and not on bread.","Prayer scripts run along the walls at ankle height, meant to be read while kneeling.","The god's face has been chiseled off every relief, but the hands remain.","Small shelves for offerings line the wall, every one picked clean.","A worn path in the floor leads deeper in, made by centuries of bare feet.","Bells hang from the ceiling on chains, and not one of them has a clapper.","The air still smells faintly of something sweet that was burned here for a very long time.","Small clay figures stand in rows along a ledge, each with its hands pressed over its eyes."]},
   mine:{label:"Mine",place:["delving","shaft-run","ore gallery","under-forge","seam"],classes:{workshop:4,store:3,hall:3,warren:3,quarters:2,guard:2,well:2,vault:1},
-    touch:["Tally marks by the shaft mouth count something in the thousands, then stop.","The support beams were replaced with stone columns, as if wood learned to rot too fast here.","Cart rails run into a wall of collapse and keep going underneath."]},
+    touch:["Tally marks by the shaft mouth count something in the thousands, then stop.","The support beams were replaced with stone columns, as if wood learned to rot too fast here.","Cart rails run into a wall of collapse and keep going underneath.","Rusted lamp hooks run along the wall at head height, every few paces.","A rope ladder hangs down a shaft and ends just short of the bottom.","Names are scratched by the doorway, with dates. The dates all stop on the same day.","Ore dust coats everything, and your boots leave clean tracks in it.","A canary cage hangs from a beam, empty, its door wired shut."]},
   tomb:{label:"Tomb",place:["barrow","sepulcher","charnel walk","mausoleum","rest"],classes:{crypt:5,shrine:3,hall:3,vault:2,cell:1,library:1,store:1},
-    touch:["The dead here were buried with their tools, as if expected to keep working.","Offering bowls sit outside each tomb, and some are freshly used.","The architecture funnels you inward. Tombs are usually built to keep people out."]},
+    touch:["The dead here were buried with their tools, as if expected to keep working.","Offering bowls sit by the doorways, and some are freshly used.","The architecture funnels you inward. Tombs are usually built to keep people out.","Grave goods are heaped by the wall: a spindle, a sword, a little wooden horse.","The walls are painted with a procession of mourners, all walking deeper in.","Someone left flowers here not long ago. They have only just begun to wilt.","A carved warning over the door describes what happens to grave robbers, in loving detail.","Coins lie on the floor in pairs, the way you would lay them on a dead person's eyes."]},
   prison:{label:"Prison",place:["oubliette","holdfast","penance house","iron gallery","keep-below"],classes:{cell:5,guard:4,hall:2,quarters:2,store:2,well:1,workshop:1},
-    touch:["The cell ledger in the warden's hand ends mid-sentence.","Every lock in this place is on the outside of the door, except one.","Prisoners scratched a calendar into the wall. It goes on far too long."]},
+    touch:["The cell ledger in the warden's hand ends mid-sentence.","Every lock in this place is on the outside of the door, except one.","Prisoners scratched a calendar into the wall. It goes on far too long.","Shackles hang from the wall at a height meant for someone kneeling.","A slot in the door is just wide enough for a bowl, and worn smooth by thousands of them.","Someone scratched a map into the wall with a spoon. It is wrong in one important place.","The keys on a warden's ring have been filed down so that none of them will turn.","Every door here has a peephole, and every peephole looks in."]},
   sanctum:{label:"Wizard's Sanctum",place:["athenaeum","observatory","working","spiral","conservatory"],classes:{library:5,workshop:4,hall:2,shrine:2,vault:2,quarters:2,cell:1},
-    touch:["Chalk diagrams cover the floor, scuffed exactly where you would have to step.","The candles here have burned upward and sideways, but never down.","Notes in the margins argue with the text, then with each other, then with someone else entirely."]},
+    touch:["Chalk diagrams cover the floor, scuffed exactly where you would have to step.","The candles here have burned upward and sideways, but never down.","Notes in the margins argue with the text, then with each other, then with someone else entirely.","Glass jars line a shelf, each holding something that is not quite dead.","A brass instrument ticks quietly on a stand, tracking something across the ceiling.","Ink stains on the floor form a path, as if someone paced here for years, thinking.","A door is painted on the wall in enough detail that you check twice whether it opens.","Every book within reach has had the same page torn out."]},
   monastery:{label:"Monastery",place:["cloister","undercroft","scriptorium","refectory","stillness"],classes:{quarters:4,shrine:3,library:3,hall:2,store:2,well:2,crypt:1,cell:1},
-    touch:["The order kept a rule of silence. The walls are very good at keeping it still.","Rows of copied pages hang to dry on lines strung wall to wall, decades dry now.","Their vows are carved over every lintel. One vow has been chiseled away."]},
+    touch:["The order kept a rule of silence. The walls keep it still.","Copied pages still hang from lines strung wall to wall, dry for decades now.","Their vows are carved over every lintel. One vow has been chiseled away.","A bell rope hangs from a hole in the ceiling, worn thin where many hands pulled it.","Gray robes hang on a row of hooks, each mended many times in small, neat stitches.","A schedule of hours is painted on the wall. Someone has added a new hour at the bottom, in red.","The floor is worn into shallow dips where the brothers knelt in the same spots for a hundred years.","Herbs grow in a stone trough under a light shaft, dry and gone to seed."]},
   vault:{label:"Smugglers' Vault",place:["undermarket","cache-run","tollway","bolt-hole","counting house"],classes:{vault:4,store:4,hall:2,guard:3,quarters:2,cell:1,well:1,workshop:1},
-    touch:["Every crate is stenciled with a different owner's mark, and none of them match the manifests.","Hidden count-marks by the door track shipments in a private code.","There are more exits in this place than doors. Somebody always planned to run."]},
+    touch:["Every crate is stenciled with a different owner's mark, and none of them match the manifests.","Hidden count-marks by the door track shipments in a private code.","There are more exits in this place than doors. Somebody always planned to run.","Ledgers are hidden behind a loose stone, each kept in two different sets of numbers.","A lantern with a red shutter hangs by the door, for signals nobody answers now.","Stacked crates hide a narrow way through, just wide enough for one person and a sack.","A list of debts is nailed to the wall. Most of the names have been crossed out, in a darker ink.","A scale sits on a crate, its weights shaved light by someone who cheated everyone."]},
   fortress:{label:"Fortress",place:["bastion","gatehold","war-cellar","garrison","redoubt"],classes:{guard:5,hall:3,quarters:3,store:3,workshop:2,well:1,cell:2,vault:1},
-    touch:["Murder holes overhead have been bricked shut from above.","The garrison's standard still hangs, too faded to name a side.","Deep scratches on the inside of the gate. The siege ended, one way or the other."]},
-  cistern:{label:"Cistern Works",place:["waterworks","undersluice","stillwater","channel-run","drowned way"],classes:{well:5,hall:3,store:2,workshop:2,warren:2,guard:1,shrine:1,vault:1},
-    touch:["High-water marks stripe the walls like the rings of a tree.","The channels were built to move water out. Lately, something moves in.","Coins glitter at the bottom of every pool. Nobody has retrieved a single one."]},
+    touch:["Murder holes overhead have been bricked shut from above.","The garrison's standard still hangs, too faded to name a side.","Deep scratches on the inside of the gate. The siege ended, one way or the other.","The arrow loops have been stuffed with rags, against the cold or against something else.","A duty roster is painted by the door. The last watch was never assigned.","The pike racks stand empty, and the floor beneath them is scored where the pikes were dragged out in a hurry.","A signal horn hangs on a peg, its mouthpiece bitten through.","The walls are thicker than any siege needed, as if the builders feared something other than armies."]},
+  cistern:{label:"Cistern Works",once:"a waterworks",place:["waterworks","undersluice","stillwater","channel-run","drowned way"],classes:{well:5,hall:3,store:2,workshop:2,warren:2,guard:1,shrine:1,vault:1},
+    touch:["High-water marks stripe the walls like the rings of a tree.","The channels were built to move water out. Lately, something moves in.","Coins glitter at the bottom of every pool. Nobody has retrieved a single one.","A sluice gate is jammed open with a broken oar.","Pipes run along the ceiling, knocking softly now and then, though no water flows.","Stone channels cut across the floor, worn smooth by a century of running water.","A rusted grate is set in the floor, and something below it has bent the bars upward.","Workers' marks are painted on the wall: arrows, depths, and one warning repeated in red."]},
   hold:{label:"Dwarven Hold",place:["feasthall","deep-hold","hearth-run","stonehome","undergate"],classes:{hall:5,workshop:3,quarters:3,store:2,vault:2,shrine:2,crypt:2,guard:2},
-    touch:["The masonry is so fine you cannot fit a knife blade in the joints.","The feast tables are stone and still set. The chairs were burned as firewood.","Family marks are carved beside every doorway, then struck through."]}
+    touch:["The masonry is so fine you cannot fit a knife blade in the joints.","The feast tables are stone and still set. The chairs were burned as firewood.","Family marks are carved beside every doorway, then struck through.","Runes of welcome are cut over the door, then cut again, deeper, as a warning.","Stone faces of ancestors stare from the walls, each with its eyes carefully put out.","The steps here are cut low and wide, for short legs carrying heavy loads.","A forge-song runs along the wall in angular runes, its last line left blank.","Iron plates bolted to the doorframe carry the marks of axes, struck from the inside."]}
 };
 
 /* ============ dooms ============ */
 const DOOMS={
-  plague:{label:"Plague",adj:["Weeping","Pale","Blistered","Quarantined"],env:{mold:true},
-    touch:["Chalk warding circles surround the doorways, drawn from the inside.","Bundled shapes lie along the wall with merciful regularity.","Someone marked the rooms with the sick, then marked every room."],boss:["undead","fungal","ooze"]},
-  betrayal:{label:"Betrayal",adj:["Broken","Oathless","Sundered","Knifed"],env:{},
-    touch:["The barricade here faces inward, against the rest of this place.","Two kinds of arrowheads stud the door. They were loosed at each other.","Someone's name is gouged out of the honor roll with real hatred."],boss:["humanoid","undead","cult"]},
-  flood:{label:"Flood",adj:["Drowned","Sunken","Silted","Tidegone"],env:{water:true},
-    touch:["Silt lies over everything in a smooth gray blanket.","Debris hangs caught in the ceiling vaults, left by water with nowhere to go.","Everything below waist height has been rearranged by a patient current."],boss:["aquatic","ooze","undead"]},
-  breach:{label:"Breach from Below",adj:["Riven","Undermined","Cracked","Gnawed"],env:{caves:2,rubble:true},
-    touch:["A crack runs through the floor here, and warm air rises out of it.","The lowest wall has been broken through from the other side.","Whatever tunneled up did not use tools."],boss:["beast","giant","construct"]},
-  summoning:{label:"Failed Summoning",adj:["Scorched","Unbound","Ninth-Circle","Calling"],env:{rubble:true},
-    touch:["A summoning diagram has been burned into the stone. The circle is broken outward.","Shadows here fall at angles your light does not explain.","Everything metal in the room has half-melted and reset in new shapes."],boss:["fiend","construct","undead"]},
-  answered:{label:"The God Answered",adj:["Hallowed","Answered","Kneeling","Chosen"],env:{},
-    touch:["Every surface in this room faces the same direction, and it is not the door.","The dust on the floor is disturbed in one enormous, continuous sweep.","You get the sense of being in something's peripheral vision."],boss:["fiend","guardian","cult"]},
-  siege:{label:"Endless Siege",adj:["Beleaguered","Starved","Walled","Last"],env:{rubble:true},
-    touch:["Ration tallies on the wall shrink week by week, then count things that are not food.","Both sides of this door have been reinforced.","Arrow shafts have been harvested from the dead and re-fletched. Several times."],boss:["humanoid","undead","giant"]},
-  greed:{label:"Greed Woke Something",adj:["Gilded","Delved","Covetous","Overdeep"],env:{caves:1},
-    touch:["The last vein they cut into is not ore. It looks back.","Picks and barrows were dropped where they stood, pointing away from the deep working.","A fortune in raw metal sits untouched. That should tell you everything."],boss:["beast","construct","giant"]},
-  curse:{label:"Curse",adj:["Thricebound","Marked","Sleepless","Withered"],env:{},
-    touch:["Plants have grown here without light, white as bone and facing the door.","Your torch burns a shade too blue in this room.","Written warnings appear in three languages and one set of claw marks."],boss:["undead","fey","guardian"]},
-  silence:{label:"The Silence",adj:["Silent","Vanished","Untenanted","Waiting"],env:{},
-    touch:["Meals sit on the tables, decades past eating, undisturbed by any animal.","Every door in this place was closed gently, from the inside.","There are no bodies. There are never any bodies."],boss:["fey","guardian","ooze"]}
+  plague:{label:"Plague",fell:"A plague came {age}",np:"a plague",still:"The plague is not finished. It is still spreading, slowly, upward.",adj:["Weeping","Pale","Blistered","Quarantined"],env:{mold:true},
+    touch:["Chalk warding circles surround the doorways, drawn from the inside.","Bundled shapes lie along the wall with merciful regularity.","Someone marked the rooms with the sick, then marked every room.","A cloth soaked in vinegar is still tied over the keyhole.","Someone scrubbed this floor until the stone wore pale, and then stopped.","A bucket of lime stands by the door, half used.","A list of names is chalked by the door. Every one is crossed out but the last.","The air tastes of old smoke, as if the rooms were burned clean and then given up."],boss:["undead","fungal","ooze"]},
+  betrayal:{label:"Betrayal",fell:"Someone inside betrayed it {age}",np:"a betrayal",still:"The betrayal is not finished. One of the traitors is still down there, still keeping the secret.",adj:["Broken","Oathless","Sundered","Knifed"],env:{},
+    touch:["The barricade here faces inward, against the rest of this place.","Two kinds of arrowheads stud the door. They were loosed at each other.","Someone's name is gouged out of the honor roll with real hatred.","A door here was locked from the far side by someone who knew the people on this side.","Two cups sit on a ledge, poured from the same jar. One was drunk. One was not.","Someone's insignia has been torn from a tabard and ground into the floor with a heel.","A message is scratched beside the door: TRUST THE CAPTAIN. Under it, in another hand: DON'T.","The bolts on this door were sawn halfway through from the inside, weeks before anyone needed them."],boss:["humanoid","undead","cult"]},
+  flood:{label:"Flood",fell:"The water came {age}",np:"a flood",still:"The flood is not finished. The water is still rising, an inch a year.",adj:["Drowned","Sunken","Silted","Tidegone"],env:{water:true},
+    touch:["Silt lies over everything in a smooth gray blanket.","Debris hangs caught in the ceiling vaults, left by water with nowhere to go.","Everything below waist height has been rearranged by a patient current.","A line of dried scum runs around the walls at chest height, perfectly level.","Small bones and shells lie in the corners where the water left them.","Every crack in the floor still holds a little black water.","A drowned lantern hangs from a hook, its glass full of mud.","The walls are soft to the touch, and your fingers come away wet."],boss:["aquatic","ooze","undead"]},
+  breach:{label:"Breach from Below",fell:"Something broke through from below {age}",np:"something breaking through from below",still:"The breach is not finished. It is still widening, slowly, upward.",adj:["Riven","Undermined","Cracked","Gnawed"],env:{caves:2,rubble:true},
+    touch:["A crack runs through the floor here, and warm air rises out of it.","The lowest wall has been broken through from the other side.","Whatever tunneled up did not use tools.","The floor tilts very slightly toward one corner, as if something underneath is still settling.","Fresh earth has been pushed up between the flagstones in a long, unbroken line.","Stones from far below lie scattered here, black and glassy, nothing like the walls.","The air is warmer than it should be, and it moves when nothing else does.","Claw marks score the stone in sets of five, each groove as wide as your thumb."],boss:["beast","giant","construct"]},
+  summoning:{label:"Failed Summoning",fell:"A summoning went wrong {age}",np:"a summoning gone wrong",still:"The summoning is not finished. The circle is still open, and still widening.",adj:["Scorched","Unbound","Ninth-Circle","Calling"],env:{rubble:true},
+    touch:["A summoning diagram has been burned into the stone. The circle is broken outward.","Shadows here fall at angles your light does not explain.","Everything metal in the room has half-melted and reset in new shapes.","Ash lies in a fine, even film, as if something burned very hot for a very short time.","Words are written on the ceiling in a script that hurts to look at for long.","Your shadow takes a moment longer than you do to move.","Candles were set in a ring, and every one of them burned down sideways.","Something has scorched the shape of a tall figure onto the wall, arms raised."],boss:["fiend","construct","undead"]},
+  answered:{label:"The God Answered",fell:"A god answered its prayers {age}",np:"a god answering its prayers",still:"The god's answer is not finished. It is still arriving, one room at a time.",adj:["Hallowed","Answered","Kneeling","Chosen"],env:{},
+    touch:["Every surface in this room faces the same direction, and it is not the door.","The dust on the floor is disturbed in one enormous, continuous sweep.","You get the sense of being in something's peripheral vision.","The stones are warm on one side only, the side that faces deeper in.","Every flame you carry leans the same way here, toward the dark.","Prayer beads lie scattered where a string broke, and every bead has rolled the same way.","A hymn is carved over the door. Its last verse was finished by a different, much larger hand.","The quiet here has weight, the way a room does when someone is about to speak."],boss:["fiend","guardian","cult"]},
+  siege:{label:"Endless Siege",fell:"A siege closed around it {age} and never lifted",np:"a siege",still:"The siege is not over. Whatever laid it is still outside the walls, waiting for the doors to open.",adj:["Beleaguered","Starved","Walled","Last"],env:{rubble:true},
+    touch:["Ration tallies on the wall shrink week by week, then count things that are not food.","Both sides of this door have been reinforced.","Arrow shafts have been harvested from the dead and re-fletched. Several times.","Whatever could burn has been pulled loose and piled against the door. The pile has been lit at least twice.","Someone kept a count of days on the wall. The marks get smaller as they go.","A pot sits cold over long-dead coals. Whatever was boiled in it was not food.","Sling stones lie heaped by every door, sorted by size.","A last letter is pinned to the wall with a knife, addressed to someone outside."],boss:["humanoid","undead","giant"]},
+  greed:{label:"Greed Woke Something",fell:"Treasure hunters dug too deep {age} and woke something",np:"greed",still:"What the treasure hunters woke is not finished. It is still climbing, slowly, toward the surface.",adj:["Gilded","Delved","Covetous","Overdeep"],env:{caves:1},
+    touch:["The last vein they cut into is not ore. It looks back.","Picks and barrows were dropped where they stood, pointing away from the deep working.","A fortune in raw metal sits untouched. That should tell you everything.","Ore glitters in the walls here, and every bright seam has been left alone.","A tally of shares is scratched by the door. The names go down and the shares go up.","Somebody hid a purse of coins in a crack in the wall and never came back for it.","Chisel marks cover every surface, as if someone searched this room very hard for something.","A miner's lamp lies where it fell, still pointing at the deeper dark."],boss:["beast","construct","giant"]},
+  curse:{label:"Curse",fell:"A curse fell on it {age}",np:"a curse",still:"The curse is not finished. It is still spreading, slowly, upward.",adj:["Thricebound","Marked","Sleepless","Withered"],env:{},
+    touch:["Plants have grown here without light, white as bone and facing the door.","Your torch burns a shade too blue in this room.","Warnings are written here in three languages, and once in claw marks.","Every surface that could hold a reflection has been scratched blind.","A sigil is cut into the lintel. Someone tried to chisel it out, and the stone has healed.","Stand still long enough and the dust begins to settle in the shape of words.","Anything silver here has gone black, down to the nails in the door.","A child's rhyme is scratched into the wall, over and over, until it stops making sense."],boss:["undead","fey","guardian"]},
+  silence:{label:"The Silence",fell:"The silence fell {age}, and everyone inside was gone",np:"the Silence",still:"The silence is not finished. It is still spreading, room by room, toward the surface.",adj:["Silent","Vanished","Untenanted","Waiting"],env:{},
+    touch:["Meals sit on the tables, decades past eating, undisturbed by any animal.","Every door in this place was closed gently, from the inside.","There are no bodies. There are never any bodies.","A door here stands ajar, as if someone stepped out and meant to come right back.","Coats still hang on their pegs by the door. The dust on each shoulder is undisturbed.","A half-written letter lies open. The ink has run from the last word, as if the pen was simply let go.","An hourglass lies on its side, half its sand still on top.","Every lamp in the room has been trimmed and filled, ready for a night nobody saw."],boss:["fey","guardian","ooze"]}
 };
 /*ENGINE-DATA-CONT*/
 
@@ -691,7 +696,7 @@ const MONSTERS=[
 {id:"troll",name:"Troll",fl:"Kill it properly or you have only postponed the conversation.",ac:13,hp:23,atk:[{n:"claws",b:6,d:"1d8"},{n:"bite",b:6,d:"1d6"}],mv:"near",m:[4,1,4,-2,0,-2],al:"C",lv:5,ab:[{n:"Regenerate",t:"Regains 3 HP at the start of its turn unless burned."}],tg:["giant"]},
 {id:"wraith",name:"Wraith",fl:"Grief with a shape and an appetite.",ac:14,hp:22,atk:[{n:"life drain",b:5,d:"1d8 + 1d4 max HP drain"}],mv:"near (fly)",m:[-2,3,2,1,2,2],al:"C",lv:5,ab:[{n:"Incorporeal",t:"Half damage from nonmagical weapons."}],tg:["undead"]},
 {id:"hag",name:"Fen Hag",fl:"She knew you were coming. She set another place.",ac:14,hp:21,atk:[{n:"iron nails",b:5,d:"1d8"}],mv:"near (swim)",m:[3,1,2,3,3,2],al:"C",lv:5,ab:[{n:"Foul Bargain",t:"1/day: offers a true answer for a price. The price is always fair and always awful."}],tg:["fey","aquatic"]},
-{id:"basilisk",name:"Basilisk",fl:"Eight legs, terrible breath, and a gaze you meet exactly once.",ac:15,hp:27,atk:[{n:"bite",b:6,d:"1d10"}],mv:"near",m:[3,0,4,-3,1,-3],al:"N",lv:6,ab:[{n:"Petrify",t:"Meets its gaze: DC 15 CON or turned to stone."}],tg:["beast"]},
+{id:"basilisk",name:"Basilisk",fl:"Eight legs, terrible breath, and a gaze you meet exactly once.",ac:15,hp:27,atk:[{n:"bite",b:6,d:"1d10"}],mv:"near",m:[3,0,4,-3,1,-3],al:"N",lv:6,ab:[{n:"Petrify",t:"Anyone who meets its gaze: DC 15 CON or turned to stone."}],tg:["beast"]},
 {id:"colossus",name:"Flesh Colossus",fl:"Stitched from the garrison. It still answers the old passwords.",ac:12,hp:30,atk:[{n:"crushing fists",b:7,d:"1d12"}],mv:"near",m:[5,-2,4,-3,-2,-3],al:"N",lv:6,ab:[{n:"Berserk",t:"At half HP, attacks the nearest creature, any creature."}],tg:["construct","undead"]},
 {id:"barrowking",name:"Barrow King",fl:"He was promised the crown forever. Forever is still running.",ac:15,hp:28,atk:[{n:"ancient blade",b:7,d:"1d10 + 1d4 cold"}],mv:"near",m:[3,1,3,2,2,3],al:"C",lv:6,ab:[{n:"Command the Grave",t:"1/day: raises 1d4 skeletons from the floor."}],tg:["undead"]},
 {id:"wyrm",name:"Young Wyrm",fl:"Not yet a legend. Working on it. You may be a chapter.",ac:16,hp:34,atk:[{n:"bite",b:8,d:"2d8"},{n:"tail",b:7,d:"1d10"}],mv:"double near (fly)",m:[5,2,4,2,2,3],al:"C",lv:7,ab:[{n:"Breath",t:"1/day: cone of fire, near. 3d6, DC 15 DEX for half."}],tg:["beast","giant"]},
@@ -701,24 +706,24 @@ const MON=Object.fromEntries(MONSTERS.map(m=>[m.id,m]));
 
 /* boss gifts: applied to a base creature to forge a named boss */
 const BOSS_GIFTS=[
- {n:"of the Broken Circle",t:"1/day: rebukes a spell cast within near; the caster takes 1d6 backlash."},
+ {n:"Broken Circle",t:"1/day: rebukes a spell cast within near; the caster takes 1d6 backlash."},
  {n:"Lamplit",t:"Carries a stolen light that never gutters. In its glow, allies never check morale."},
- {n:"Thricecrowned",t:"When first reduced to 0 HP, rises at 1 HP with a scream. Once."},
- {n:"the Patient",t:"Always acts last, and always knows where everyone is."},
+ {n:"Rises Again",t:"When first reduced to 0 HP, rises at 1 HP with a scream. Once."},
+ {n:"Patient",t:"Always acts last, and always knows where everyone is."},
  {n:"Grave-Sworn",t:"Allies that die within near rise as zombies next round."},
  {n:"Saltborn",t:"1/day: floods the room ankle-deep; the floor is difficult ground for foes."},
- {n:"the Hollow-Eyed",t:"Sees through its followers' eyes anywhere in the dungeon."}
+ {n:"Hollow-Eyed",t:"Sees through its followers' eyes anywhere in the dungeon."}
 ];
 
 /* faction archetypes */
 const FACTION_KINDS=[
- {k:"cult",name:["The {a} Choir","The Order of the {a} {b}","Keepers of the {a} Word"],type:"cultists",base:["zealot","acolyte","warlock"],goal:["finish the summoning the doom began","appease what stirs below with regular offerings","transcribe the whole dungeon before it changes again"],ally:"the party swears silence about what they saw",att:"hostile"},
- {k:"humanoid",name:["The {a} Knives","{a} Company","The {b} Gang"],type:"raiders and deserters",base:["bandit","goblin","orc"],goal:["strip the place of every coin before winter","hold the gate and tax whoever passes","find their captain, lost three levels down"],ally:"the party splits any treasure found in their territory",att:"wary"},
- {k:"undead",name:["The Household","The {a} Court","The Unrelieved Watch"],type:"the risen dead",base:["skeleton","zombie","wight"],goal:["keep every intruder from the inner sanctum","complete a duty whose purpose everyone alive has forgotten","gather enough grave goods to buy back their rest"],ally:"the party performs the rite that relieves their watch",att:"hostile"},
- {k:"vermin",name:["The Gnawing","The {a} Brood","The Understair"],type:"a swarming brood",base:["rat","spider","centipede"],goal:["expand the nest into the warm upper rooms","protect the egg chamber at any cost","drag everything edible below"],ally:"the party leaves an offering of food and backs away slowly",att:"hostile"},
- {k:"beast",name:["The Pale Pack","The {a} Hunger","Those Below"],type:"things adapted to the dark",base:["stalker","bonehound","basilisk"],goal:["hunt the two-legged prey that keeps arriving","defend the breach they came up through","follow a scent old and terrible even to them"],ally:"the party douses their lights in its presence",att:"hostile"},
- {k:"fungal",name:["The {a} Bloom","The Quiet Garden","The Spore Parliament"],type:"a colony wearing its hosts",base:["thrall","thrall","ooze"],goal:["spread the garden to the surface air","incorporate every warm thing that enters","protect the mother-bloom in the deep room"],ally:"one party member accepts a spore mark on the wrist",att:"hostile"},
- {k:"desperate",name:["The Left Behind","{a}'s Survivors","The Lantern Club"],type:"trapped survivors",base:["bandit","zealot","kobold"],goal:["get out alive, whatever alive costs by now","recover a friend taken to the inner rooms","hold the safest room until rescue that is not coming"],ally:"the party shares rations and shows them a way out",att:"wary"}
+ {k:"cult",say:"the cultists down there mean to",name:["The {a} Choir","The Order of the {a} {b}","Keepers of the {a} Word"],type:"cultists",base:["zealot","acolyte","warlock"],goal:["finish a summoning someone else abandoned here","appease what stirs below with regular offerings","transcribe the whole dungeon before it changes again"],ally:"the party swears silence about what they saw",att:"hostile"},
+ {k:"humanoid",say:"the raiders down there mean to",name:["The {a} Knives","{a} Company","The {b} Gang"],type:"raiders and deserters",base:["bandit","goblin","orc"],goal:["strip the place of every coin before winter","hold the gate and tax whoever passes","find their captain, lost three levels down"],ally:"the party splits any treasure found in their territory",att:"wary"},
+ {k:"undead",say:"the dead down there mean to",name:["The Household","The {a} Court","The Unrelieved Watch"],type:"the risen dead",base:["skeleton","zombie","wight"],goal:["keep every intruder from the inner sanctum","complete a duty whose purpose everyone alive has forgotten","gather enough grave goods to buy back their rest"],ally:"the party performs the rite that relieves their watch",att:"hostile"},
+ {k:"vermin",say:"the brood down there means to",name:["The Gnawing","The {a} Brood","The Understair"],type:"a swarming brood",base:["rat","spider","centipede"],goal:["expand the nest into the warm upper rooms","protect the egg chamber at any cost","drag everything edible below"],ally:"the party leaves an offering of food and backs away slowly",att:"hostile"},
+ {k:"beast",say:"the things that hunt down there mean to",name:["The Pale Pack","The {a} Hunger","Those Below"],type:"things adapted to the dark",base:["stalker","bonehound","basilisk"],goal:["hunt the two-legged prey that keeps arriving","defend the breach they came up through","follow a scent old and terrible even to them"],ally:"the party puts out every light when they come near",att:"hostile"},
+ {k:"fungal",say:"the colony down there means to",name:["The {a} Bloom","The Quiet Garden","The Spore Parliament"],type:"a colony wearing its hosts",base:["thrall","thrall","ooze"],goal:["spread the garden to the surface air","incorporate every warm thing that enters","protect the mother-bloom in the deep room"],ally:"one party member accepts a spore mark on the wrist",att:"hostile"},
+ {k:"desperate",say:"the people trapped down there mean to",name:["The Left Behind","Survivors of the {a} {b}","The Lantern Club"],type:"a trapped expedition",base:["bandit","zealot","kobold"],goal:["get out alive, whatever alive costs by now","recover a friend taken to the inner rooms","hold the safest room until a rescue that is not coming"],ally:"the party shares rations and shows them a way out",att:"wary"}
 ];
 
 /* ============ traps, puzzles, riddles, dressing ============ */
@@ -726,8 +731,8 @@ const TRAPS=[
  {n:"Scything Blade",tr:"Tripwire at ankle height across the doorway",ef:"+4 to hit, 1d8. On a miss it resets.",fd:"The floor stones by the door are unscuffed. Nobody walks there.",ds:"DC 12 DEX with a blade or tool cuts the wire safely."},
  {n:"Pit of Stakes",tr:"A 10 ft section of false floor",ef:"DC 12 DEX or fall: 1d6, plus 1d6 from the stakes.",fd:"A thrown coin lands with a wooden knock, not a stone one.",ds:"Spikes, planks, or simply walking the true edge (DC 10 DEX)."},
  {n:"Rusted Needle Lock",tr:"A poisoned needle in a lock",ef:"DC 12 DEX on picking, or 1d4 and DC 12 CON against fever for a day.",fd:"Green crust rims the keyhole.",ds:"Flush the lock with oil or wine first."},
- {n:"Deadfall",tr:"A cracked lintel rigged to drop",ef:"DC 14 DEX or 2d6 from falling masonry, and the doorway chokes with rubble.",fd:"Fresh stone dust dusts the threshold.",ds:"Brace the lintel (DC 12 STR) or a rope pull from cover."},
- {n:"Choking Vapor",tr:"A pressure plate vents old gas",ef:"All in the room DC 12 CON or retch helplessly for 1d4 rounds.",fd:"Dead beetles ring one particular flagstone.",ds:"Wedge the plate. It clicks once, loudly, if stepped on and held."},
+ {n:"Deadfall",tr:"A cracked lintel rigged to drop",ef:"DC 14 DEX or 2d6 from falling masonry, and the doorway chokes with rubble.",fd:"Fresh stone dust lies on the threshold.",ds:"Brace the lintel (DC 12 STR) or a rope pull from cover."},
+ {n:"Choking Vapor",tr:"A pressure plate vents old gas",ef:"All in the room DC 12 CON or retch helplessly for 1d4 rounds.",fd:"Dead beetles ring one particular flagstone.",ds:"Wedge the plate. Stepped on and held down, it clicks once, loudly."},
  {n:"Bell of Summons",tr:"A hidden bell wired to the door",ef:"No damage. Every wandering thing on this level hears it.",fd:"A thin wire vanishes into a hole above the hinge.",ds:"DC 10 DEX to unhook the wire. Muffling the bell also works."},
  {n:"Oil Slick Stair",tr:"Steps slicked and rigged with a spark flint",ef:"DC 12 DEX or fall down the flight, 1d6. Open flame ignites it: 1d6 fire to all on the stair.",fd:"The stairs shine wet where nothing drips.",ds:"Sand, ash, or ten patient minutes with rags."},
  {n:"Warding Glyph",tr:"A glyph keyed to the unmarked",ef:"First to cross: DC 13 WIS or struck blind until the next rest.",fd:"Faint chalk lines resolve into script under close light.",ds:"Smudge the binding rune (DC 12 INT) or carry a token of the old owners."},
@@ -736,10 +741,10 @@ const TRAPS=[
 ];
 const PUZZLES=[
  {n:"The Scale of Tribute",s:"A brass scale before a sealed door. One pan holds a stone heart. Around the room: a gold ingot, a loaf of bread turned to stone, a sword, an empty vial.",a:"Balance the heart with the bread. The door opens for those who value bread as much as a heart. Wealth or weapons make the floor drop an inch and the room grow cold."},
- {n:"Four Thrones",s:"Four stone chairs face a locked gate: one high, one broken, one child-sized, one draped in chains. An inscription: SIT WHERE YOU BELONG.",a:"Anyone sitting in the broken throne unlocks the gate. Humility reads the room. The high seat triggers the nearest trap or a wandering check."},
+ {n:"Four Thrones",s:"Four stone chairs face a locked gate: one high, one broken, one child-sized, one draped in chains. An inscription: SIT WHERE YOU BELONG.",a:"Anyone sitting in the broken throne unlocks the gate. Humility opens the way. The high seat triggers the nearest trap or a wandering check."},
  {n:"The Unlit Procession",s:"Twelve candle sconces line the hall, numbered in an old script. Soot says only some were ever lit.",a:"Light only the prime-numbered sconces: 2, 3, 5, 7, 11. The rest, lit, snuff every flame in the room including the party's."},
  {n:"Mirror of the Missing",s:"A tarnished mirror shows the room correctly, except one item present in the reflection is absent from the room.",a:"Find or fashion the missing item and place it where the mirror shows. The mirror then shows the location of this level's best-hidden thing."},
- {n:"The Debt Ledger",s:"A ledger on a lectern, one line unfinished: OWED TO THE HOUSE, ONE ______. A quill waits, full of something red.",a:"Write TRUTH and speak one aloud. Any material payment written is taken from the writer on the spot, painfully, and the door stays shut."},
+ {n:"The Debt Ledger",s:"A ledger on a lectern, one line unfinished: OWED TO THE HOUSE, ONE ______. A quill waits, full of something red.",a:"Write TRUTH, then speak a true thing aloud. Any material payment written is taken from the writer on the spot, painfully, and the door stays shut."},
  {n:"Stone Choir",s:"Five statue heads, mouths open. Wind moves through the room. Each head hums a different note when its mouth is covered.",a:"Cover the mouths so the remaining notes sound the dungeon's four-note motif, heard at the entrance. The wall behind the choir swings wide."},
  {n:"The Warden's Riddle Lock",s:"A door with a sliding letter rack and the prompt: THE MORE YOU TAKE, THE MORE YOU LEAVE BEHIND.",a:"Set the letters to STEPS. Wrong answers ring the Bell of Summons if one is placed anywhere in the dungeon; otherwise they simply echo, twice."},
  {n:"Offering of Light",s:"An altar bowl, bone dry, ringed by the sooty stubs of ten thousand candles. Carved beneath: FEED WHAT GUIDES YOU.",a:"Burn something of the party's own light in the bowl: a torch, an hour of the lantern's oil. The room's secret opens. The dungeon accepts no other currency."}
@@ -754,7 +759,15 @@ const RIDDLES=[
  {q:"What walks on four legs in the morning, two at noon, and three in the evening?",a:"A person, through a lifetime"},
  {q:"I am not alive, but I grow. I have no lungs, but I need air. I have no mouth, and water kills me.",a:"Fire"}
 ];
-const DRESSING=["a boot, standing upright, laces tied","a message scratched at floor height, unfinished","a perfect circle of dead moths","a child's toy soldier, facing the door","tally marks in groups of five, hundreds of them","a fresh apple core","a rope descending into a hole too small for a person","two skeletons holding hands","a locked box, open, empty, and warm","a portrait with the face scraped to canvas","a birdcage, door open, seed fresh","a single muddy footprint, mid-room, pointing up","a wine bottle, dusty, corked, three-quarters full","an arrow of coins on the floor, pointing somewhere"];
+const DRESSING=["a boot, standing upright, laces tied","a message scratched at floor height, unfinished","a perfect circle of dead moths","a child's toy soldier, facing the door","tally marks in groups of five, hundreds of them","a fresh apple core","a rope descending into a hole too small for a person","two skeletons holding hands","a lockbox, open, empty, and still warm","a portrait with the face scraped to canvas","a birdcage, door open, seed fresh","a single muddy footprint, mid-room, pointing up","a wine bottle, dusty, corked, three-quarters full","an arrow of coins on the floor, pointing somewhere"];
+
+/* creatures that cannot argue, keep watch or parley; the same pick reads differently for them */
+const MINDLESS=new Set(["skeleton","zombie","drowned","thrall","bonehound","armor","sentinel","colossus","ooze","wraith","shade"]);
+/* the same picks for a creature alone: no "one on watch", no dividing loot with itself */
+const ONE_ACT=a=>a.replace(/^arguing over/,"muttering over").replace("asleep, with one supposed to be on watch","asleep at its post").replace("dividing loot with knives out","counting loot with a knife out").replace("standing where they stopped","standing where it stopped").replace("only they can sense","only it can sense").replace("gathered around a corpse","crouched beside a corpse");
+const ONE_TAC={"Fall back and regroup at their home room":"Fall back to its home room","Fight to the last while the leader watches":"Fight to the last","Feint, scatter, and snipe":"Strike, fall back, strike again","Fall back toward their home room":"Fall back toward its home room","Spread out and come from every side":"Circle and strike from behind"};
+const MINDLESS_ACTS=["gathered around a corpse, very still","standing where they stopped, facing nothing","circling the room in a slow loop that never ends","crouched over something best left unexamined","pressed against a barricade that faces the wrong way","following a trail only they can sense","nested in a heap of other people's things","listening at the far door"];
+const MINDLESS_TACS=["Rush the light first","Fall back toward their home room","Ambush from cover, then press the attack","Fight to the last, without a sound","Spread out and come from every side","Hold the doorway"];
 
 /* ============ treasure ============ */
 const COIN={minor:[15,60],moderate:[60,220],major:[220,700]};
@@ -764,16 +777,16 @@ const MAGIC=[
  {n:"Cartographer's Quill",t:"Draws a true map of any single room it has been carried through. Works nine times."},
  {n:"Draught of the Deep Breath",t:"Drink to breathe water for one hour, real time."},
  {n:"Salt-Iron Torc",t:"Wearer gains +1 AC against undead."},
- {n:"Whispering Coin",t:"Split in two: whatever is said over one half is heard at the other, once per day."},
+ {n:"Whispering Coin",t:"Split in two. Whatever is said over one half is heard at the other, once a day."},
  {n:"Boots of the Quiet Guest",t:"Advantage on checks to move silently. The boots refuse to run."},
  {n:"Lantern of Honest Shadows",t:"Anything invisible or disguised casts its true shadow in this light."},
  {n:"Ration of the Last Feast",t:"One meal that satisfies a full day and heals 1d6. It tastes like a meal you remember."},
  {n:"Keyblank of the Old Owners",t:"Opens one nonmagical lock in the place it was found, then fuses forever."},
- {n:"Scroll of Turning",t:"Read aloud: undead within near flee for 1d4 rounds, DC 13 WIS resists."},
- {n:"Grave-Cold Blade",t:"A +1 dagger. In darkness it also deals +1 cold and glimmers faintly, close only."},
- {n:"Stone of Recall the Way",t:"Squeeze to know the direction of the entrance. Ninety-nine uses, and it counts down out loud."}
+ {n:"Scroll of Turning",t:"Read it aloud, and undead within near range turn and flee for 1d4 rounds (DC 13 WIS resists)."},
+ {n:"Grave-Cold Blade",t:"A +1 dagger. In darkness it deals 1 extra cold damage and glows faintly, out to close range."},
+ {n:"Stone of the Way Back",t:"Squeeze to know the direction of the entrance. Ninety-nine uses, and it counts down out loud."}
 ];
-const CURSES=["It hums when reburied treasure is near, loudly, at the worst times.","Its former owner knows, now, exactly who carries it.","Sleep within near of it fills with someone else's memories.","It is heavier every day it goes unspent."];
+const CURSES=["It hums whenever buried treasure is near, loudly, at the worst times.","Its former owner knows, now, exactly who carries it.","Anyone who sleeps near it dreams someone else's memories.","It is heavier every day it goes unspent."];
 const GEAR=[{n:"Torch",c:"5 cp"},{n:"Flask of oil",c:"5 sp"},{n:"Iron spikes (10)",c:"1 gp"},{n:"Rope, 60 ft",c:"1 gp"},{n:"Rations (3)",c:"5 sp"},{n:"Crowbar",c:"5 sp"},{n:"Grappling hook",c:"1 gp"},{n:"Mirror, steel",c:"5 gp"}];
 /*ENGINE-DATA-END*/
 
@@ -787,14 +800,14 @@ const DIRNAME=(dx,dy)=>Math.abs(dx)>Math.abs(dy)?(dx>0?"east":"west"):(dy>0?"sou
 
 function makeName(rng,originKey,doomKey){
   const adj=P(rng,DOOMS[doomKey].adj), place=P(rng,ORIGINS[originKey].place);
-  return "The "+adj+" "+CAP(place)+" of "+P(rng,HOLY);
+  return "The "+adj+" "+TITLE(place)+" of "+P(rng,HOLY);
 }
 function randomSeed(){const r=Math.random;return SEED_A[Math.floor(r()*SEED_A.length)]+"-"+SEED_B[Math.floor(r()*SEED_B.length)]+"-"+(10+Math.floor(r()*90));}
 
 const TWISTS=[
  g=>"The founder of this place and "+g.leaderName+" are the same person. The years in between do not bear thinking about.",
- g=>"The "+g.doomLabel.toLowerCase()+" is not finished. It is still spreading, slowly, upward.",
- g=>"A second way in exists: a shaft that surfaces inside "+(g.townName||"the nearest town")+", behind "+(g.innName?(/^The /.test(g.innName)?g.innName.replace(/^The /,"the "):"the "+g.innName):"the old inn")+".",
+ g=>g.doomStill,
+ g=>"A second way in exists: a shaft that comes up in "+(g.townName||"the nearest town")+", behind "+(g.innName?(/^The /.test(g.innName)?g.innName.replace(/^The /,"the "):"the "+g.innName):"the old inn")+".",
  g=>"The famous treasure of this place was carried out long ago. What remains in the deep vault is the thing the treasure was payment to contain.",
  g=>"One faction's leader is already dead. Something else answers when its followers report.",
  g=>"The old owners left a key to everything in plain sight at the threshold. Nobody ever takes it, because nobody believes it."
@@ -815,7 +828,8 @@ function generate(cfg){
   const origin=ORIGINS[originKey], doom=DOOMS[doomKey];
   const age=P(rng,["a generation ago","in your grandparents' time","centuries past","before any living memory"]);
   const name=makeName(rng,originKey,doomKey);
-  const intro="This was a "+origin.label.toLowerCase()+" once. "+CAP(doom.label.toLowerCase())+" came "+age+", and the surface world sealed the doors and tried to forget. The doors did not stay sealed.";
+  const once=origin.once||"a "+origin.label.toLowerCase(), fell=doom.fell.replace("{age}",age);
+  const intro="This was "+once+" once. "+fell+". The surface world sealed the doors and tried to forget. The doors did not stay sealed.";
 
   /* ---- room count & class deck ---- */
   const count=cfg.size==="s"?RI(rng,8,12):cfg.size==="l"?RI(rng,20,28):RI(rng,13,18);
@@ -873,6 +887,9 @@ function generate(cfg){
       return true;}
     return false;}
 
+  /* the wall a door stands in, read from where it is drawn: the door square and the first square of its passage */
+  const WALL=(d,o)=>o[1]<d[1]?"north":o[1]>d[1]?"south":o[0]>d[0]?"east":"west";
+  const wallA=e=>WALL(e.da,e.path[0]), wallB=e=>WALL(e.db,e.path[e.path.length-1]);
   /* entrance */
   const eW=CLASSES.entry.w;
   const entrance=addRect("entry",Math.floor(GW/2-eW[0]/2),2,eW[0],eW[1]);
@@ -919,6 +936,45 @@ function generate(cfg){
     const dx=(A.x+A.w/2)-(B.x+B.w/2),dy=(A.y+A.h/2)-(B.y+B.h/2);
     const d=Math.hypot(dx,dy);if(d>5&&d<17)pairs.push([i,j,d]);}
   for(const[i,j]of SH(rng,pairs)){if(loops>=RI(rng,2,4))break;if(connect(rooms[i],rooms[j]))loops++;}
+  /* ---- passages with no room in common must not share floor ----
+     On the map a shared square reads as a junction, and the key knows of none. Any such passage is laid again
+     around the others: the shortest way with the fewest turns. No random number is drawn, so the same code still
+     builds the same rooms, doors, creatures and treasure; only the line of a passage moves. */
+  (function untangle(){
+    const rel=(i,j)=>{const a=edges[i],b=edges[j];return a.a===b.a||a.a===b.b||a.b===b.a||a.b===b.b;};
+    let own=new Map();
+    const index=()=>{own=new Map();edges.forEach((e,i)=>e.path.forEach(([x,y])=>{const k=K(x,y),o=own.get(k);if(o)o.push(i);else own.set(k,[i]);}));};
+    const foreign=(i,k)=>{const o=own.get(k);return !!o&&o.some(j=>j!==i&&!rel(i,j));};
+    const clash=i=>edges[i].path.some(([x,y])=>foreign(i,K(x,y)));
+    const DX=[1,0,-1,0],DY=[0,1,0,-1];
+    function relay(i){
+      const e=edges[i],s=e.path[0],g=e.path[e.path.length-1];
+      if(s[0]===g[0]&&s[1]===g[1])return null;
+      const shut=(x,y)=>x<0||y<0||x>=GW||y>=GH||occ.has(K(x,y))||(!(x===g[0]&&y===g[1])&&foreign(i,K(x,y)));
+      const best=new Map(),from=new Map(),buckets=[];
+      const push=(c,x,y,d,prev)=>{const id=(y*GW+x)*4+d;if(best.has(id)&&best.get(id)<=c)return;best.set(id,c);from.set(id,prev);(buckets[c]||(buckets[c]=[])).push(id);};
+      for(let d=0;d<4;d++)push(0,s[0],s[1],d,-1);
+      let end=-1;
+      for(let c=0;c<buckets.length&&end<0;c++){const b=buckets[c];if(!b)continue;
+        for(let n=0;n<b.length;n++){const id=b[n];if(best.get(id)!==c)continue;
+          const d=id&3,cell=id>>2,x=cell%GW,y=(cell-x)/GW;
+          if(x===g[0]&&y===g[1]){end=id;break;}
+          for(let nd=0;nd<4;nd++){if(((nd+2)&3)===d)continue;
+            const nx=x+DX[nd],ny=y+DY[nd];if(shut(nx,ny))continue;
+            push(c+2+(nd===d?0:3),nx,ny,nd,id);}}}
+      if(end<0)return null;
+      const out=[];for(let id=end;id!==-1;id=from.get(id)){const cell=id>>2,x=cell%GW;out.push([x,(cell-x)/GW]);}
+      return out.reverse();
+    }
+    index();
+    for(let pass=0;pass<4;pass++){let moved=false;
+      for(let i=0;i<edges.length;i++){if(!clash(i))continue;const np=relay(i);if(np){edges[i].path=np;index();moved=true;}}
+      if(!moved)break;}
+    /* where the stone leaves no other way, the key says so rather than hide it */
+    for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++){if(rel(i,j))continue;
+      if(edges[i].path.some(([x,y])=>{const o=own.get(K(x,y));return !!o&&o.includes(j);})){
+        (edges[i].meets=edges[i].meets||[]).push(j);(edges[j].meets=edges[j].meets||[]).push(i);}}
+  })();
 
   /* ---- door types, secrets, locks with guaranteed keys ---- */
   for(const e of edges){
@@ -942,8 +998,7 @@ function generate(cfg){
     const cand=rooms.filter((r,i)=>i!==0&&reach[i]>=0&&i!==lairId);
     if(!cand.length){le.type="stuck";continue;}
     const kr=P(rng,cand);
-    le.keyIn=kr.id;le.keySide=DIRNAME(
-      rooms[le.b].bbox.x-rooms[le.a].bbox.x, rooms[le.b].bbox.y-rooms[le.a].bbox.y);
+    le.keyIn=kr.id;le.keySide=wallA(le);
   }
 
   /* ---- factions ---- */
@@ -970,10 +1025,12 @@ function generate(cfg){
         goal:P(rng,kind.goal),att:kind.att,canAlly:rng()<.75,allyCond:kind.ally,
         home:homes[f]?homes[f].id:lairId,rooms:[],strength:0});
     }
+    {const used=new Set(); factions.forEach(f=>{let [first,...rest]=f.leader.name.split(" ");
+      if(used.has(first)){const free=FIRST.find(x=>!used.has(x)); if(free){first=free; f.leader.name=[first,...rest].join(" ");}} used.add(first);});}
     /* relations */
     for(let i=0;i<factions.length;i++)for(let j=i+1;j<factions.length;j++){
-      const rel=P(rng,["is at open war with","keeps an uneasy truce with","preys on","refuses to acknowledge"]);
-      factions[i].rel=factions[i].rel||[];factions[i].rel.push(rel+" "+factions[j].name);}
+      const rel=P(rng,["At open war with","In an uneasy truce with","Preying on","Refusing to acknowledge"]);
+      factions[i].rel=factions[i].rel||[];factions[i].rel.push(rel+" "+theLower(factions[j].name));}
     /* territory: nearest home by graph distance */
     const dists=factions.map(f=>bfs(f.home));
     rooms.forEach(r=>{
@@ -1012,8 +1069,9 @@ function generate(cfg){
       cls==="shrine"&&rng()<.35?"Dim (votives that should not still burn)":
       cls==="lair"&&rng()<.4?"Dim (an unwholesome glow)":"None";
     /* boxed text: class line + genome touch */
-    const touch=rng()<.5?P(rng,doom.touch):P(rng,origin.touch);
-    r.box=P(rng,CLASS_LINES[cls])+" "+touch;
+    const fromDoom=rng()<.5, touch=fromDoom?P(rng,doom.touch):P(rng,origin.touch);
+    const opener=P(rng,CLASS_LINES[cls]);
+    r.box=opener+" "+touch; r.touch=touch; r.touchPool=fromDoom?"doom":"origin"; r.opener=opener;
     r.detail=rng()<.5?P(rng,DRESSING):null;
     r.treasure=[];r.exits=[];
     if(doom.env.water&&(cls==="well"||rng()<.22))r.flooded=true;
@@ -1023,7 +1081,7 @@ function generate(cfg){
     if(r.id===boss.roomId){
       r.enc={mon:boss.mon,count:1,boss:true,
         act:"waiting, because everything in this place eventually comes here",
-        tac:"Fights in its home ground and uses it: "+(boss.mon.gift?boss.mon.gift.t:"every advantage.")};
+        tac:"Fights on its home ground. "+(boss.mon.gift?boss.mon.gift.t:"It knows every corner of it.")};
     }else if(cls!=="entry"){
       const f=r.faction!=null?factions[r.faction]:null;
       const chance=f?0.65:0.4;
@@ -1035,10 +1093,16 @@ function generate(cfg){
           mon=pool.length?P(rng,pool):MON.rat;}
         const budget=party*(tier.max+1);
         const n=Math.max(1,Math.min(6,Math.round(budget/((mon.lv+1)*2))+RI(rng,-1,1)));
-        r.enc={mon,count:n,fac:f?f.id:null,
-          act:P(rng,["arguing over "+(rng()<.5?"a corpse's boots":"the last of the food"),"asleep, with one supposed to be on watch","mid-ritual, and annoyed","eating; do not ask what","repairing a barricade that faces the wrong way","tracking something on the floor by smell","dividing loot with knives out","listening at the far door"]),
-          tac:P(rng,["Rush the light first","Fall back and regroup at their home room","Ambush from cover, then parley if it goes badly","Fight to the last while the leader watches","Feint, scatter, and snipe","Defend the doorway chokepoint"]),
-          morale:f&&f.kind==="undead"?"Never checks morale.":"Flees or parleys at half strength."};
+        const ACTS=["arguing over "+(rng()<.5?"a corpse's boots":"the last of the food"),"asleep, with one supposed to be on watch","mid-ritual, and annoyed","eating; do not ask what","repairing a barricade that faces the wrong way","tracking something on the floor by smell","dividing loot with knives out","listening at the far door"];
+        const TACS=["Rush the light first","Fall back and regroup at their home room","Ambush from cover, then parley if it goes badly","Fight to the last while the leader watches","Feint, scatter, and snipe","Defend the doorway chokepoint"];
+        let act=P(rng,ACTS), tac=P(rng,TACS);
+        /* things with no mind to speak of: the dead that only walk, constructs, oozes, vermin, beasts */
+        const mindless=MINDLESS.has(mon.id)||mon.tg.some(t=>["vermin","beast","ooze","fungal","construct"].includes(t));
+        if(mindless){act=MINDLESS_ACTS[ACTS.indexOf(act)]; tac=MINDLESS_TACS[TACS.indexOf(tac)];}
+        if(n===1){act=ONE_ACT(act); tac=ONE_TAC[tac]||tac;}
+        const unfeeling=mindless&&(mon.tg.includes("undead")||mon.tg.includes("construct")||mon.tg.includes("ooze"));
+        r.enc={mon,count:n,fac:f?f.id:null,act,tac,
+          morale:(f&&f.kind==="undead")||unfeeling?"Never checks morale.":mindless?"Flees at half strength.":"Flees or parleys at half strength."};
       }
     }
     /* traps */
@@ -1055,13 +1119,21 @@ function generate(cfg){
       const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));
       const m=pickMagic();if(m){r.treasure.push(T(m.n+": "+m.t+(m.curse?" Cursed: "+m.curse:""),0,"magic"));placedItems.push(m.n);}
     }else if(fHome){
-      const g=RI(rng,COIN.moderate[0],COIN.moderate[1]);r.treasure.push(T((/^The /.test(fHome.name)?fHome.name.replace(/^The /,"the "):"the "+fHome.name)+"'s hoard: "+coinTxt(g),g));
+      const g=RI(rng,COIN.moderate[0],COIN.moderate[1]);r.treasure.push(T("the hoard of "+theLower(fHome.name)+": "+coinTxt(g),g));
       if(rng()<.6){const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));}
     }else if(cls==="vault"||rng()<.4){
       const g=RI(rng,COIN.minor[0],COIN.minor[1]);r.treasure.push(T(coinTxt(g),g));
       if(cls==="vault"&&rng()<.7){const v=P(rng,VALUABLES);r.treasure.push(T(v.n,v.gp,"valuable"));}
     }
   }
+  /* the doom and origin lines are strong once and dull by the fifth reading: keep each one the first time only */
+  {const told=new Set(), opened=new Set(); for(const r of rooms){
+    let op=r.opener; if(opened.has(op)){const free=CLASS_LINES[r.cls].find(l=>!opened.has(l)); if(free)op=free;} opened.add(op);
+    let tc=r.touch; if(tc&&told.has(tc)){ /* a fresh line from the same pool, then the other, in order: no new draws */
+      const mine=r.touchPool==="doom"?doom.touch:origin.touch, other=r.touchPool==="doom"?origin.touch:doom.touch;
+      const at=mine.indexOf(tc), ring=mine.slice(at+1).concat(mine.slice(0,at)).concat(other);
+      tc=ring.find(l=>!told.has(l))||null;}
+    r.box=op+(tc?" "+tc:""); if(tc)told.add(tc); delete r.touch; delete r.touchPool; delete r.opener;}}
   /* extra magic items scattered */
   const magicN=(cfg.size==="l"?2:1)+(rng()<.5?1:0);
   for(let i=0;i<magicN;i++){const m=pickMagic();if(!m)break;
@@ -1078,29 +1150,45 @@ function generate(cfg){
       rooms[far].treasure.push(T("a hidden cache: "+coinTxt(g),g,"cache"));}}}
   /* secrets noted on rooms */
   for(const e of edges){if(e.type==="secret"){
-    const dn=DIRNAME(rooms[e.b].bbox.x-rooms[e.a].bbox.x,rooms[e.b].bbox.y-rooms[e.a].bbox.y);
-    rooms[e.a].secretNote="A secret door hides in the "+dn+" wall (DC 12 WIS to notice the draft).";
-    rooms[e.b].secretNote="A secret door hides in the "+({north:"south",south:"north",east:"west",west:"east"})[dn]+" wall (DC 12 WIS from this side).";}}
+    const note=(r,w,tail)=>{r.secretNote=r.secretNote?r.secretNote+" Another hides in the "+w+" wall.":"A secret door hides in the "+w+" wall ("+tail+").";};
+    note(rooms[e.a],wallA(e),"DC 12 WIS to notice the draft");
+    note(rooms[e.b],wallB(e),"DC 12 WIS from this side");}}
   /* exits listing */
   const num=id=>id+1;
   for(const e of edges){
-    const dn=DIRNAME(rooms[e.b].bbox.x-rooms[e.a].bbox.x,rooms[e.b].bbox.y-rooms[e.a].bbox.y);
-    const back={north:"south",south:"north",east:"west",west:"east"}[dn];
     const t=e.type;
-    const label=t==="open"?"open passage":t==="door"?"wooden door":t==="stuck"?"stuck door (DC 12 STR)":t==="locked"?"locked iron door":t==="barred"?"door barred from the far side":"secret door";
-    rooms[e.a].exits.push({dir:dn,to:num(e.b),label,secret:t==="secret"});
-    rooms[e.b].exits.push({dir:back,to:num(e.a),label,secret:t==="secret"});
+    let la=t==="open"?"open passage":t==="door"?"wooden door":t==="stuck"?"stuck door (DC 12 STR)":t==="locked"?"locked iron door":t==="barred"?"":"secret door", lb=la;
+    if(t==="barred"){ /* the bar sits on the side farther from the entrance, so the door is a way back and never a dead wall */
+      const d=bfs(0,x=>x===e), far=d[e.a]<0?e.a:d[e.b]<0?e.b:(d[e.a]>d[e.b]?e.a:e.b);
+      e.barIn=far;
+      const held="barred door (the bar is on this side; lift it)", shut="door barred from the other side (DC 15 STR to force it, and it is loud)";
+      la=far===e.a?held:shut; lb=far===e.b?held:shut;}
+    const meet=e.meets?"it meets the passage between rooms "+e.meets.map(j=>num(edges[j].a)+" and "+num(edges[j].b)).join(", and the one between rooms ")+" on the way, and a party can turn there":"";
+    rooms[e.a].exits.push({dir:wallA(e),to:num(e.b),label:la,secret:t==="secret",at:e.da,note:meet});
+    rooms[e.b].exits.push({dir:wallB(e),to:num(e.a),label:lb,secret:t==="secret",at:e.db,note:meet});
   }
-  rooms.forEach(r=>r.exits.sort((a,b)=>a.dir.localeCompare(b.dir)));
+  /* two doors in one wall: say which is which, reading the wall the way the map is drawn */
+  rooms.forEach(r=>{
+    const ORD={north:0,east:1,south:2,west:3}, along=x=>(x.dir==="north"||x.dir==="south")?x.at[0]:x.at[1];
+    r.exits.sort((a,b)=>ORD[a.dir]-ORD[b.dir]||along(a)-along(b)||a.to-b.to);
+    for(const w of ["north","east","south","west"]){
+      const g=r.exits.filter(x=>x.dir===w&&!x.secret); if(g.length<2)continue;
+      const spots=[...new Set(g.map(along))], ends=(w==="north"||w==="south")?["west","east"]:["north","south"];
+      g.forEach(x=>{const i=spots.indexOf(along(x)), many=g.filter(y=>along(y)===along(x)).length>1;
+        const where=spots.length<2?"":i===0?ends[0]+" end":i===spots.length-1?ends[1]+" end":spots.length===3?"middle":"doorway "+(i+1)+" from the "+ends[0];
+        const side=[where,many?"shared doorway":""].filter(Boolean).join(", "); if(side)x.side=side;});}
+    r.exits.forEach(x=>{delete x.at; if(!x.note)delete x.note;});});
   /* wandering table */
   const wpool=[];
-  factions.forEach(f=>wpool.push({mon:f.base,txt:f.name+" patrol, "+P(rng,["lost","hunting","carrying a body","arguing about orders"])}));
+  factions.forEach(f=>wpool.push({mon:f.base,txt:"a patrol from "+theLower(f.name)+", "+P(rng,["lost","hunting","carrying a body","arguing about orders"])}));
   wpool.push({mon:MON.rat,txt:"vermin following the smell of your rations"});
   const beasts=MONSTERS.filter(m=>m.lv<=tier.max&&(m.tg.includes("beast")||m.tg.includes("vermin")));
   wpool.push({mon:P(rng,beasts),txt:"something that heard the last fight"});
   wpool.push({mon:null,txt:"a distant sound: "+P(rng,["a bell, one note","stone grinding on stone","laughter, cut short","water where no water should move","your own names, badly pronounced"])});
   wpool.push({mon:null,txt:"the torch gutters in a wind from below (no encounter, lose 5 minutes of light)"});
-  const wander=SH(rng,wpool).slice(0,6).map((w,i)=>({roll:i+1,txt:w.txt,mon:w.mon,n:w.mon?RI(rng,1,Math.max(1,Math.min(4,party-1))):0}));
+  const wander=SH(rng,wpool).slice(0,6).map((w,i)=>{const k=w.mon?RI(rng,1,Math.max(1,Math.min(4,party-1))):0;
+    const txt=k===1&&/^a patrol from /.test(w.txt)?w.txt.replace(/^a patrol from /,"a straggler from ").replace(", arguing about orders",", muttering about orders"):w.txt;
+    return{roll:i+1,txt,mon:w.mon,n:k};});
 
   /* ---- town (one-shot) ---- */
   let town=null;
@@ -1108,19 +1196,19 @@ function generate(cfg){
   if(cfg.mode==="oneshot"){
     const patronName=P(rng,FIRST)+" "+P(rng,EPITHET);
     const wantItem=placedItems.length&&rng()<.7?placedItems[0]:null;
-    const want=wantItem?("recover "+wantItem+" from "+name):("bring back proof that "+boss.mon.name+" is finished");
+    const want=wantItem?("recover the "+wantItem+" from "+theLower(name)):("bring back proof that "+boss.mon.name+" is finished");
     const reward=(lvl+1)*RI(rng,40,80);
     const rumors=[];
-    factions.slice(0,2).forEach(f=>rumors.push({txt:"They say the "+f.type.replace(/^(the|a|an) /,"")+" down there mean to "+f.goal+".",truth:"t"}));
-    const twistTxt=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomLabel:doom.label,townName,innName});
+    factions.slice(0,2).forEach(f=>rumors.push({txt:"They say "+FACTION_KINDS.find(x=>x.k===f.kind).say+" "+f.goal+".",truth:"t"}));
+    const twistTxt=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomStill:doom.still,townName,innName});
     rumors.push({txt:P(rng,["An old-timer swears: ","The keeper will tell you, for a drink: ","A scrawl in the outhouse reads: "])+twistTxt,truth:"h"});
     const falseDoom=P(rng,Object.keys(DOOMS).filter(k=>k!==doomKey));
-    rumors.push({txt:"Everyone knows it was "+DOOMS[falseDoom].label.toLowerCase()+" that emptied the place. Everyone is wrong.",truth:"f"});
+    rumors.push({txt:"Everyone knows it was "+DOOMS[falseDoom].np+" that emptied the place. Everyone is wrong.",truth:"f"});
     town={name:townName,inn:innName,keeper:P(rng,FIRST)+", who "+P(rng,KEEPER_QUIRK),
       patron:{name:patronName,want,reward},rumors:SH(rng,rumors).slice(0,3),
       shop:SH(rng,GEAR).slice(0,4)};
   }
-  const twist=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomLabel:doom.label,townName:town?town.name:null,innName:town?town.inn:null});
+  const twist=P(rng,TWISTS)({leaderName:(bossFaction?bossFaction.leader.name:boss.mon.name),doomStill:doom.still,townName:town?town.name:null,innName:town?town.inn:null});
 
   /* stairs down for campaign mode */
   let stairsDown=null;
@@ -1128,7 +1216,7 @@ function generate(cfg){
     const dd=bfs(0);let far=lairId;rooms.forEach((r,i)=>{if(i!==lairId&&dd[i]>=0&&dd[i]>=dd[far]-1&&i!==0)far=i;});
     stairsDown=far;rooms[far].stairsDown=true;}
 
-  return{seed:cfg.seed,seedFull,depth,cfg:{...cfg,level:lvl,baseLevel:(+cfg.level||1)},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist},
+  return{seed:cfg.seed,seedFull,depth,cfg:{...cfg,level:lvl,baseLevel:(+cfg.level||1)},genome:{originKey,doomKey,origin:origin.label,doom:doom.label,age,name,intro,twist,once,fell},
     rooms,edges,factions,boss,wander,town,stairsDown,grid:{w:GW,h:GH},lairId};
 }
 
@@ -1164,8 +1252,9 @@ if(typeof module!=="undefined"&&module.exports){module.exports=AC;}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const CAP=s=>String(s).charAt(0).toUpperCase()+String(s).slice(1);
+const theLower=s=>/^The /.test(String(s))?"the "+String(s).slice(4):String(s);
 const S={model:null,revealed:new Set([0]),sel:0,sys:"sd",view:"dm",role:"dm",tints:false,tab:"room",
-  loot:new Set(),torch:{src:"torch",remain:0,running:false,used:0,timer:null,warned:{}}};
+  loot:new Set(),torch:{src:"torch",remain:0,endsAt:null,running:false,used:0,timer:null,warned:{}}};
 const CS=14, GLYPH={entry:"⌂",hall:"║",guard:"♜",quarters:"▤",store:"▥",shrine:"✟",crypt:"☠",cell:"⛓",library:"✎",workshop:"⚒",well:"≈",vault:"▣",warren:"◌",lair:"✦"};
 const FCOLOR=["#a3552e","#4e7b52","#5a5f9e"];
 
@@ -1181,6 +1270,8 @@ function jitterMap(model){
    Everything here is drawn once, in <defs>, and reused by pattern or gradient fills.
    The pen's jitter comes from a tiny generator seeded by the dungeon's seed string, so the same
    seed always draws the same strokes. It never touches the dungeon generator's own random numbers. */
+function inkRng(str){let h=0;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),2654435761);}
+  let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function artInk(model){
   const rng=(()=>{let h=0;const s=String(model.seed)+":art";for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),2654435761);}
     let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();
@@ -1216,11 +1307,18 @@ function buildMap(model,opts){
   const rev=opts.revealed, view=opts.view, tints=opts.tints;
   const showAll=view==="dm";
   const parts=[],hatch=[],wdefs=[];
+  /* opts.print: the map for paper. Same drawing, but the grain and the hatching are real strokes, not pattern fills. */
+  const prng=opts.print?inkRng(String(model.seed)+":print"):null, f1=n=>(+n).toFixed(1), ptilt=prng?(prng()-0.5)*14:0;
   parts.push(""); /* the <defs> block is written last, once every wall path is known */
   /* corridors */
   const corrVisible=e=>rev.has(e.a)||rev.has(e.b);
   parts.push('<g>');
-  for(const e of model.edges){
+  if(opts.print){ /* on paper a passage needs walls of its own: every outline first, then every floor, so forks join cleanly */
+    for(const pass of [0,1])for(const e of model.edges){ if(e.type==="secret"&&view!=="dm")continue;
+      const pts=[e.da,...e.path,e.db].map(([x,y])=>((x+0.5)*CS)+","+((y+0.5)*CS)).join(" ");
+      parts.push(pass===0?'<polyline points="'+pts+'" fill="none" stroke="var(--wallink)" stroke-width="'+(CS*0.56+1.5)+'" stroke-linecap="round" stroke-linejoin="round" opacity="0.72"'+(e.type==="secret"?' stroke-dasharray="3 4"':'')+'/>'
+        :'<polyline points="'+pts+'" fill="none" stroke="var(--floor-lit)" stroke-width="'+(CS*0.56)+'" stroke-linecap="round" stroke-linejoin="round"/>');}}
+  for(const e of (opts.print?[]:model.edges)){
     const vis=corrVisible(e)||showAll;
     if(!vis)continue;
     if(e.type==="secret"&&view!=="dm")continue;
@@ -1241,7 +1339,8 @@ function buildMap(model,opts){
       parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="'+fill+'"/>');
     }
     for(const[x,y]of r.cells){
-      parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="url(#dots)"/>');
+      if(opts.print){for(let k=0;k<3;k++)parts.push('<circle cx="'+f1((x+prng())*CS)+'" cy="'+f1((y+prng())*CS)+'" r="'+f1(0.3+prng()*0.45)+'" fill="var(--wallink)" opacity="'+f1(0.08+prng()*0.12)+'"/>');}
+      else parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="url(#dots)"/>');
     }
     if(tints&&view==="dm"&&r.faction!=null){
       for(const[x,y]of r.cells)parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="'+FCOLOR[r.faction]+'" opacity="0.12"/>');
@@ -1265,7 +1364,13 @@ function buildMap(model,opts){
        The bands narrow toward the wall and shade it darker; the innermost crosses the strokes. */
     const hop=dim?0.2:1,wid="wp"+r.id;
     wdefs.push('<path id="'+wid+'" d="'+wp+'"/>');
-    hatch.push('<use href="#'+wid+'" stroke="url(#hatchB)" stroke-width="'+(CS*1.3)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.38)+'"/>'
+    if(opts.print){
+      let hs="";const pen=(x,y,ox,oy)=>{for(let k=0;k<7;k++){const t=(k+prng())/7,d=0.7+Math.pow(prng(),1.6)*CS*0.78,px=x+(ox?ox*d:t*CS),py=y+(oy?oy*d:t*CS),
+          a=(44+ptilt+(prng()-0.5)*10)*Math.PI/180,L=(2.4+prng()*2.6)*(1-d/(CS*1.7)),dx=Math.cos(a)*L/2,dy=Math.sin(a)*L/2;
+          hs+="M"+f1(px-dx)+" "+f1(py-dy)+"L"+f1(px+dx)+" "+f1(py+dy);}};
+      for(const[x,y]of r.cells){if(!has(x,y-1))pen(x*CS,y*CS,0,-1);if(!has(x,y+1))pen(x*CS,(y+1)*CS,0,1);if(!has(x-1,y))pen(x*CS,y*CS,-1,0);if(!has(x+1,y))pen((x+1)*CS,y*CS,1,0);}
+      hatch.push('<use href="#'+wid+'" stroke="none" fill="none"/><path d="'+hs+'" stroke="var(--wallink)" stroke-width="0.5" stroke-linecap="round" fill="none" opacity="'+(hop*0.72)+'"/>');
+    }else hatch.push('<use href="#'+wid+'" stroke="url(#hatchB)" stroke-width="'+(CS*1.3)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.38)+'"/>'
       +'<use href="#'+wid+'" stroke="url(#hatchA)" stroke-width="'+(CS*0.9)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.5)+'"/>'
       +'<use href="#'+wid+'" stroke="url(#hatchX)" stroke-width="'+(CS*0.56)+'" stroke-linecap="square" fill="none" opacity="'+(hop*0.55)+'"/>');
     parts.push('<use href="#'+wid+'" stroke="'+wcol+'" stroke-width="'+ww+'" fill="none" stroke-linecap="round" opacity="'+(dim?0.5:1)+'"/>');
@@ -1316,7 +1421,7 @@ function buildMap(model,opts){
       parts.push('<circle class="frontier" data-goto="'+far+'" cx="'+((dc[0]+0.5)*CS)+'" cy="'+((dc[1]+0.5)*CS)+'" r="4.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1" style="cursor:pointer"><animate attributeName="r" values="3.5;5;3.5" dur="2.2s" repeatCount="indefinite"/></circle>');
     }
   }
-  parts[0]='<defs>'+artInk(model)+(opts.light?lightDefs():'')+wdefs.join("")+'</defs>';
+  parts[0]='<defs>'+(opts.print?'':artInk(model))+(opts.light?lightDefs():'')+wdefs.join("")+'</defs>';
   parts.splice(1,0,'<g class="hatchL">'+hatch.join("")+'</g>');
   return parts.join("");
 }
@@ -1380,7 +1485,7 @@ function reveal(id){const was=S.revealed.has(id),prev=S.sel;S.revealed.add(id);i
 function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
 /* ---------- torch ---------- */
-const SRC={torch:3600,lantern:14400,candle:3600,spell:3600};
+const SRC={torch:3600,lantern:3600,candle:3600,spell:3600};
 const SRCNAME={torch:"torch",lantern:"lantern",candle:"candle",spell:"light spell"};
 function fmtT(s){s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;
   return(h?h+":":"")+String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");}
@@ -1389,16 +1494,20 @@ function chime(freq){let cue=false; try{cue=SND.cfg.cues;}catch(e){} if(!$("#chi
     const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=freq;o.type="sine";
     g.gain.setValueAtTime(0.12,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
     o.connect(g);g.connect(sc?SND.cueBus:ctx.destination);o.start();o.stop(ctx.currentTime+0.62);}catch(e){}}
+/* The torch burns by the clock, not by counting ticks. A browser slows or stops the ticks of a tab nobody is
+   looking at, and the hour has to be a real hour. endsAt is the moment the light dies; what is left is worked out
+   from the clock every second, and again the moment the tab is looked at. */
 function torchTick(){
   const t=S.torch;if(!t.running)return;
-  t.remain-=1;
-  if(t.remain<=600&&!t.warned.w10){t.warned.w10=true;chime(660);torchMsg("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");narAnnounce("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");}
-  if(t.remain<=300&&!t.warned.w5){t.warned.w5=true;chime(520);torchMsg("The flame shrinks to a knuckle of light. Five minutes.");narAnnounce("The flame shrinks to a knuckle of light. Five minutes.");}
+  if(t.endsAt==null)t.endsAt=Date.now()+t.remain*1000;
+  t.remain=Math.max(0,Math.ceil((t.endsAt-Date.now())/1000));
   if(t.remain<=0){lightsOut();return;}
+  if(t.remain<=300&&!t.warned.w5){t.warned.w5=true;t.warned.w10=true;chime(520);torchMsg("The flame shrinks to a knuckle of light. Five minutes.");narAnnounce("The flame shrinks to a knuckle of light. Five minutes.");torchSave();}
+  else if(t.remain<=600&&!t.warned.w10){t.warned.w10=true;chime(660);torchMsg("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");narAnnounce("The "+SRCNAME[t.src]+" gutters. Ten minutes of light remain.");torchSave();}
   renderTorch();renderLight();
 }
 function lightsOut(){
-  const t=S.torch;t.running=false;t.remain=0;clearInterval(t.timer);t.timer=null;
+  const t=S.torch;t.running=false;t.remain=0;t.endsAt=null;clearInterval(t.timer);t.timer=null;
   document.body.classList.add("dark");
   $("#flame").classList.add("out");
   chime(220);
@@ -1406,17 +1515,18 @@ function lightsOut(){
   sndFire("douse"); narAnnounce("The light dies. The dungeon has been waiting for this.");
   renderTorch();renderMap(false);
   if(!TBL.isTable)tblSend({t:"dark"});
+  torchSave();
 }
 function lightUp(){
   const t=S.torch, fromFlame=t.used>0&&t.remain>0&&!document.body.classList.contains("dark"); t.src=$("#lightSource").value;
-  t.remain=SRC[t.src];t.warned={};t.used++;
+  t.remain=SRC[t.src];t.endsAt=Date.now()+t.remain*1000;t.warned={};t.used++;
   document.body.classList.remove("dark");
   $("#flame").classList.remove("out");
   if(!t.timer)t.timer=setInterval(torchTick,1000);
   t.running=true;
   torchMsg("A new "+SRCNAME[t.src]+" takes the flame."+(t.src==="candle"?" Its light reaches only close.":""));
   sndFire("strike",fromFlame); narAnnounce($("#torchState").textContent);
-  renderTorch();renderLight();
+  renderTorch();renderLight();torchSave();
 }
 function torchMsg(m){$("#torchState").innerHTML='<span class="smallcaps">'+esc(m)+"</span>";tblPush();}
 function renderTorch(){
@@ -1454,8 +1564,28 @@ function renderLight(cur){
     LPOS=cur;}
 }
 $("#btnLight").addEventListener("click",lightUp);
-$("#btnPause").addEventListener("click",()=>{const t=S.torch;if(t.remain>0){t.running=!t.running;torchMsg(t.running?"The flame steadies.":"Time holds its breath. The flame does not burn while you rest.");renderTorch();}});
+$("#btnPause").addEventListener("click",()=>{const t=S.torch;if(t.remain>0){t.running=!t.running;t.endsAt=t.running?Date.now()+t.remain*1000:null;if(t.running&&!t.timer)t.timer=setInterval(torchTick,1000);torchMsg(t.running?"The flame steadies.":"Time holds its breath. The flame does not burn while you rest.");renderTorch();torchSave();}});
 $("#btnSnuff").addEventListener("click",()=>{if(S.torch.remain>0){lightsOut();torchMsg("You snuff the light on purpose. Bold.");narAnnounce("You snuff the light on purpose. Bold.");}});
+/* the torch is kept, so a reload or a night's sleep does not relight it or put it out */
+function torchSave(){ if(TBL.isTable)return; const t=S.torch;
+  try{localStorage.setItem("ac.torch",JSON.stringify({src:t.src,endsAt:t.endsAt,remain:t.remain,running:t.running,used:t.used,warned:t.warned,dark:document.body.classList.contains("dark"),at:Date.now()}));}catch(e){} }
+function torchLoad(){
+  if(TBL.isTable)return false; let o=null; try{o=JSON.parse(localStorage.getItem("ac.torch")||"null");}catch(e){} if(!o||!o.used)return false;
+  const t=S.torch,now=Date.now(),STALE=6*3600*1000, src=SRC[o.src]?o.src:"torch";
+  const set=()=>{t.src=src;t.used=o.used;t.warned=o.warned||{};$("#lightSource").value=src;};
+  if(o.running&&o.endsAt){
+    if(o.endsAt<=now){ if(now-o.endsAt>STALE)return false; /* long burned out: a new evening starts unlit */
+      set();t.remain=0;t.running=false;t.endsAt=null;document.body.classList.add("dark");$("#flame").classList.add("out");return "out";}
+    set();t.endsAt=o.endsAt;t.remain=Math.ceil((o.endsAt-now)/1000);t.running=true;$("#flame").classList.remove("out");
+    if(!t.timer)t.timer=setInterval(torchTick,1000);return "burning";}
+  if(!o.running&&o.remain>0){set();t.remain=o.remain;t.endsAt=null;t.running=false;$("#flame").classList.remove("out");
+    if(!t.timer)t.timer=setInterval(torchTick,1000);return "paused";}
+  if(o.dark&&now-(o.at||0)<STALE){set();t.remain=0;document.body.classList.add("dark");$("#flame").classList.add("out");return "out";}
+  return false;
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)torchTick();});
+window.addEventListener("pageshow",()=>torchTick());
+window.addEventListener("focus",()=>torchTick());
 /*UI-CONT*/
 
 /* ---------- panels ---------- */
@@ -1491,7 +1621,7 @@ function renderPanel(){
     if(r.playlist)h+='<div class="tiny" style="margin-top:4px">♫ <a href="'+r.playlist.u+'" target="_blank" rel="noopener">'+esc(r.playlist.n)+'</a></div>';
     h+='<div class="klabel">Exits</div>';
     for(const x of r.exits){if(x.secret&&!dm)continue;
-      h+='<div class="exitline">'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+'</div>';}
+      h+='<div class="exitline">'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
     if(dm&&r.secretNote)h+='<div class="secretline" style="margin-top:4px">'+esc(r.secretNote)+'</div>';
     if(r.stairsDown){h+='<div class="klabel">Below</div><div class="dmnote">A stair descends into a deeper level.</div>';
       if(m.cfg.mode==="campaign")h+='<button class="primary" id="btnDescend" style="margin-top:4px">Descend to depth '+(m.depth+1)+'</button>';}
@@ -1523,9 +1653,9 @@ function renderPanel(){
         h+='<div class="dmnote"><b>Goal:</b> '+esc(f.goal)+'</div>';
         if(dm){h+='<div class="dmnote"><b>Leader:</b> '+esc(f.leader.name)+', '+esc(f.leader.of)+'</div>'+statHTML(f.leader);
           if(f.canAlly)h+='<div class="tiny">Will treat with the party if '+esc(f.allyCond)+'.</div>';
-          (f.rel||[]).forEach(rl=>h+='<div class="tiny">'+esc(f.name+" "+rl)+'.</div>');}
+          (f.rel||[]).forEach(rl=>h+='<div class="tiny">'+esc(rl)+'.</div>');}
         h+='</div>';});}
-    if(dm){h+='<div class="klabel">Wandering the halls (d6, check every 2 rooms or on loud noise)</div>';
+    if(dm){h+='<div class="klabel">Wandering the halls (roll a d6 between rounds of exploring and on any loud noise; a 1 brings something)</div>';
       m.wander.forEach(w=>{h+='<div class="rrow" style="cursor:default"><span class="rnum">'+w.roll+'</span><span class="rname tiny">'+esc(w.txt)+(w.mon?' ('+w.n+' × '+esc(w.mon.name)+')':'')+'</span></div>';});}
     if(m.town){const t=m.town;
       h+='<div class="klabel">'+esc(t.name)+', the last town</div>';
@@ -1543,14 +1673,14 @@ function renderPanel(){
     const used=new Map();
     m.rooms.forEach(r=>{if(r.enc){const k=r.enc.mon.name;const u=used.get(k)||{mon:r.enc.mon,n:0,rooms:[]};u.n+=r.enc.count;u.rooms.push(r.id+1);used.set(k,u);}});
     let h='<div class="klabel">Everything that lives here ('+(S.sys==="sd"?"Shadowdark":"5e")+' stats)</div>';
-    if(!dm)h='<div class="tiny">The bestiary is the DM\u2019s to know.</div>';
-    else{used.forEach(u=>{h+=statHTML(u.mon)+'<div class="tiny" style="margin:-4px 0 10px">'+u.n+' across rooms '+u.rooms.join(", ")+'</div>';});
+    if(!dm)h='<div class="tiny">The bestiary is the game master\u2019s to know.</div>';
+    else{used.forEach(u=>{h+=statHTML(u.mon)+'<div class="tiny" style="margin:-4px 0 10px">'+u.n+(u.rooms.length>1?' across rooms '+u.rooms.slice(0,-1).join(", ")+' and '+u.rooms[u.rooms.length-1]:' in room '+u.rooms[0])+'</div>';});
       if(!used.size)h+='<div class="tiny">The halls are empty. That is its own kind of warning.</div>';}
     el.innerHTML=h;
   }
   else{
     let h='<div class="klabel">'+(S.sys==="sd"?"Treasure is experience. Each hoard carried out is worth XP by its rating.":"Treasure. In 5e, experience comes from foes overcome, not from coin.")+'</div>';
-    if(!dm)h+='<div class="tiny">Your haul so far, as the DM reveals it.</div>';
+    if(!dm)h+='<div class="tiny">Your haul so far, as the game master reveals it.</div>';
     let total=0,checked=0;
     m.rooms.forEach(r=>{if(!r.treasure.length)return;if(!dm&&!S.revealed.has(r.id))return;
       h+='<div class="klabel">Room '+(r.id+1)+' · '+esc(r.name)+'</div><div class="treas">';
@@ -1563,11 +1693,12 @@ function renderPanel(){
     h+='<div class="tiny" style="margin-top:6px">Banked this campaign: <b id="banked">'+(S.banked||0)+'</b> gp.'+(S.sys==="sd"?' Carouse to spend it and roll on your table of regrets.':'')+'</div>';
     el.innerHTML=h;
     $("#btnBank").addEventListener("click",()=>{S.banked=(S.banked||0)+checked;
-      S.loot.forEach(id=>S.spent=S.spent);S.loot.clear();
+      S.loot.clear();playSave();
       toast("Banked. The tavern lights look very good tonight.");renderPanel();renderFoot();});
   }
   el.querySelectorAll("[data-loot]").forEach(cb=>cb.addEventListener("change",()=>{
     if(cb.checked){S.loot.add(cb.dataset.loot);sndCue("coins");}else S.loot.delete(cb.dataset.loot);
+    playSave();
     renderFoot();if(S.tab==="loot")renderPanel();}));
 }
 /* Shadowdark awards XP by treasure hoard tier, not gold count, and every delver
@@ -1597,6 +1728,29 @@ function renderFoot(){
 }
 function renderTabs(){$("#tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.tab===S.tab));}
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.tab=b.dataset.tab;renderTabs();renderPanel();});
+
+/* ---------- what the table has done: ticked treasure and banked gold, kept per dungeon code ---------- */
+function playKey(){return "ac.play."+S.model.seed;}
+function playSave(){ if(TBL.isTable||!S.model)return;
+  try{const k=playKey();let o={};try{o=JSON.parse(localStorage.getItem(k)||"{}")||{};}catch(e){}
+    o.banked=S.banked||0;o.loot=o.loot||{};o.loot[S.model.depth]=[...S.loot];localStorage.setItem(k,JSON.stringify(o));}catch(e){} }
+function playLoad(){ if(TBL.isTable||!S.model)return; let o=null;try{o=JSON.parse(localStorage.getItem(playKey())||"null");}catch(e){}
+  S.banked=o&&o.banked?o.banked:0; S.loot=new Set((o&&o.loot&&o.loot[S.model.depth])||[]); }
+/* a saved game comes back from its file: the dungeon, the rooms that were lit, the treasure ticked and banked */
+function loadGame(){
+  const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json";inp.id="loadFile";inp.style.display="none";document.body.appendChild(inp);
+  inp.addEventListener("change",()=>{const f=inp.files&&inp.files[0];if(!f){inp.remove();return;}const rd=new FileReader();
+    rd.onload=()=>{try{const o=JSON.parse(rd.result),m=o.model;if(!m||!m.seed||!m.cfg)throw 0;
+        const c=m.cfg,d=m.depth||1,base=c.baseLevel!=null?+c.baseLevel:Math.max(0,(+c.level||1)-(d-1));
+        $("#cfgParty").value=c.party;$("#cfgLevel").value=base;$("#cfgSize").value=c.size;$("#cfgMode").value=c.mode;$("#cfgFactions").value=c.factions||"on";$("#cfgOrigin").value=c.origin||"";$("#cfgDoom").value=c.doom||"";
+        newDungeon({seed:m.seed,depth:d,party:+c.party||4,level:base,size:c.size||"m",mode:c.mode||"oneshot",factions:c.factions||"on",origin:c.origin||"",doom:c.doom||""});
+        const ok=new Set(S.model.rooms.map(r=>r.id));S.revealed=new Set([0]);(o.revealed||[]).forEach(i=>{if(ok.has(i))S.revealed.add(i);});
+        S.loot=new Set(o.loot||[]);S.banked=+o.banked||0;playSave();
+        renderMap(true);renderPanel();renderFoot();syncHash();toast("Loaded. The dungeon, the rooms you had lit and your treasure are back.",4200);
+      }catch(e){toast("That file is not a saved Abyssal Cartographer game.",4200);}inp.remove();};
+    rd.readAsText(f);});
+  inp.click();
+}
 
 /* ---------- toast ---------- */
 let toastT=null;
@@ -1645,7 +1799,7 @@ function newDungeon(cfg,revealHex){
   S.model=AC.generate(cfg);
   S.revealed=new Set([0]);
   if(revealHex){for(let i=0;i<S.model.rooms.length;i++){const b=parseInt(revealHex.slice((i>>3)*2,(i>>3)*2+2)||"0",16);if(b&(1<<(i&7)))S.revealed.add(i);}}
-  S.sel=0;S.loot=new Set();S.tab=S.role==="player"?"gm":"over";VB=null;
+  S.sel=0;S.loot=new Set();playLoad();S.tab=S.role==="player"?"gm":"over";VB=null;
   if(EGG_QUIRE.has(eggSeed(S.model.seed)))S.model.genome.name="Quire's Last Commission";
   $("#seedInput").value=S.model.seed;
   renderTabs();renderMap(true);renderPanel();renderFoot();
@@ -1695,7 +1849,7 @@ $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");
   $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderPanel();renderFoot();syncHash();});
 $("#viewToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.view=b.dataset.view;
   $("#viewToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderMap(true);renderPanel();syncHash();
-  toast(S.view==="dm"?"DM view: all secrets shown":"Player view: only what the light has touched");});
+  toast(S.view==="dm"?"Game master’s view: all secrets shown":"Player view: only what the light has touched");});
 $("#btnShare").addEventListener("click",()=>{syncHash();
   const url=location.href.split("#")[0]+HASHMEM;
   const ok=()=>toast("Link copied. Same seed, same dungeon, same secrets.");
@@ -1733,22 +1887,23 @@ function expStat(m){const t=AC.statText(m,S.sys);
   return h+'</div>';}
 function mapSVGString(view){
   const all=new Set(S.model.rooms.map(r=>r.id));
-  const body=buildMap(S.model,{revealed:all,view,tints:false,sel:-1});
+  const body=buildMap(S.model,{revealed:all,view,tints:false,sel:-1,print:true});
   const b=mapBounds(S.model,all,true);
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+b.x+' '+b.y+' '+b.w+' '+b.h+'">'+body+'</svg>';}
 const LICENSE_LINE='This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.';
 function expDM(){
   const m=S.model,g=m.genome;
-  let h='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(g.name)+' (DM Guide)</title><style>'+PRINT_VARS+EXP_CSS+'</style></head><body>';
+  let h='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(g.name)+' (Game Master’s Guide)</title><style>'+PRINT_VARS+EXP_CSS+'</style></head><body>';
   if(QS.on)h+=QLETTER_PRINT();
   h+='<h1>'+esc(g.name)+'</h1><div class="sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+' · depth '+m.depth+' · seed '+esc(m.seed)+'</div>';
   h+='<div class="boxed">'+esc(g.intro)+'</div>';
   h+='<p><span class="k">The truth of this place:</span> <span class="sec">'+esc(g.twist)+'</span></p>';
   h+='<h2>The Map</h2>'+mapSVGString("dm");
+  h+='<p class="tiny">The room notes name the wall each door is drawn in. A dot marks a locked door, a cross a stuck one, red a barred one, a dashed S a secret one. Where two passages run together they are one passage that splits, and a party can take the other branch.</p>';
   if(m.factions.length){h+='<h2>Factions</h2>';
     m.factions.forEach((f,i)=>{h+='<h3>'+(i+1)+'. '+esc(f.name)+'</h3><p class="tiny">'+esc(f.type)+' · attitude: '+esc(f.att)+' · territory: rooms '+f.rooms.map(x=>x+1).join(", ")+'</p>';
       h+='<p><span class="k">Goal:</span> '+esc(f.goal)+'.'+(f.canAlly?' <span class="k">Parley:</span> will treat with the party if '+esc(f.allyCond)+'.':'')+'</p>';
-      (f.rel||[]).forEach(r=>h+='<p class="tiny">'+esc(f.name+" "+r)+'.</p>');
+      (f.rel||[]).forEach(r=>h+='<p class="tiny">'+esc(r)+'.</p>');
       h+='<p class="tiny"><span class="k">Leader:</span> '+esc(f.leader.name)+'</p>'+expStat(f.leader);});}
   h+='<h2>Wandering the Halls</h2><p class="tiny">Roll 1d6 between crawling rounds; an encounter arrives on a 1. How often you roll is set by how dangerous the place is: unsafe, every third round. Risky, every second. Deadly, every round. Roll as well whenever the party makes a loud disturbance, whatever the count says.</p><table><tr><th>d6</th><th>What comes</th></tr>';
   m.wander.forEach(w=>h+='<tr><td>'+w.roll+'</td><td>'+esc(w.txt)+(w.mon?' ('+w.n+' × '+esc(w.mon.name)+')':'')+'</td></tr>');h+='</table>';
@@ -1756,12 +1911,12 @@ function expDM(){
   h+='<h2>The Rooms</h2>';
   m.rooms.forEach(r=>{
     h+='<div class="room"><h3>'+(r.id+1)+'. '+esc(r.name)+(r.id===m.boss.roomId?' ♛':'')+(r.faction!=null&&m.factions[r.faction]?' <span class="tiny">('+esc(m.factions[r.faction].name)+')</span>':'')+'</h3>';
-    h+='<p><span class="k">Light:</span> '+esc(r.light)+'<br><span class="k">Exits:</span> '+r.exits.map(x=>esc(x.dir+", "+x.label+" to "+x.to)).join("; ")+'</p>';
+    h+='<p><span class="k">Light:</span> '+esc(r.light)+'<br><span class="k">Exits:</span> '+r.exits.map(x=>esc(x.dir+(x.side?" ("+x.side+")":"")+", "+x.label+" to "+x.to+(x.note?" ("+x.note+")":""))).join("; ")+'</p>';
     h+='<div class="boxed">'+esc(r.box)+'</div>';
     if(r.detail)h+='<p class="tiny">Detail: '+esc(r.detail)+'</p>';
     if(r.flooded)h+='<p class="tiny">Flooded: knee-deep, difficult ground, sound carries.</p>';
     if(r.rubble)h+='<p class="tiny">Rubble: half cover available, loud to cross quickly.</p>';
-    if(r.enc){h+='<p><span class="k">Creatures:</span> '+r.enc.count+' × '+esc(r.enc.mon.name)+', '+esc(r.enc.act||"present")+'. Tactics: '+esc(r.enc.tac||"fight")+(r.enc.morale?' Morale: '+esc(r.enc.morale):'')+'</p>'+expStat(r.enc.mon);}
+    if(r.enc){h+='<p><span class="k">Creatures:</span> '+r.enc.count+' × '+esc(r.enc.mon.name)+', '+esc(r.enc.act||"present")+'. Tactics: '+esc(r.enc.tac||"fight")+'.'+(r.enc.morale?' Morale: '+esc(r.enc.morale):'')+'</p>'+expStat(r.enc.mon);}
     if(r.trap)h+='<p><span class="k">Trap ('+esc(r.trap.n)+'):</span> '+esc(r.trap.tr)+'. '+esc(r.trap.ef)+' <span class="tiny">Telltale: '+esc(r.trap.fd)+' Disarm: '+esc(r.trap.ds)+'</span></p>';
     if(r.puzzle)h+='<p><span class="k">Puzzle ('+esc(r.puzzle.n)+'):</span> '+esc(r.puzzle.s)+' <span class="sec">Solution: '+esc(r.puzzle.a)+'</span></p>';
     if(r.riddle)h+='<p><span class="k">Riddle:</span> <i>'+esc(r.riddle.q)+'</i> <span class="sec">Answer: '+esc(r.riddle.a)+'</span></p>';
@@ -1769,11 +1924,11 @@ function expDM(){
     if(r.secretNote)h+='<p class="sec"><span class="k">Secret:</span> '+esc(r.secretNote)+'</p>';
     if(r.stairsDown)h+='<p><span class="k">Below:</span> a stair descends to depth '+(m.depth+1)+'.</p>';
     h+='</div>';});
-  if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(t.inn)+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
+  if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(theLower(t.inn))+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.2. Seed: '+esc(m.seed)+'.</p></body></html>';
-  dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_DM.html","text/html",h);
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.4. Seed: '+esc(m.seed)+'.</p></body></html>';
+  dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_game_master.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
    The generator holds the facts (map, monsters, treasure, secrets); the AI does the
@@ -1810,7 +1965,7 @@ function aiGMText(){
   L.push("SECRET (the truth of this place): "+g.twist);
   if(m.town){const t=m.town;
     L.push("");L.push("TOWN: "+t.name);
-    L.push("The inn is "+t.inn+", kept by "+t.keeper+". "+t.patron.name+" will pay "+t.patron.reward+" gp to "+t.patron.want+".");
+    L.push("The inn is "+theLower(t.inn)+", kept by "+t.keeper+". "+t.patron.name+" will pay "+t.patron.reward+" gp to "+t.patron.want+".");
     L.push("Rumors (TRUE/FALSE is secret):");
     t.rumors.forEach(r=>L.push("- “"+r.txt+"” ["+(r.truth==="t"?"TRUE":r.truth==="f"?"FALSE":"HALF-TRUE")+"]"));
     L.push("For sale: "+t.shop.map(s=>s.n+" ("+s.c+")").join(", ")+".");}
@@ -1819,15 +1974,16 @@ function aiGMText(){
   if(m.factions.length){L.push("");L.push("FACTIONS");
     m.factions.forEach((f,i)=>{L.push((i+1)+". "+f.name+" ("+f.type+", "+f.att+"), holds rooms "+f.rooms.map(x=>x+1).join(", ")+".");
       L.push("  Goal: "+f.goal+"."+(f.canAlly?" Will bargain with the party if "+f.allyCond+".":""));
-      (f.rel||[]).forEach(r=>L.push("  "+f.name+" "+r+"."));
+      (f.rel||[]).forEach(r=>L.push("  "+r+"."));
       L.push("  Leader: "+f.leader.name);L.push(stat(f.leader));});}
-  L.push("");L.push("WANDERING CREATURES: roll 1d6 every few turns of exploring and whenever the party is loud; on a 1, something comes.");
+  L.push("");L.push("WANDERING CREATURES: roll 1d6 between rounds of exploring (more often where the place is deadly) and whenever the party is loud; on a 1, something comes.");
   m.wander.forEach(w=>L.push("- "+w.roll+": "+w.txt+(w.mon?" ("+w.n+" x "+w.mon.name+")":"")));
   L.push("");L.push("ROOMS");
+  L.push("Exits name the wall each door is in, the way my map draws it. \"Shared doorway\" means two exits leave by one opening and the passage splits beyond it.");
   m.rooms.forEach(r=>{
     L.push("");
     L.push("ROOM "+(r.id+1)+": "+r.name+(r.id===m.boss.roomId?" (the boss is here)":"")+(r.faction!=null&&m.factions[r.faction]?" [held by "+m.factions[r.faction].name+"]":""));
-    L.push("Light: "+r.light+". Exits: "+r.exits.map(x=>x.dir+", "+x.label+" to "+x.to).join("; ")+".");
+    L.push("Light: "+r.light+". Exits: "+r.exits.map(x=>x.dir+(x.side?" ("+x.side+")":"")+", "+x.label+" to "+x.to+(x.note?" ("+x.note+")":"")).join("; ")+".");
     L.push("READ-ALOUD: "+fresh(r.box));
     if(r.detail)L.push("Detail: "+r.detail);
     if(r.flooded)L.push("Flooded: knee-deep water, difficult ground, sound carries.");
@@ -1841,7 +1997,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v3.2. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v3.4. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -1871,7 +2027,7 @@ function expPlayer(){
 }
 $("#exportMenu").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.x==="save"){saveOffline();$("#exportMenu").classList.remove("open");return;}
-  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();else if(b.dataset.x==="ai")expAIGM();else if(b.dataset.x==="plink")copyPlayerLink();else if(b.dataset.x==="table")tblLaunch();
+  if(b.dataset.x==="dm")expDM();else if(b.dataset.x==="player")expPlayer();else if(b.dataset.x==="ai")expAIGM();else if(b.dataset.x==="plink")copyPlayerLink();else if(b.dataset.x==="table")tblLaunch();else if(b.dataset.x==="load")loadGame();
   else dl("abyssal_"+S.model.seed+".json","application/json",JSON.stringify({model:S.model,revealed:[...S.revealed],loot:[...S.loot],banked:S.banked||0},null,1));
   $("#exportMenu").classList.remove("open");});
 
@@ -2059,6 +2215,7 @@ function tblReceive(msg){
     if(S.revealed.size>prev&&prev>0) tblFlash();
     if(TBL.stageRoom!=null&&TBL.stageRoom!==S.sel) tblStage(null);
     S.torch.remain=msg.torch.remain; S.torch.running=msg.torch.running; S.torch.src=msg.torch.src; S.torch.used=msg.torch.used;
+    S.torch.endsAt=S.torch.running?Date.now()+S.torch.remain*1000:null;
     document.body.classList.toggle("dark",S.torch.remain<=0&&S.torch.used>0);
     $("#flame").classList.toggle("out",!(S.torch.remain>0));
     if(msg.tmsg) torchMsg(msg.tmsg);
@@ -2106,7 +2263,7 @@ function tblBootDisplay(){
   window.addEventListener("pagehide",bye); window.addEventListener("beforeunload",bye);
   window.addEventListener("pageshow",function(){ if(said){ said=false; tblSend({t:"hello"}); } });
   TBL.tick=setInterval(function(){ /* the clock keeps moving between messages; each message resets it */
-    if(S.torch.running&&S.torch.remain>0){ S.torch.remain--; renderTorch();
+    if(S.torch.running&&S.torch.remain>0){ S.torch.remain=S.torch.endsAt?Math.max(0,Math.ceil((S.torch.endsAt-Date.now())/1000)):S.torch.remain-1; renderTorch();
       if(S.torch.remain<=0){ S.torch.running=false; document.body.classList.add("dark"); $("#flame").classList.add("out"); tblDrawIfChanged(); tblFlash(); } } },1000);
 }
 
@@ -2195,7 +2352,7 @@ function QLETTER(){
    +'<p>You do not have to make anything up. The whole dungeon is already built: every room, every creature, every trap, every coin. The map is on your screen. Your friends cannot see it. They only know what you tell them.</p>'
    +'<p>Here is the game. Read a room\'s description (the text in the parchment box) out loud. Ask what their characters do. Check that room\'s notes and tell them what happens. Then on to the next room. Their goal is to find the treasure and get out alive. Your job is not to beat them. It is to show them the place honestly and let their choices count.</p>'
    +'<p>When they try something the notes do not cover, and they will, decide what seems most likely and keep going.</p>'
-   +'<p>I have drawn maps for the Guild of Careful Maps for thirty-one years. I drew this one for you, and left tips in its margins for your first time through: the dotted words you can tap, and the notes that appear as you go. The Margins button at the top turns them off whenever you like.</p>'
+   +'<p>I have drawn maps for the Guild of Careful Maps these thirty-one years. I drew this one for you, and left tips in its margins for your first time through: the dotted words you can tap, and the notes that appear as you go. The Margins button at the top turns them off whenever you like.</p>'
    +'<p class="qsign">— Q.</p></div>';
 }
 
@@ -2223,7 +2380,7 @@ function QSTEPS(){
   steps.push({t:"What you are holding",h:
     '<p>Not a story. A place, and a list of what is true about it. The difference is the whole job: a story has one path, and a place has doors.</p>'
     +'<p>You are the game master. Everyone else at the table plays somebody walking into your place. You describe. They decide. You say what happens next. That is the entire arrangement, and it never gets more complicated, only quicker.</p>'
-    +'<div class="qaside">This particular place is called '+esc(m.genome.name)+'. It was '+esc(String(m.genome.origin).toLowerCase())+', until '+esc(String(m.genome.doom).toLowerCase())+'. You did not decide that. Neither did I. The dice did, and now it is true.</div>'});
+    +'<div class="qaside">This particular place is called '+esc(m.genome.name)+'. It was '+esc(m.genome.once||("a "+String(m.genome.origin).toLowerCase()))+', until '+esc(m.genome.fell?m.genome.fell.charAt(0).toLowerCase()+m.genome.fell.slice(1):String(m.genome.doom).toLowerCase())+'. You did not decide that. Neither did I. The dice did, and now it is true.</div>'});
 
   steps.push({t:"Who sits at the table",h:
     '<p>Two to five friends. One twenty-sided die between you, or any dice roller on a telephone. An hour to three.</p>'
@@ -2250,10 +2407,10 @@ function QSTEPS(){
   if(enc&&enc.enc){
     var mon=enc.enc.mon;
     steps.push({t:"And what is waiting in it",h:
-      '<p>Somewhere along the way, room '+(enc.id+1)+' holds '+enc.enc.count+' × '+esc(mon.name)+'. '+esc(enc.enc.act||"")+'</p>'
-      +'<p>The numbers under its name are only a way of writing down <i>how hard</i>:</p>'
+      '<p>Somewhere along the way, room '+(enc.id+1)+' holds '+enc.enc.count+' × '+esc(mon.name)+(enc.enc.act?', '+esc(enc.enc.act):'')+'.</p>'
+      +'<p>The numbers under its name are only a way of writing down <i>how much trouble it is</i>:</p>'
       +statHTML(mon)
-      +'<p>Every underlined word in this window will explain itself if you tap it. You will stop tapping them within a session or two.</p>'
+      +'<p>Every word with a dotted line under it will explain itself if you tap it. You will stop tapping them within a session or two.</p>'
       +'<div class="qaside">Tactics and <span class="qterm" data-q="morale">morale</span> are written beside every creature for a reason. A thing that fights to the last hit point is a machine. A thing that runs at half is a character.</div>'});
   }
 
@@ -2311,9 +2468,9 @@ function qRender(){
   if(g("qNext"))g("qNext").onclick=function(){QS.step++;qRender();};
   if(g("qPrev"))g("qPrev").onclick=function(){QS.step--;qRender();};
   if(g("qClose"))g("qClose").onclick=qClose;
-  if(g("qDone"))g("qDone").onclick=function(){qClose();toast("The margins stay. Tap any underlined word.");};
+  if(g("qDone"))g("qDone").onclick=function(){qClose();toast("The margins stay. Tap any word with a dotted line under it.");};
   if(g("qKeep"))g("qKeep").onchange=function(e){QS.on=e.target.checked;
-    if(!QS.on)toast("Margins cleaned. The ink keeps.");
+    if(!QS.on)toast("Margin notes are off. The Margins button at the top brings them back.");
     renderPanel();};
   if(g("qRoll"))g("qRoll").onclick=function(){
     var d=1+Math.floor(Math.random()*20), tot=d+2;
@@ -2798,8 +2955,8 @@ const SND_LIGHT="rules", SND_LAIR_BREATH=false; /* David's picks, Nov 7 */
    Everything starts off. Sounds are made here as you play: nothing is recorded, nothing is sent anywhere.
    The dungeon's own random numbers are never touched; sounds draw from their own small generator,
    seeded from the dungeon's code and the room, so a shared link still builds the same dungeon. */
-const SND={cfg:{voice:false,src:"system",sysVoice:"",sysVoice2:"",kVoice:"af_bella",kVoice2:"bm_george",voice2:true,rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
-  ctx:null,room:null,roomKey:"",torch:null,kok:null};
+const SND={cfg:{voice:false,src:"supertonic",sVoice:"M5",sVoice2:"M3",sysVoice:"",sysVoice2:"",kVoice:"af_bella",kVoice2:"bm_george",voice2:true,rate:1,vol:0.8,room:false,roomVol:0.6,cues:false},
+  ctx:null,room:null,roomKey:"",torch:null,kok:null,sup:null};
 try{const j=JSON.parse(localStorage.getItem("ac.sound")||"null"); if(j&&typeof j==="object")Object.assign(SND.cfg,j);}catch(e){}
 function sndSave(){try{localStorage.setItem("ac.sound",JSON.stringify(SND.cfg));}catch(e){}}
 function sndIsTable(){return document.body.classList.contains("table");}
@@ -2950,7 +3107,7 @@ function sndDreadStart(){const c=SND.ctx, n=sndNode("dread",0.6), g=c.createGain
   if(SND_LAIR_BREATH){const b=c.createBufferSource(), bf=c.createBiquadFilter(), bg=c.createGain(); b.buffer=FX.noise(c); b.loop=true; bf.type="bandpass"; bf.frequency.value=380; bf.Q.value=1.2; bg.gain.value=0.35;
     const bl=c.createOscillator(), bld=c.createGain(); bl.frequency.value=0.16; bld.gain.value=0.35; bl.connect(bld); bld.connect(bg.gain); b.connect(bf); bf.connect(bg); bg.connect(g); b.start(); bl.start(); n.srcs.push(b,bl);}
   return n;}
-function sndTalking(){return !!((window.speechSynthesis&&speechSynthesis.speaking)||(SND.kok&&SND.ctx&&SND.kok.end>SND.ctx.currentTime));}
+function sndTalking(){return !!((window.speechSynthesis&&speechSynthesis.speaking)||(SND.kok&&SND.ctx&&SND.kok.end>SND.ctx.currentTime)||(SND.sup&&SND.ctx&&SND.sup.end>SND.ctx.currentTime));}
 function sndTick(){
   if(sndIsTable())return;
   if(!SND.cfg.room||!S.model){if(SND.room){sndNodeStop(SND.room);SND.room=null;SND.roomKey="";} if(SND.torch){sndNodeStop(SND.torch);SND.torch=null;}
@@ -2988,7 +3145,7 @@ function narSegments(s){const out=[]; let cur="", q=NAR.q;
   for(const ch of s){if(ch==="“"||ch==="”"||ch==='"'){if(cur.trim())out.push([cur,q]); cur=""; q=ch==="“"?true:ch==="”"?false:!q; continue;} cur+=ch;}
   if(cur.trim())out.push([cur,q]); NAR.q=q; return out;}
 function narSay(s,allChar){const segs=allChar?[[s,true]]:SND.cfg.voice2?narSegments(s):[[s,false]];
-  segs.forEach(([x,ch])=>{const t=narClean(x); if(!t||!/[a-z0-9]/i.test(t))return; if(SND.cfg.src==="kokoro")kokSay(t,ch); else sysSay(t,ch);});}
+  segs.forEach(([x,ch])=>{const t=narClean(x); if(!t||!/[a-z0-9]/i.test(t))return; if(SND.cfg.src==="supertonic")supSay(t,ch); else if(SND.cfg.src==="kokoro")kokSay(t,ch); else sysSay(t,ch);});}
 function narAnnounce(m){if(SND.cfg.voice&&!sndIsTable())narSay(m);}
 function narSentences(text){const out=[]; let rest=String(text);
   for(;;){const m=/[.!?…]+["”’)\]]*\s+|\n+/.exec(rest); if(!m)break; out.push(rest.slice(0,m.index+m[0].length)); rest=rest.slice(m.index+m[0].length);}
@@ -3000,12 +3157,17 @@ function narFeed(tok){if(!SND.cfg.voice||sndIsTable())return; NAR.buf+=tok;
 function narFlush(){if(!SND.cfg.voice){NAR.buf="";NAR.pend="";return;} narGroup(NAR.buf,true); NAR.buf=""; NAR.q=false;}
 function narReadAll(text,allChar){narStop(); const ss=narSentences(text); let pend="";
   ss.forEach((s,i)=>{pend+=s; if(narClean(pend).length>=50||i===ss.length-1){narSay(pend,allChar); pend="";}}); NAR.q=false;}
-function narStop(){NAR.buf=""; NAR.pend=""; NAR.q=false; NAR.gen++; try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){} kokStop();}
+function narStop(){NAR.buf=""; NAR.pend=""; NAR.q=false; NAR.gen++; try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){} kokStop(); supStop();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sndTalking())narStop();});
 /* this computer's voices, ranked the way our reading app (Clarity) ranks them: enhanced and premium first */
 function sysVoices(){try{return window.speechSynthesis?speechSynthesis.getVoices():[];}catch(e){return [];}}
 function sysScore(v){return (/enhanced|premium/i.test(v.name)?100:0)+(/natural|neural|siri/i.test(v.name)?80:0)+(v.localService?10:0);}
-function sysRanked(){return sysVoices().filter(v=>/^en/i.test(v.lang||"")).sort((a,b)=>sysScore(b)-sysScore(a));}
+/* macOS ships novelty voices (Bubbles, Zarvox, Bad News...); a game master should not offer them */
+const SYS_NOVELTY=/^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Deranged|Good News|Hysterical|Jester|Organ|Pipe Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox)\b/i;
+function sysRanked(){return sysVoices().filter(v=>/^en/i.test(v.lang||"")&&!SYS_NOVELTY.test(v.name||"")).sort((a,b)=>sysScore(b)-sysScore(a));}
+/* "Eddy (English (United Kingdom))" reads "Eddy, British" */
+function sysLabel(v){const n=String(v.name||""); const m=n.match(/^(.*?) \(English \((.*)\)\)$/); if(!m)return n;
+  const w={"United States":"American","United Kingdom":"British","Australia":"Australian","India":"Indian","Ireland":"Irish","South Africa":"South African","Scotland":"Scottish","Canada":"Canadian"}[m[2]]; return m[1]+", "+(w||m[2]);}
 function sysPick(){const r=sysRanked(); return r.find(v=>v.voiceURI===SND.cfg.sysVoice)||r[0]||null;}
 function sysPick2(){const r=sysRanked(), a=sysPick(); return r.find(v=>v.voiceURI===SND.cfg.sysVoice2&&v!==a)||r.find(v=>v!==a)||a;}
 function sysSay(t,ch){if(!window.speechSynthesis||typeof SpeechSynthesisUtterance==="undefined")return;
@@ -3025,7 +3187,7 @@ function kokState(){return SND.kok?SND.kok.state:"none";}
 function kokStatusText(){const k=SND.kok; if(!k)return SND.cfg.kokDownloaded?"Downloaded before; it wakes up the first time it speaks.":"Not downloaded yet.";
   if(k.state==="loading")return "Downloading the voice… "+(k.total?Math.round(k.loaded/1048576)+" of "+Math.round(k.total/1048576)+" MB":"starting");
   if(k.state==="error")return "The voice could not load: "+k.err+". Speaking with this computer's voices for now.";
-  if(k.state==="ready")return k.slow?"Ready. This computer makes the voice a little slower than it speaks, so expect short pauses between sentences. This computer's own voices never pause.":"Ready. It runs on this computer; nothing you hear is sent anywhere.";
+  if(k.state==="ready")return k.slow?"Ready. On this computer the voice takes a little longer to make than to say, so expect short pauses between sentences. The computer's own voices never pause.":"Ready. It runs on this computer; nothing you hear is sent anywhere.";
   return "";}
 function kokPaint(){const el=$("#sndKStatus"); if(el)el.textContent=kokStatusText(); const b=$("#sndKLoad"); if(b&&SND.kok&&SND.kok.state!=="error")b.remove();}
 function kokEnsure(){
@@ -3061,21 +3223,93 @@ function kokPlay(pcm,sr){const c=sndCtx(); if(!c)return; const k=SND.kok;
   s.onended=()=>{k.srcs=k.srcs.filter(x=>x!==s);};}
 function kokStop(){const k=SND.kok; if(!k)return; k.srcs.forEach(s=>{try{s.stop();}catch(e){}}); k.srcs=[]; k.end=0; k.pending=[];}
 
+/* Supertonic 3: the narrator David picked by ear on Nov 7 ("Daniel is the best narrator"). Daniel is preset M5.
+   Model: Supertone Inc., weights under OpenRAIL-M (use restrictions apply to every user; speech must be disclosed as
+   machine-generated, which the Sound panel does). Transformers.js build pinned to one commit. It runs in a classic worker
+   with a dynamic import (a module worker made from a Blob will not start in the saved copy). On the graphics chip when the
+   browser offers WebGPU (all fp16, about 206 MB once, far faster than real time); otherwise on the processor (fp16, 8-bit
+   denoiser, fp16, about 143 MB once). On GitHub Pages and the saved copy the processor gets one thread: about real time,
+   with short pauses between sentences. Prototype and measurements: the Studio, ~/Library/Caches/ae_scratch/supertonic_probe/. */
+const SUP_LIB="https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1", SUP_MODEL="open-world-group/Supertonic-3-ONNX", SUP_REV="0642207fc25f1a390cde0d7a4536de477d372b4a";
+const SUP_VOICE_BASE="https://huggingface.co/"+SUP_MODEL+"/resolve/"+SUP_REV+"/voices/";
+const SUP_LICENSE="https://huggingface.co/supertone-oss-archive/supertonic-3/blob/main/LICENSE";
+const SUP_VOICES=[["M5","Daniel, man (the narrator)"],["M3","Robert, man"],["M1","Alex, man"],["M2","James, man"],["M4","Sam, man"],["F1","Sarah, woman"],["F2","Lily, woman"],["F3","Jessica, woman"],["F4","Olivia, woman"],["F5","Emily, woman"]];
+const SUP_NAME=id=>((SUP_VOICES.find(v=>v[0]===id)||[id,id])[1]).split(",")[0];
+async function supPlan(){
+  try{if(navigator.gpu){const a=await navigator.gpu.requestAdapter(); const info=a&&a.info||{};
+    if(a&&!a.isFallbackAdapter&&!info.isFallbackAdapter&&!/swiftshader|llvmpipe|software/i.test((info.vendor||"")+" "+(info.architecture||"")+" "+(info.description||"")))
+      return {device:"webgpu",dtype:"fp16",mb:206};}}catch(e){}
+  return {device:"wasm",dtype:{text_encoder:"fp16",latent_denoiser:"q8",voice_decoder:"fp16"},mb:143};}
+function supState(){return SND.sup?SND.sup.state:"none";}
+function supStatusText(){const k=SND.sup; if(!k)return SND.cfg.supDownloaded?"Downloaded before; Daniel wakes up the first time he speaks.":"Not downloaded yet.";
+  if(k.state==="loading")return "Downloading Daniel’s voice… "+(k.total?Math.round(k.loaded/1048576)+" of "+Math.round(k.total/1048576)+" MB":"starting");
+  if(k.state==="error")return "Daniel’s voice could not load: "+k.err+". Speaking with this computer’s voices for now.";
+  if(k.state==="ready")return k.slow?"Ready. On this computer the voice takes about as long to make as to say, so expect short pauses between sentences.":"Ready. It runs on this computer; nothing you hear is sent anywhere.";
+  return "";}
+function supPaint(){const el=$("#sndSStatus"); if(el)el.textContent=supStatusText(); const b=$("#sndSLoad"); if(b&&SND.sup&&SND.sup.state!=="error")b.remove();}
+function supEnsure(){
+  if(SND.sup&&SND.sup.state!=="error")return SND.sup;
+  const k=SND.sup={state:"loading",w:null,pending:[],srcs:[],end:0,loaded:0,total:0,files:{},times:[],slow:false,err:""};
+  const src='let tts=null,base="",voices={},chain=Promise.resolve();\n'
+    +'self.onmessage=e=>{const m=e.data;chain=chain.then(()=>run(m));};\n'
+    +'async function voice(id){if(!voices[id]){const r=await fetch(base+id+".bin");if(!r.ok)throw new Error("voice "+id+" "+r.status);voices[id]=new Float32Array(await r.arrayBuffer());}return voices[id];}\n'
+    +'async function run(m){try{\n'
+    +' if(m.type==="load"){const {pipeline}=await import(m.lib); base=m.voiceBase;\n'
+    +'  tts=await pipeline("text-to-speech",m.model,{revision:m.rev,device:m.device,dtype:m.dtype,progress_callback:p=>{if(p&&p.status==="progress")self.postMessage({type:"progress",file:p.file,loaded:p.loaded,total:p.total});}});\n'
+    +'  await voice(m.voice); self.postMessage({type:"ready"});}\n'
+    +' else if(m.type==="say"){const t0=performance.now();const a=await tts("<en>"+m.text+"</en>",{speaker_embeddings:await voice(m.voice),num_inference_steps:8,speed:m.speed});const pcm=new Float32Array(a.audio);\n'
+    +'  self.postMessage({type:"audio",gen:m.gen,pcm,sr:a.sampling_rate,ms:performance.now()-t0},[pcm.buffer]);}\n'
+    +'}catch(err){self.postMessage({type:"error",message:String(err&&err.message||err)});}}';
+  let w; try{w=new Worker(URL.createObjectURL(new Blob([src],{type:"text/javascript"})));}catch(e){k.state="error";k.err="this browser cannot run it";supPaint();return k;}
+  k.w=w;
+  w.onmessage=e=>{const m=e.data;
+    if(m.type==="progress"){k.files[m.file]=[m.loaded||0,m.total||0]; k.loaded=0;k.total=0; Object.values(k.files).forEach(([l,t])=>{k.loaded+=l;k.total+=t;}); supPaint();}
+    else if(m.type==="ready"){k.state="ready"; SND.cfg.supDownloaded=true; sndSave(); supPaint(); const p=k.pending; k.pending=[]; p.forEach(([g,t,ch])=>{if(g===NAR.gen)supPost(t,ch);});}
+    else if(m.type==="audio"){if(m.gen!==NAR.gen)return; supPlay(m.pcm,m.sr);
+      const dur=m.pcm.length/m.sr*1000; k.times.push(m.ms/dur); if(k.times.length>=3&&!k.slow){const avg=k.times.slice(-3).reduce((a,b)=>a+b,0)/3; if(avg>0.8){k.slow=true;supPaint();}}}
+    else if(m.type==="error"){if(k.state==="loading"){k.state="error";k.err=m.message.slice(0,120);supPaint();toast("Daniel’s voice could not load, so this computer’s voices are speaking instead.",5000); const p=k.pending;k.pending=[];p.forEach(([g,t,ch])=>{if(g===NAR.gen)sysSay(t,ch);});}}};
+  w.onerror=()=>{if(k.state==="loading"){k.state="error";k.err="the download was interrupted";supPaint(); const p=k.pending;k.pending=[];p.forEach(([g,t,ch])=>{if(g===NAR.gen)sysSay(t,ch);});}};
+  supPlan().then(pl=>{SND.supPlan=pl; w.postMessage({type:"load",lib:SUP_LIB,model:SUP_MODEL,rev:SUP_REV,voiceBase:SUP_VOICE_BASE,voice:SND.cfg.sVoice||"M5",dtype:pl.dtype,device:pl.device});});
+  supPaint(); return k;
+}
+/* the model takes at most 300 characters a call: split at sentence ends, then at commas, then at spaces */
+function supChunks(t){const out=[]; let cur="";
+  for(const s of (t.match(/[^.!?]+[.!?]+["”’')\]]*\s*|[^.!?]+$/g)||[t])){
+    if(cur&&(cur+s).length>300){out.push(cur.trim());cur="";}
+    if(s.length>300){let rest=s; while(rest.length>300){let cut=rest.lastIndexOf(", ",300); if(cut<100)cut=rest.lastIndexOf(" ",300); if(cut<1)cut=300; out.push(rest.slice(0,cut+1).trim()); rest=rest.slice(cut+1);} cur+=rest;}
+    else cur+=s;}
+  if(cur.trim())out.push(cur.trim()); return out;}
+function supSay(t,ch){if(!SND.sup&&!SND.cfg.supDownloaded){sysSay(t,ch);supNudge();return;} const k=supEnsure(); if(k.state==="error"){sysSay(t,ch);return;}
+  supChunks(t).forEach(x=>{if(k.state!=="ready")k.pending.push([NAR.gen,x,ch]); else supPost(x,ch);});}
+function supNudge(){if(SND.nudgedSup)return; SND.nudgedSup=true; toast("Speaking with this computer’s voice for now. To hear Daniel, open Sound and press Download.",5000);}
+function supPost(t,ch){SND.sup.w.postMessage({type:"say",gen:NAR.gen,text:t,voice:ch?(SND.cfg.sVoice2||"M3"):(SND.cfg.sVoice||"M5"),speed:SND.cfg.rate});}
+function supPlay(pcm,sr){const c=sndCtx(); if(!c)return; const k=SND.sup;
+  const b=c.createBuffer(1,pcm.length,sr); b.copyToChannel(pcm,0); const s=c.createBufferSource(); s.buffer=b; s.connect(SND.voiceBus);
+  const at=Math.max(c.currentTime+0.05,k.end); s.start(at); k.end=at+b.duration+0.15; k.srcs.push(s);
+  s.onended=()=>{k.srcs=k.srcs.filter(x=>x!==s);};}
+function supStop(){const k=SND.sup; if(!k)return; k.srcs.forEach(s=>{try{s.stop();}catch(e){}}); k.srcs=[]; k.end=0; k.pending=[];}
+
 /* ---------- the Sound panel ---------- */
 function sndPanelHTML(){
   const c=SND.cfg, ck=b=>b?" checked":"";
   let h='<div class="sndhead">Sound<span class="tiny">Everything starts off. The page makes these sounds as you play; nothing is recorded or sent anywhere.</span></div>';
   h+='<label class="qtoggle"><input type="checkbox" id="sndVoice"'+ck(c.voice)+'> Read the game master’s replies aloud</label>';
-  h+='<div class="sndsub"><div class="sndrow"><span>Voice</span><select id="sndSrc"><option value="system"'+(c.src==="system"?" selected":"")+'>This computer’s voices</option><option value="kokoro"'+(c.src==="kokoro"?" selected":"")+'>Kokoro, a small voice model (more natural)</option></select></div>';
-  if(c.src==="kokoro"){
+  h+='<div class="sndsub"><div class="sndrow"><span>Voice</span><select id="sndSrc"><option value="supertonic"'+(c.src==="supertonic"?" selected":"")+'>Daniel, a small voice model (the best narrator)</option><option value="kokoro"'+(c.src==="kokoro"?" selected":"")+'>Kokoro, a small voice model</option><option value="system"'+(c.src==="system"?" selected":"")+'>This computer’s voices</option></select></div>';
+  if(c.src==="supertonic"){
+    h+='<div class="sndrow"><span>Narrator</span><select id="sndSVoice">'+SUP_VOICES.map(([id,nm])=>'<option value="'+id+'"'+(id===(c.sVoice||"M5")?" selected":"")+'>'+esc(nm)+'</option>').join("")+'</select></div>';
+    h+='<div class="sndrow"><span>Characters</span><select id="sndSVoice2">'+SUP_VOICES.map(([id,nm])=>'<option value="'+id+'"'+(id===(c.sVoice2||"M3")?" selected":"")+'>'+esc(nm.replace(" (the narrator)",""))+'</option>').join("")+'</select></div>';
+    h+='<div class="tiny sndk" id="sndSStatus">'+esc(supStatusText())+'</div>';
+    if((supState()==="none"&&!SND.cfg.supDownloaded)||supState()==="error")h+='<button id="sndSLoad">Download Daniel’s voice (about '+((SND.supPlan&&SND.supPlan.mb)||143)+' MB, once)</button><div class="tiny" style="margin:4px 0">It downloads once from the internet, then runs on this computer.</div>';
+    h+='<div class="tiny" style="margin:4px 0;opacity:.85">These voices are machine-made speech, generated on this computer by Supertonic 3 from Supertone Inc. The model’s license (<a href="'+SUP_LICENSE+'" target="_blank" rel="noopener">OpenRAIL-M</a>) and its use restrictions apply to you.</div>';
+  }else if(c.src==="kokoro"){
     h+='<div class="sndrow"><span>Narrator</span><select id="sndKVoice">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
     h+='<div class="sndrow"><span>Characters</span><select id="sndKVoice2">'+KOK_VOICES.map(([id,n])=>'<option value="'+id+'"'+(id===c.kVoice2?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
     h+='<div class="tiny sndk" id="sndKStatus">'+esc(kokStatusText())+'</div>';
     if((kokState()==="none"&&!SND.cfg.kokDownloaded)||kokState()==="error")h+='<button id="sndKLoad">Download the Kokoro voice (about '+((SND.kokPlan&&SND.kokPlan.mb)||100)+' MB, once)</button><div class="tiny" style="margin:4px 0">It downloads once from the internet, then runs on this computer.</div>';
   }else{
     const vs=sysRanked(), pick=sysPick();
-    h+='<div class="sndrow"><span>Narrator</span><select id="sndSysVoice">'+(vs.length?vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick?" selected":"")+'>'+esc(v.name)+'</option>').join(""):'<option value="">this computer’s default voice</option>')+'</select></div>';
-    const pick2=sysPick2(); if(vs.length>1)h+='<div class="sndrow"><span>Characters</span><select id="sndSysVoice2">'+vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick2?" selected":"")+'>'+esc(v.name)+'</option>').join("")+'</select></div>';
+    h+='<div class="sndrow"><span>Narrator</span><select id="sndSysVoice">'+(vs.length?vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick?" selected":"")+'>'+esc(sysLabel(v))+'</option>').join(""):'<option value="">this computer’s default voice</option>')+'</select></div>';
+    const pick2=sysPick2(); if(vs.length>1)h+='<div class="sndrow"><span>Characters</span><select id="sndSysVoice2">'+vs.map(v=>'<option value="'+esc(v.voiceURI)+'"'+(v===pick2?" selected":"")+'>'+esc(sysLabel(v))+'</option>').join("")+'</select></div>';
   }
   h+='<label class="qtoggle" style="margin:4px 0;font-size:12px"><input type="checkbox" id="sndVoice2"'+ck(c.voice2)+'> Lines in “quotation marks” go to the character voice</label>';
   h+='<div class="sndrow"><span>Speed</span><input type="range" id="sndRate" min="0.8" max="1.3" step="0.05" value="'+c.rate+'" aria-label="Speaking speed"></div>';
@@ -3087,6 +3321,7 @@ function sndPanelHTML(){
   h+='<div class="tiny" style="margin-top:6px">The ▶ buttons beside read-aloud text speak it in this voice. Esc stops the voice.</div>';
   return h;}
 function sndRenderPanel(){const el=$("#soundMenu"); if(!el)return; el.innerHTML=sndPanelHTML(); sndWirePanel();
+  if(SND.cfg.src==="supertonic"&&!SND.supPlan)supPlan().then(p=>{SND.supPlan=p; const b=$("#sndSLoad"); if(b)b.textContent="Download Daniel’s voice (about "+p.mb+" MB, once)";});
   if(SND.cfg.src==="kokoro"&&!SND.kokPlan)kokPlan().then(p=>{SND.kokPlan=p; const b=$("#sndKLoad"); if(b)b.textContent="Download the Kokoro voice (about "+p.mb+" MB, once)";});}
 function sndWirePanel(){
   const on=(id,ev,fn)=>{const el=$(id); if(el)el.addEventListener(ev,fn);};
@@ -3098,6 +3333,9 @@ function sndWirePanel(){
   on("#sndSysVoice2","change",e=>{SND.cfg.sysVoice2=e.target.value; sndSave();});
   on("#sndVoice2","change",e=>{SND.cfg.voice2=e.target.checked; sndSave();});
   on("#sndKLoad","click",()=>{sndCtx(); kokEnsure(); sndRenderPanel();});
+  on("#sndSLoad","click",()=>{sndCtx(); supEnsure(); sndRenderPanel();});
+  on("#sndSVoice","change",e=>{SND.cfg.sVoice=e.target.value; sndSave();});
+  on("#sndSVoice2","change",e=>{SND.cfg.sVoice2=e.target.value; sndSave();});
   on("#sndRate","input",e=>{SND.cfg.rate=+e.target.value; sndSave();});
   on("#sndTest","click",()=>{sndCtx(); narReadAll("The doors hang open, and cold air rises from below. “Keep your voice down,” the old guard whispers. “Something down there is listening.”");});
   on("#sndStop","click",()=>narStop());
@@ -3142,8 +3380,13 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
     else if(stored==="dm"){newDungeon(currentCfg()); setTimeout(qDropNote,900);}
     else{S.view="player"; newDungeon(currentCfg()); roleDoor();}
   }
-  renderTorch();
-  torchMsg("Nobody has lit a torch yet. The dungeon does not mind waiting.");
+  const back=torchLoad();
+  renderTorch();renderLight();
+  torchMsg(back==="burning"?"The "+SRCNAME[S.torch.src]+" has been burning while you were away."
+    :back==="paused"?"The flame is as you left it, held. Press Resume when the party moves on."
+    :back==="out"?"The light died while you were away."
+    :"Nobody has lit a torch yet. The dungeon does not mind waiting.");
+  if(back==="out")renderMap(false);
   tblSend({t:"who"}); /* a display opened before this window answers, and gets the state */
 })();
 })();

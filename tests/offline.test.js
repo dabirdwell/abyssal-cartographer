@@ -46,7 +46,7 @@ async function page(ctx, hash, name) { const p = await ctx.newPage(); p.on('page
   ok(/You do not have to make anything up/.test(await p.textContent('#qSheet')), 'welcome letter opens');
   await p.keyboard.press('Escape');
   await p.click('#btnExport'); const [d1] = await Promise.all([p.waitForEvent('download'), p.click('#exportMenu button[data-x="dm"]')]);
-  ok(/_DM\.html$/.test(d1.suggestedFilename()), 'DM guide downloads: ' + d1.suggestedFilename());
+  ok(/_game_master\.html$/.test(d1.suggestedFilename()), 'DM guide downloads: ' + d1.suggestedFilename());
   await p.click('#btnExport'); const [d2] = await Promise.all([p.waitForEvent('download'), p.click('#exportMenu button[data-x="player"]')]);
   ok(/_players\.html$/.test(d2.suggestedFilename()), 'player handout downloads');
   await p.click('#btnExport'); await p.click('#exportMenu button[data-x="ai"]'); await p.waitForTimeout(300);

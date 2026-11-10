@@ -55,7 +55,7 @@ v2 is a ground-up rewrite. There are no frameworks, no CDN loads, no build step,
 - **The Margins**: an optional guidance layer for first-time GMs. A letter from Quire, a retired Guild cartographer, opens into a nine-step first game built from your own generated dungeon. One checkbox turns all of it off
 - **Town and rumors** in one-shot mode; endless descending levels in campaign mode
 - **Play with an AI game master**: one click copies the whole dungeon as a ready-made prompt. Paste it into Claude, ChatGPT or Gemini and the AI runs the game for you, while the dungeon itself (map, creatures, treasure, secrets) stays fixed so the AI cannot drift. If the clipboard is blocked, it saves a text file instead
-- **Dual export**: a full DM guide and a spoiler-free player handout, both standalone printable HTML. Quire's letter rides along in the DM guide when the margins are on
+- **Dual export**: a full game master's guide and a spoiler-free player handout, both standalone printable HTML. Quire's letter rides along in the game master's guide when the margins are on
 
 ## 🚀 Deploy
 
@@ -68,7 +68,22 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v3.0.1 (Current)
+### v3.4 (Current)
+The key now agrees with the map. Every exit names the wall its door is drawn in, two doors in one wall are told apart, and passages with no room in common no longer cross (where the stone leaves no other way, the key says they meet). A barred door has a side and a rule. The lantern burns one hour, as its label says. The torch burns by the clock, so a hidden tab or a reload no longer slows, stops or resets it. Ticked treasure and banked gold are kept, and Export can load a saved game. The printed guide and handout draw their hatching as strokes, so a two-page handout prints to well under a megabyte instead of 24. The same code still builds the same rooms, doors, creatures and treasure; only the line of some passages moved.
+
+### v3.3
+A writing pass over everything the game puts together, deeper pools of mood lines, and Daniel (Supertonic 3) as the narrator.
+
+### v3.2
+Sounds that copy the physics: drips, doors and footsteps by doorway type, flint and steel in the dark, the lair, coins. Voices where they help.
+
+### v3.1
+Sound: the game master's voice, rooms you can hear, small cues. Everything is off until you turn it on.
+
+### v3.0.2
+A game master running on your own computer can be reached from the website: Chrome's permission question is explained before it appears.
+
+### v3.0.1
 Save the game for offline play from the page itself (the footer link, or Export). Opened from your computer, the page says it is the offline copy.
 
 ### v3.0
