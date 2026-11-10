@@ -21,7 +21,7 @@ body.dark{ --accent:var(--cold); --accent-soft:rgba(123,143,163,.12);
 html,body{height:100%}
 body{
   background:var(--ink); color:var(--parch);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif; font-size:14px;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif; font-size:15px;
   display:flex; flex-direction:column; overflow:hidden;
   transition:background .8s ease;
 }
@@ -52,10 +52,10 @@ header{
 .brand{display:flex; align-items:baseline; gap:9px; margin-right:4px}
 .brand .star{color:var(--accent); font-size:17px; transition:color .8s}
 .brand h1{font-size:17px; font-weight:600; letter-spacing:.04em; white-space:nowrap}
-.brand .ver{font-size:11px; color:var(--parch-deep)}
+.brand .ver{font-size:11.5px; color:var(--parch-deep)}
 .seedbox{display:flex; align-items:center; gap:6px; position:relative}
 .seedbox input{width:160px; font-family:ui-monospace,monospace; font-size:12.5px}
-.seedbox .seedlab{font-size:11px; color:var(--parch-deep); letter-spacing:.06em}
+.seedbox .seedlab{font-size:12px; color:var(--parch-deep); letter-spacing:.06em}
 .seedhint{position:absolute; top:calc(100% + 7px); left:0; width:302px; max-width:78vw; z-index:45;
   background:var(--panel2); border:1px solid var(--line); border-left:2px solid var(--ember);
   border-radius:5px; padding:8px 10px; font-size:12px; line-height:1.55; color:var(--parch-dim);
@@ -103,7 +103,7 @@ body.dark #torchbar{background:linear-gradient(to right, rgba(123,143,163,.07), 
 #torchTime.crit{color:var(--blood); animation:pulse 1s ease-in-out infinite}
 #torchTime.dead{color:var(--cold)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
-#torchState{font-size:12px; color:var(--parch-dim); max-width:340px; line-height:1.35}
+#torchState{font-size:13px; color:var(--parch-dim); max-width:360px; line-height:1.35}
 #torchState .smallcaps{color:var(--parch)}
 .torchbtns{display:flex; gap:6px; align-items:center; flex-wrap:wrap}
 .torchbtns button{font-size:12px; padding:4px 9px}
@@ -137,13 +137,13 @@ body.dark #mapSvg.tl-dm{--tl-edge:.42; --tl-core:.18}
 @keyframes tlgutter{0%,100%{transform:scale(1)}28%{transform:scale(.9)}52%{transform:scale(1.05)}74%{transform:scale(.93)}}
 @media (prefers-reduced-motion:reduce){.tlPulse{animation:none} .tlL{transition:opacity 1.2s ease}}
 #mapTools{position:absolute; top:10px; left:10px; display:flex; gap:6px; flex-wrap:wrap; z-index:3}
-#mapTools button{background:rgba(26,23,20,.88); font-size:12px; backdrop-filter:blur(3px)}
-#mapHint{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:var(--parch-deep);
+#mapTools button{background:rgba(26,23,20,.88); font-size:13px; backdrop-filter:blur(3px)}
+#mapHint{position:absolute; bottom:10px; left:12px; font-size:12.5px; color:var(--parch-deep);
   background:rgba(15,13,11,.6); padding:3px 8px; border-radius:4px; pointer-events:none}
-#sidebar{flex:1; min-width:340px; max-width:520px; display:flex; flex-direction:column;
+#sidebar{flex:1; min-width:340px; max-width:580px; display:flex; flex-direction:column;
   border-left:1px solid var(--line); background:var(--panel); min-height:0}
 .tabs{display:flex; border-bottom:1px solid var(--line)}
-.tabs button{flex:1; border:none; border-radius:0; padding:9px 4px; font-size:12.5px;
+.tabs button{flex:1; border:none; border-radius:0; padding:9px 4px; font-size:13.5px;
   color:var(--parch-dim); border-bottom:2px solid transparent}
 .tabs button.on{color:var(--flame); border-bottom-color:var(--accent)}
 body.dark .tabs button.on{color:#c8d4e0}
@@ -154,27 +154,27 @@ footer .xp{color:var(--parch); font-size:12.5px}
 footer .xp b{color:var(--flame)}
 
 /* ---------- content bits ---------- */
-.boxed{background:var(--parch); color:#2a2216; border-radius:3px; padding:11px 13px;
-  font-style:italic; line-height:1.5; font-size:13.5px; position:relative;
+.boxed{background:var(--parch); color:#2a2216; border-radius:3px; padding:13px 16px;
+  font-style:normal; line-height:1.6; font-size:17px; position:relative;
   box-shadow:inset 0 0 34px rgba(96,78,44,.25); border:1px solid #c9b990}
 .boxed::before{content:""; position:absolute; inset:3px; border:1px solid rgba(96,78,44,.35);
   border-radius:2px; pointer-events:none}
 .dun-title{font-size:21px; line-height:1.2; margin:2px 0 1px}
-.dun-sub{font-size:12px; color:var(--parch-dim); margin-bottom:10px}
-.klabel{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+.dun-sub{font-size:13px; color:var(--parch-dim); margin-bottom:10px}
+.klabel{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
   color:var(--parch-deep); margin:14px 0 5px}
 .card{background:var(--panel2); border:1px solid var(--line); border-radius:6px;
   padding:10px 12px; margin:8px 0}
 .card h3{font-size:14.5px; margin-bottom:3px}
-.card .meta{font-size:11.5px; color:var(--parch-dim); margin-bottom:6px}
+.card .meta{font-size:13px; color:var(--parch-dim); margin-bottom:6px}
 .statblock{background:var(--panel2); border-left:3px solid var(--accent); border-radius:0 5px 5px 0;
-  padding:9px 11px; margin:8px 0; font-size:12.5px; line-height:1.5}
+  padding:9px 11px; margin:8px 0; font-size:13.5px; line-height:1.5}
 .statblock .mname{font-variant:small-caps; letter-spacing:.06em; font-size:14px; font-weight:700}
-.statblock .mflavor{font-style:italic; color:var(--parch-dim); font-size:12px; margin:1px 0 5px}
-.statblock .mline{font-family:ui-monospace,monospace; font-size:11.5px; color:var(--parch)}
+.statblock .mflavor{font-style:italic; color:var(--parch-dim); font-size:13px; margin:1px 0 5px}
+.statblock .mline{font-family:ui-monospace,monospace; font-size:13px; color:var(--parch)}
 .statblock .mability{margin-top:4px}
 .statblock .mability b{font-variant:small-caps}
-.pill{display:inline-block; font-size:10.5px; letter-spacing:.06em; padding:2px 8px;
+.pill{display:inline-block; font-size:11.5px; letter-spacing:.06em; padding:2px 8px;
   border:1px solid var(--line); border-radius:99px; color:var(--parch-dim); margin:0 5px 5px 0}
 .pill.f0{border-color:#a3552e; color:#d78a5c}
 .pill.f1{border-color:#4e7b52; color:#83b389}
@@ -184,20 +184,20 @@ footer .xp b{color:var(--flame)}
 .rrow:hover .rname{color:var(--flame)}
 .rnum{font-family:ui-monospace,monospace; color:var(--accent); flex:none; width:26px; text-align:right}
 .rname{flex:1}
-.rtags{font-size:10.5px; color:var(--parch-deep); flex:none}
-.exitline{font-size:12.5px; margin:2px 0}
-.secretline{color:var(--cold); font-size:12.5px}
-.dmnote{font-size:13px; line-height:1.55; margin:7px 0}
-.treas{font-size:12.5px}
+.rtags{font-size:11.5px; color:var(--parch-deep); flex:none}
+.exitline{font-size:14px; margin:3px 0}
+.secretline{color:var(--cold); font-size:13.5px}
+.dmnote{font-size:14px; line-height:1.55; margin:7px 0}
+.treas{font-size:13.5px}
 .treas label{display:flex; gap:7px; align-items:baseline; padding:2px 0; cursor:pointer}
 .treas input{accent-color:var(--torch)}
 .gp{color:var(--flame); font-family:ui-monospace,monospace}
-.senses{display:grid; grid-template-columns:auto 1fr; gap:2px 10px; font-size:12px; color:var(--parch-dim); margin-top:7px}
-.senses b{color:var(--parch-deep); font-weight:600; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase}
-.tiny{font-size:11px; color:var(--parch-deep)}
+.senses{display:grid; grid-template-columns:auto 1fr; gap:2px 10px; font-size:13.5px; color:var(--parch-dim); margin-top:7px}
+.senses b{color:var(--parch-deep); font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase}
+.tiny{font-size:13px; color:var(--parch-dim)}
 hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
-.rumor{padding:6px 0; border-bottom:1px dashed var(--line); font-size:13px; line-height:1.45}
-.rumor .truth{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase}
+.rumor{padding:6px 0; border-bottom:1px dashed var(--line); font-size:14px; line-height:1.45}
+.rumor .truth{font-size:11.5px; letter-spacing:.08em; text-transform:uppercase}
 .rumor .truth.t{color:#83b389}.rumor .truth.f{color:#d78a5c}.rumor .truth.h{color:var(--cold)}
 .overlay{position:fixed; inset:0; background:rgba(8,7,6,.72); z-index:50; display:none;
   align-items:center; justify-content:center; padding:20px}
@@ -207,13 +207,27 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:13px 0}
 .sheet h2{font-size:18px; margin-bottom:12px}
 .frow{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:11px 0}
 .frow label{font-size:13px}
-.frow .hint{display:block; font-size:11px; color:var(--parch-deep); margin-top:1px}
+.frow .hint{display:block; font-size:12px; color:var(--parch-deep); margin-top:1px}
 .toast{position:fixed; bottom:64px; left:50%; transform:translateX(-50%) translateY(8px);
   background:var(--panel2); border:1px solid var(--accent); color:var(--flame);
   padding:8px 16px; border-radius:6px; font-size:13px; opacity:0; pointer-events:none;
   transition:all .25s; z-index:60}
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){ .flame{animation:none} #torchTime.crit{animation:none} }
+/* ---------- reading and reach ---------- */
+#tabBody, .qsheet{zoom:var(--tz,1)}
+#mapSvg .roomG:focus-visible, #mapSvg .frontier:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.rrow:focus-visible, .exitline[role=button]:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.exitline[role=button]{cursor:pointer}
+.exitline[role=button]:hover{color:var(--flame)}
+.doorlede{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; font-size:15.5px; color:var(--parch); margin-bottom:10px; line-height:1.4}
+.doorsound{display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--parch-dim); margin-top:10px; cursor:pointer; line-height:1.35}
+.doorsound input{accent-color:var(--torch); margin-top:3px}
+#sndOffer{font-size:12px; padding:3px 9px}
+body.dark .darkbanner{flex:1 1 100%; margin-left:0}
+header{z-index:45} /* its menus open over the folded note and the first-visit card */
+#soundMenu{z-index:46; max-height:calc(100vh - 70px); overflow-y:auto}
+@media (max-width:700px){ button, select{min-height:40px} .tabs button{min-height:44px} .toast{top:10px; bottom:auto} }
 /* ---------- the player's table ---------- */
 body.choosing #sidebar, body.choosing #mapTools, body.choosing #torchbar, body.choosing #mapHint, body.choosing footer .xp, body.choosing header > :not(.brand){visibility:hidden}
 body.choosing #mapSvg{filter:blur(2px) brightness(.7)}
@@ -241,13 +255,13 @@ body.role-player.gm-ready .tabs button[data-tab="chat"]{display:block}
 .gmsetup .frow{align-items:flex-start} .gmsetup .frow label{flex:0 0 46%} .gmsetup .frow input, .gmsetup .frow select{width:100%; min-width:0}
 .gmsetup .frow > div{flex:1; min-width:0}
 .thinking{animation:pulse 1.4s ease-in-out infinite}
-.door{position:absolute; left:50%; top:44%; transform:translate(-50%,-50%); z-index:42;
+.door{position:fixed; left:50%; top:46%; transform:translate(-50%,-50%); z-index:42;
   width:min(440px,calc(100% - 28px)); background:var(--panel); border:1px solid var(--accent);
   border-radius:8px; padding:18px 20px 14px; box-shadow:0 22px 64px rgba(0,0,0,.65)}
 .door h3{font-size:19px; margin-bottom:4px}
-.door .sub{font-size:12.5px; color:var(--parch-dim); margin-bottom:12px}
+.door .sub{font-size:13.5px; color:var(--parch-dim); margin-bottom:12px}
 .door button{display:block; width:100%; text-align:left; padding:10px 13px; margin:8px 0; font-size:14.5px; line-height:1.3}
-.door button small{display:block; font-size:12px; color:var(--parch-dim); margin-top:3px; font-weight:400}
+.door button small{display:block; font-size:13px; color:var(--parch-dim); margin-top:3px; font-weight:400}
 .door button.primary small{color:var(--parch-dim)}
 #btnNewP{display:none}
 .tabs button[data-tab="gm"]{display:none}
@@ -256,7 +270,7 @@ body.role-player .tabs button[data-tab="gm"]{display:block}
 body.role-player .seedbox, body.role-player #viewToggle, body.role-player .menuwrap, body.role-player #btnQuire,
 body.role-player #btnRevealAll, body.role-player #btnFactionTint, body.role-player #qNote,
 body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[data-tab="loot"]{display:none}
-.gmsteps .step{display:flex; gap:10px; margin:9px 0; font-size:13px; line-height:1.5}
+.gmsteps .step{display:flex; gap:10px; margin:9px 0; font-size:14px; line-height:1.5}
 .gmsteps .num{flex:none; width:22px; height:22px; border-radius:50%; background:var(--accent-soft); border:1px solid var(--accent);
   color:var(--flame); font-size:12px; display:flex; align-items:center; justify-content:center; margin-top:1px}
 .gmlinks{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 2px}
@@ -353,7 +367,7 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
 .soundmenu input[type=checkbox]{accent-color:var(--flame)}
 .soundmenu button{display:inline-block; width:auto; border:1px solid var(--line, #444); padding:4px 10px; margin:2px 0}
 .soundmenu .sndk{margin:4px 0; line-height:1.45}
-.readbtn{font-size:11px; padding:2px 8px; margin:4px 0 2px; opacity:.85}
+.readbtn{font-size:12.5px; padding:3px 10px; margin:4px 0 2px; opacity:.85}
 .msg .who .readbtn{margin:0 0 0 6px; padding:0 6px; font-size:10px; vertical-align:baseline}
 
 .qterm{border-bottom:1px dotted var(--parch-deep); cursor:help}
@@ -364,7 +378,7 @@ body.role-player .tabs button[data-tab="best"], body.role-player .tabs button[da
   font-size:13px; line-height:1.5; font-style:italic; display:none}
 .qpop.open{display:block}
 .qpop .qh{font-style:normal; font-variant:small-caps; letter-spacing:.09em; font-size:11px; color:#6b5c3e; display:block; margin-bottom:3px}
-.qplain{font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic; font-size:12.5px;
+.qplain{font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic; font-size:14.5px;
   color:var(--parch-dim); border-left:2px solid var(--ember); padding:5px 9px; margin-top:7px; line-height:1.5}
 .qmarg{font-family:"Iowan Old Style",Palatino,Georgia,serif; font-style:italic; font-size:12.5px;
   color:var(--parch-dim); border-left:2px solid var(--torch); padding:6px 10px; margin:8px 0; line-height:1.55}
@@ -420,10 +434,10 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.4</span></div>
+  <div class="brand"><span class="star">✦</span><h1>Abyssal Cartographer</h1><span class="ver">v3.5</span></div>
   <div class="seedbox">
-    <span class="seedlab qterm" data-q="seed" id="seedLabel">seed</span>
-    <input id="seedInput" spellcheck="false" aria-label="Dungeon seed">
+    <span class="seedlab qterm" data-q="seed" id="seedLabel">dungeon code</span>
+    <input id="seedInput" spellcheck="false" aria-label="Dungeon code">
     <button class="primary" id="btnGenerate">Generate</button>
     <button id="btnRandom" title="Roll a new fate">⚄ New</button>
     <div class="seedhint" id="seedHint" role="status" aria-live="polite"></div>
@@ -486,7 +500,7 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
       <button id="btnFactionTint">Faction ink</button>
       <button id="btnFit">Fit map</button>
     </div>
-    <svg id="mapSvg" role="img" aria-label="Dungeon map"></svg>
+    <svg id="mapSvg" role="group" aria-label="Dungeon map. Tab moves between rooms and doorways; Enter chooses one."></svg>
     <div id="mapHint">Click a lit room to enter it. Click a doorway beyond your light to press on. Drag to pan, scroll to zoom.</div>
   </div>
   <div id="sidebar">
@@ -505,12 +519,14 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
   <span class="spacer"></span>
   <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
-  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.4 · build 2026-11-09 · <span id="footSeed"></span></span>
+  <span>MIT license · <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">save it to play offline</a> · v3.5 · build 2026-11-09 · <span id="footSeed"></span></span>
 </footer>
 
 <div class="overlay" id="configOverlay">
-  <div class="sheet">
-    <h2 class="smallcaps">Expedition terms</h2>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Settings">
+    <h2>Settings</h2>
+    <div class="frow"><label>Text size<span class="hint">Changes at once. It does not rebuild the dungeon.</span></label><div class="toggle" id="textSize" role="group" aria-label="Text size"><button data-tz="1" class="on">Regular</button><button data-tz="1.15">Large</button><button data-tz="1.3">Larger</button></div></div>
+    <div class="klabel">The next dungeon: the terms of the expedition</div>
     <div class="frow"><label>Party size</label><select id="cfgParty"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
     <div class="frow"><label>Party level<span class="hint">Shadowdark levels 0 to 9</span></label><select id="cfgLevel"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
     <div class="frow"><label>Dungeon size</label><select id="cfgSize"><option value="s">Small (7 to 11 rooms)</option><option value="m" selected>Medium (12 to 17 rooms)</option><option value="l">Large (19 to 27 rooms)</option></select></div>
@@ -518,12 +534,12 @@ body.table .darkbanner{flex:0 1 auto;font-size:15px;letter-spacing:.1em;margin:0
     <div class="frow"><label>Origin<span class="hint">What this place was built as</span></label><select id="cfgOrigin"><option value="">Let fate decide</option></select></div>
     <div class="frow"><label>Doom<span class="hint">What befell it</span></label><select id="cfgDoom"><option value="">Let fate decide</option></select></div>
     <div class="frow"><label>Factions</label><select id="cfgFactions"><option value="on" selected>2 to 3 competing groups</option><option value="off">None (dead delve)</option></select></div>
-    <div class="frow"><button class="primary" id="btnApplyCfg" style="width:100%">Seal the terms &amp; generate</button></div>
+    <div class="frow"><button class="primary" id="btnApplyCfg" style="width:100%">Build a new dungeon with these settings</button></div>
   </div>
 </div>
-<div class="qoverlay" id="qOverlay"><div class="qsheet" id="qSheet"></div></div>
+<div class="qoverlay" id="qOverlay"><div class="qsheet" id="qSheet" role="dialog" aria-modal="true" aria-label="A letter, and your first game"></div></div>
 <div class="qpop" id="qPop"></div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /*ENGINE-START*/
@@ -1334,7 +1350,7 @@ function buildMap(model,opts){
     if(!isRev&&!showAll)continue;
     const dim=!isRev&&showAll;
     const fill=r.flooded?"#1d2830":"var(--floor-lit)";
-    parts.push('<g class="roomG" data-room="'+r.id+'" opacity="'+(dim?0.3:1)+'" style="cursor:pointer">');
+    parts.push('<g class="roomG" data-room="'+r.id+'" opacity="'+(dim?0.3:1)+'" style="cursor:pointer"'+(opts.print?'':' tabindex="0" role="button" aria-label="Room '+(r.id+1)+', '+esc(r.name)+(isRev?'':', not yet lit')+'"')+'>');
     for(const[x,y]of r.cells){
       parts.push('<rect x="'+(x*CS)+'" y="'+(y*CS)+'" width="'+CS+'" height="'+CS+'" fill="'+fill+'"/>');
     }
@@ -1418,7 +1434,7 @@ function buildMap(model,opts){
       if(aR===bR)continue;
       const far=aR?e.b:e.a;
       const dc=aR?e.db:e.da;
-      parts.push('<circle class="frontier" data-goto="'+far+'" cx="'+((dc[0]+0.5)*CS)+'" cy="'+((dc[1]+0.5)*CS)+'" r="4.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1" style="cursor:pointer"><animate attributeName="r" values="3.5;5;3.5" dur="2.2s" repeatCount="indefinite"/></circle>');
+      parts.push('<circle class="frontier" tabindex="0" role="button" aria-label="A doorway beyond the light" data-goto="'+far+'" cx="'+((dc[0]+0.5)*CS)+'" cy="'+((dc[1]+0.5)*CS)+'" r="4.5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1" style="cursor:pointer"><animate attributeName="r" values="3.5;5;3.5" dur="2.2s" repeatCount="indefinite"/></circle>');
     }
   }
   parts[0]='<defs>'+(opts.print?'':artInk(model))+(opts.light?lightDefs():'')+wdefs.join("")+'</defs>';
@@ -1481,6 +1497,10 @@ function renderMap(fit){
         if(adjRev)reveal(id);}}
   }
 })();
+$("#mapSvg").addEventListener("keydown",e=>{ /* the map without a mouse: Enter or Space on a room or a doorway */
+  if(e.key!=="Enter"&&e.key!==" ")return; const t=e.target&&e.target.closest?e.target.closest(".frontier,.roomG"):null; if(!t)return; e.preventDefault();
+  let id; if(t.classList.contains("frontier")){id=+t.dataset.goto;reveal(id);} else{id=+t.dataset.room; if(S.revealed.has(id)||S.view==="dm")select(id); else return;}
+  requestAnimationFrame(()=>{const g=document.querySelector('#mapSvg .roomG[data-room="'+id+'"]'); if(g)g.focus();});});
 function reveal(id){const was=S.revealed.has(id),prev=S.sel;S.revealed.add(id);if(!was){sndCue("room");sndEnter(prev,id);}select(id);if(S.role==="player")renderMap(true);toast("Room "+(id+1)+" steps into the light");tblPush();}
 function select(id){S.sel=id;S.tab="room";renderTabs();renderMap(false);renderPanel();syncHash();tblPush();}
 
@@ -1526,7 +1546,7 @@ function lightUp(){
   t.running=true;
   torchMsg("A new "+SRCNAME[t.src]+" takes the flame."+(t.src==="candle"?" Its light reaches only close.":""));
   sndFire("strike",fromFlame); narAnnounce($("#torchState").textContent);
-  renderTorch();renderLight();torchSave();
+  renderTorch();renderLight();torchSave();sndOfferOnce();
 }
 function torchMsg(m){$("#torchState").innerHTML='<span class="smallcaps">'+esc(m)+"</span>";tblPush();}
 function renderTorch(){
@@ -1621,11 +1641,11 @@ function renderPanel(){
     if(r.playlist)h+='<div class="tiny" style="margin-top:4px">♫ <a href="'+r.playlist.u+'" target="_blank" rel="noopener">'+esc(r.playlist.n)+'</a></div>';
     h+='<div class="klabel">Exits</div>';
     for(const x of r.exits){if(x.secret&&!dm)continue;
-      h+='<div class="exitline">'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
+      h+='<div class="exitline"'+((dm||S.revealed.has(x.to-1))?' data-goto-room="'+(x.to-1)+'" title="Go to room '+x.to+'"':'')+'>'+(x.secret?'<span class="secretline">':'')+esc(CAP(x.dir)+(x.side?", "+x.side:""))+": "+esc(x.label)+" to room "+x.to+(x.secret?'</span>':'')+(x.note&&dm?'<div class="tiny">'+esc(CAP(x.note))+'.</div>':'')+'</div>';}
     if(dm&&r.secretNote)h+='<div class="secretline" style="margin-top:4px">'+esc(r.secretNote)+'</div>';
     if(r.stairsDown){h+='<div class="klabel">Below</div><div class="dmnote">A stair descends into a deeper level.</div>';
       if(m.cfg.mode==="campaign")h+='<button class="primary" id="btnDescend" style="margin-top:4px">Descend to depth '+(m.depth+1)+'</button>';}
-    if(r.enc&&(dm||S.revealed.has(r.id))){
+    if(r.enc&&(dm||(S.revealed.has(r.id)&&S.role!=="player"))){
       h+='<div class="klabel">Creatures</div>';
       if(dm)h+='<div class="dmnote">'+r.enc.count+' × '+esc(r.enc.mon.name)+', '+esc(r.enc.act||"")+'</div>';
       else h+='<div class="dmnote">'+r.enc.count+' × '+esc(r.enc.mon.name)+'</div>';
@@ -1647,6 +1667,14 @@ function renderPanel(){
     h+='<div class="dun-sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+' · depth '+m.depth+'</div>';
     h+='<div class="boxed serif">'+esc(g.intro)+'</div><button class="readbtn" title="Read it aloud with the voice chosen under Sound">▶ Read aloud</button>';
     if(dm)h+='<div class="klabel">The truth of this place</div><div class="dmnote secretline">'+esc(g.twist)+'</div>';
+    if(dm){const withThings=m.rooms.filter(r=>r.enc).length, hours=m.rooms.length/4;
+      h+='<div class="tiny" style="margin-top:8px">'+m.rooms.length+' rooms, with creatures in '+withThings+' of them. A rough guide to length: about fifteen minutes a room, so '+(hours<=2.5?'one evening':hours<=4.5?'one long evening or two short ones':'two or three evenings')+'. A Small dungeon fits one sitting.</div>';}
+    if(m.town){const t=m.town;
+      h+='<div class="klabel">'+esc(t.name)+', the last town'+(dm?': where the evening starts':'')+'</div>';
+      h+='<div class="card"><h3>'+esc(t.inn)+'</h3><div class="meta">kept by '+esc(t.keeper)+'</div>';
+      h+='<div class="dmnote"><b>'+esc(t.patron.name)+'</b> will pay <span class="gp">'+t.patron.reward+' gp</span> to '+esc(t.patron.want)+'.</div>';
+      t.rumors.forEach(r=>{h+='<div class="rumor">'+esc(r.txt)+(dm?' <span class="truth '+r.truth+'">'+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+'</span>':'')+'</div>';});
+      h+='<div class="tiny" style="margin-top:6px">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'</div></div>';}
     if(m.factions.length&&S.role!=="player"){h+='<div class="klabel">Factions</div>';
       m.factions.forEach((f,i)=>{
         h+='<div class="card"><h3><span class="pill f'+i+'" style="margin-right:6px">'+(i+1)+'</span>'+esc(f.name)+'</h3><div class="meta">'+esc(f.type)+' · '+esc(f.att)+' · holds rooms '+f.rooms.map(x=>x+1).join(", ")+'</div>';
@@ -1657,12 +1685,6 @@ function renderPanel(){
         h+='</div>';});}
     if(dm){h+='<div class="klabel">Wandering the halls (roll a d6 between rounds of exploring and on any loud noise; a 1 brings something)</div>';
       m.wander.forEach(w=>{h+='<div class="rrow" style="cursor:default"><span class="rnum">'+w.roll+'</span><span class="rname tiny">'+esc(w.txt)+(w.mon?' ('+w.n+' × '+esc(w.mon.name)+')':'')+'</span></div>';});}
-    if(m.town){const t=m.town;
-      h+='<div class="klabel">'+esc(t.name)+', the last town</div>';
-      h+='<div class="card"><h3>'+esc(t.inn)+'</h3><div class="meta">kept by '+esc(t.keeper)+'</div>';
-      h+='<div class="dmnote"><b>'+esc(t.patron.name)+'</b> will pay <span class="gp">'+t.patron.reward+' gp</span> to '+esc(t.patron.want)+'.</div>';
-      t.rumors.forEach(r=>{h+='<div class="rumor">'+esc(r.txt)+(dm?' <span class="truth '+r.truth+'">'+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+'</span>':'')+'</div>';});
-      h+='<div class="tiny" style="margin-top:6px">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'</div></div>';}
     h+='<div class="klabel">Rooms</div>';
     m.rooms.forEach(r=>{if(!dm&&!S.revealed.has(r.id))return;
       h+='<div class="rrow" data-goto-room="'+r.id+'"><span class="rnum">'+(r.id+1)+'</span><span class="rname">'+esc(r.name)+'</span><span class="rtags">'+(r.enc?"⚔ ":"")+(r.trap&&dm?"‸ ":"")+(r.treasure.length&&dm?"◆ ":"")+(r.id===m.boss.roomId&&dm?"♛":"")+'</span></div>';});
@@ -1700,6 +1722,11 @@ function renderPanel(){
     if(cb.checked){S.loot.add(cb.dataset.loot);sndCue("coins");}else S.loot.delete(cb.dataset.loot);
     playSave();
     renderFoot();if(S.tab==="loot")renderPanel();}));
+  /* rooms in a list and exits in a room can be reached and chosen without a mouse */
+  const onOver=S.tab==="over";
+  el.querySelectorAll("[data-goto-room]").forEach(x=>{x.setAttribute("tabindex","0");x.setAttribute("role","button");
+    if(!onOver)x.addEventListener("click",()=>select(+x.dataset.gotoRoom));
+    x.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(+x.dataset.gotoRoom);}});});
 }
 /* Shadowdark awards XP by treasure hoard tier, not gold count, and every delver
    receives the full award rather than a divided share. Tier thresholds below are our
@@ -1838,12 +1865,12 @@ $("#btnGenerate").addEventListener("click",()=>{
   if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");narAnnounce("Nothing happens.");return;}
   const cfg=currentCfg(), same=sameAsOnScreen(cfg);
   newDungeon(cfg); if(!same)eggLedger();
-  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");
+  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a dungeon code to rebuild that dungeon.");
   else hideSeedHint();
 });
 $("#btnRandom").addEventListener("click",()=>{hideSeedHint();$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});
 $("#seedInput").addEventListener("keydown",e=>{if(e.key==="Enter"){if(eggSeed($("#seedInput").value)==="xyzzy"){toast("Nothing happens.");narAnnounce("Nothing happens.");return;}const cfg=currentCfg(),same=sameAsOnScreen(cfg);newDungeon(cfg);if(!same)eggLedger();
-  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a seed to rebuild a specific dungeon.");else hideSeedHint();}});
+  if(same)seedHint("This is already the dungeon on screen. Press New for a fresh one, or paste a dungeon code to rebuild that dungeon.");else hideSeedHint();}});
 $("#seedInput").addEventListener("input",hideSeedHint);
 $("#sysToggle").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sys=b.dataset.sys;
   $("#sysToggle").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));renderPanel();renderFoot();syncHash();});
@@ -1852,7 +1879,7 @@ $("#viewToggle").addEventListener("click",e=>{const b=e.target.closest("button")
   toast(S.view==="dm"?"Game master’s view: all secrets shown":"Player view: only what the light has touched");});
 $("#btnShare").addEventListener("click",()=>{syncHash();
   const url=location.href.split("#")[0]+HASHMEM;
-  const ok=()=>toast("Link copied. Same seed, same dungeon, same secrets.");
+  const ok=()=>toast("Link copied. Same code, same dungeon, same secrets.");
   const legacy=()=>{try{const t=document.createElement("textarea");t.value=url;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();const d=document.execCommand("copy");document.body.removeChild(t);d?ok():toast("Copy is blocked in this preview. From a normal browser it works.");}catch(e){toast("Copy is blocked in this preview. From a normal browser it works.");}};
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(ok).catch(legacy);}else legacy();});
 function copyPlayerLink(){syncHash();
@@ -1865,7 +1892,13 @@ $("#btnRevealAll").addEventListener("click",()=>{S.model.rooms.forEach(r=>S.reve
 $("#btnFog").addEventListener("click",()=>{S.revealed=new Set([0]);S.sel=0;renderMap(true);renderPanel();syncHash();toast("The fog closes back in.");});
 $("#btnFactionTint").addEventListener("click",()=>{S.tints=!S.tints;renderMap(false);toast(S.tints?"Faction territory inked":"Faction ink lifted");});
 $("#btnFit").addEventListener("click",()=>renderMap(true));
-$("#btnConfig").addEventListener("click",()=>$("#configOverlay").classList.add("open"));
+$("#btnConfig").addEventListener("click",()=>{$("#configOverlay").classList.add("open");setTimeout(()=>{const f=$("#textSize button.on")||$("#cfgParty");if(f)f.focus();},30);});
+/* text size: a zoom on the reading panel and the letter, kept between visits */
+function setTextSize(z,quiet){z=+z||1;document.documentElement.style.setProperty("--tz",z);
+  document.querySelectorAll("#textSize button").forEach(b=>b.classList.toggle("on",+b.dataset.tz===z));
+  if(!quiet){try{localStorage.setItem("ac.text",String(z));}catch(e){}}}
+$("#textSize").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setTextSize(b.dataset.tz);});
+try{const z=+localStorage.getItem("ac.text");if(z)setTextSize(z,true);}catch(e){}
 $("#configOverlay").addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove("open");});
 $("#btnApplyCfg").addEventListener("click",()=>{$("#configOverlay").classList.remove("open");newDungeon(currentCfg());});
 $("#btnExport").addEventListener("click",e=>{e.stopPropagation();$("#exportMenu").classList.toggle("open");});
@@ -1877,7 +1910,7 @@ function dl(name,mime,content){
   const b=new Blob([content],{type:mime});const a=document.createElement("a");
   a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
 const PRINT_VARS=":root{--floor-lit:#efe6d0;--floor:#efe6d0;--wallink:#40331c;--panel:#f7f0dd;--panel2:#f1e8d2;--parch:#2a2216;--parch-dim:#5c4f38;--parch-deep:#7a6c50;--accent:#8a5a1f;--torch:#8a5a1f;--flame:#8a5a1f;--cold:#4a5d74;--blood:#8c2b20;--line:#c9b990;--accent-soft:rgba(138,90,31,0.12)}";
-const EXP_CSS="body{font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;background:#f7f0dd;color:#2a2216;max-width:820px;margin:0 auto;padding:28px;line-height:1.55;font-size:13.5px}h1{font-size:26px;text-align:center;margin-bottom:2px}h2{font-size:17px;border-bottom:2px solid #40331c;padding-bottom:3px;margin:26px 0 10px;font-variant:small-caps;letter-spacing:.06em}h3{font-size:14.5px;margin:14px 0 4px}.sub{text-align:center;color:#5c4f38;font-size:12px;margin-bottom:18px}.boxed{border:1px solid #8f8266;background:#efe6d0;padding:10px 13px;font-style:italic;margin:8px 0;border-radius:2px}.room{border:1px solid #c9b990;background:#fbf6e8;padding:12px 14px;margin:12px 0;page-break-inside:avoid;border-radius:3px}.k{font-weight:700}.stat{background:#f1e8d2;border-left:3px solid #8a5a1f;padding:8px 11px;margin:7px 0;font-size:12px}.stat .nm{font-variant:small-caps;font-weight:700;font-size:13.5px}.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}.sec{color:#4a5d74}.tiny{font-size:11px;color:#7a6c50}.truth{font-size:10px;letter-spacing:.08em;text-transform:uppercase}table{border-collapse:collapse;width:100%;font-size:12.5px}td,th{border:1px solid #c9b990;padding:4px 8px;text-align:left}svg{width:100%;height:auto;background:#efe6d0;border:1px solid #c9b990;border-radius:3px}@media print{body{padding:8px}.room{border-color:#999}}";
+const EXP_CSS="body{font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;background:#f7f0dd;color:#2a2216;max-width:820px;margin:0 auto;padding:28px;line-height:1.55;font-size:13.5px}h1{font-size:26px;text-align:center;margin-bottom:2px}h2{font-size:17px;border-bottom:2px solid #40331c;padding-bottom:3px;margin:26px 0 10px;font-variant:small-caps;letter-spacing:.06em}h3{font-size:14.5px;margin:14px 0 4px}.sub{text-align:center;color:#5c4f38;font-size:12px;margin-bottom:18px}.boxed{border:1px solid #8f8266;background:#efe6d0;padding:11px 14px;font-style:normal;font-size:15px;line-height:1.6;margin:8px 0;border-radius:2px}.room{border:1px solid #c9b990;background:#fbf6e8;padding:12px 14px;margin:12px 0;page-break-inside:avoid;border-radius:3px}.k{font-weight:700}.stat{background:#f1e8d2;border-left:3px solid #8a5a1f;padding:8px 11px;margin:7px 0;font-size:12px}.stat .nm{font-variant:small-caps;font-weight:700;font-size:13.5px}.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}.sec{color:#4a5d74}.tiny{font-size:11px;color:#7a6c50}.truth{font-size:10px;letter-spacing:.08em;text-transform:uppercase}table{border-collapse:collapse;width:100%;font-size:12.5px}td,th{border:1px solid #c9b990;padding:4px 8px;text-align:left}svg{width:100%;height:auto;background:#efe6d0;border:1px solid #c9b990;border-radius:3px}@media print{body{padding:8px}.room{border-color:#999}}";
 function expStat(m){const t=AC.statText(m,S.sys);
   let h='<div class="stat"><span class="nm">'+esc(m.name)+'</span>'+(m.of?' <span class="tiny">('+esc(m.of)+')</span>':'');
   if(m.fl)h+='<div><i>'+esc(m.fl)+'</i></div>';
@@ -1895,7 +1928,7 @@ function expDM(){
   const m=S.model,g=m.genome;
   let h='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(g.name)+' (Game Master’s Guide)</title><style>'+PRINT_VARS+EXP_CSS+'</style></head><body>';
   if(QS.on)h+=QLETTER_PRINT();
-  h+='<h1>'+esc(g.name)+'</h1><div class="sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+' · depth '+m.depth+' · seed '+esc(m.seed)+'</div>';
+  h+='<h1>'+esc(g.name)+'</h1><div class="sub">'+esc(g.origin)+' · '+esc(g.doom)+' · '+esc(g.age)+' · depth '+m.depth+' · code '+esc(m.seed)+'</div>';
   h+='<div class="boxed">'+esc(g.intro)+'</div>';
   h+='<p><span class="k">The truth of this place:</span> <span class="sec">'+esc(g.twist)+'</span></p>';
   h+='<h2>The Map</h2>'+mapSVGString("dm");
@@ -1927,7 +1960,7 @@ function expDM(){
   if(m.town){const t=m.town;h+='<h2>'+esc(t.name)+'</h2><p>The inn is <span class="k">'+esc(theLower(t.inn))+'</span>, kept by '+esc(t.keeper)+'. <span class="k">'+esc(t.patron.name)+'</span> will pay '+t.patron.reward+' gp to '+esc(t.patron.want)+'.</p>';
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.4. Seed: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v3.5. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_game_master.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -1960,7 +1993,7 @@ function aiGMText(){
   L.push("TO BEGIN: ask whether I already have a character. If not, help me make one quickly (a name, a class, a few numbers). The party is meant for "+m.cfg.party+" characters of level "+m.cfg.level+"; if I play alone, give me one or two companions to steer, or soften the fights. Then start "+(m.town?"in the town of "+m.town.name+".":"at the dungeon's entrance (room 1)."));
   L.push("");
   L.push("THE DUNGEON: "+g.name);
-  L.push(g.origin+" · "+g.doom+" · "+g.age+" · depth "+m.depth+" · seed "+m.seed);
+  L.push(g.origin+" · "+g.doom+" · "+g.age+" · depth "+m.depth+" · code "+m.seed);
   L.push("READ-ALOUD: "+g.intro);
   L.push("SECRET (the truth of this place): "+g.twist);
   if(m.town){const t=m.town;
@@ -1997,7 +2030,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v3.4. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v3.5. "+LICENSE_LINE);
   L.push("");
   L.push("When you have read all of this, greet me in one short paragraph and ask whether I have a character.");
   return L.join("\n");
@@ -2290,7 +2323,7 @@ var QTERMS={
  faction:["Factions","Two or three groups already live here and already have opinions about each other. Your delvers arrive as a fourth problem."],
  telltale:["The telltale","Every trap here comes with a tell. Describe the tell before they trip it. A trap nobody had a chance to notice is just arithmetic."],
  secret:["Secret doors","The map shows them to you and not to them. Nothing behind one is ever required. I have never built a place that punishes a party for missing a door."],
- seed:["The seed","A dungeon's short identity code, its true name. Put the same code in and you get the same dungeon back, room for room, which is how a shared link hands somebody else this exact place."],
+ seed:["The dungeon code","Each dungeon has a short code that is its true name. Put the same code in and you get the same dungeon back, room for room, which is how a shared link hands somebody else this exact place."],
  fog:["The unlit map","The map remembers only what has been lit. What is grey has not been seen by anyone still breathing."],
  torch:["The light","One hour of torch is one hour of your table's actual life. When it goes, the dark is a rule and not a mood."],
  xp:["Treasure as experience","What they carry out is what they learn from; treasure left in the dark teaches nobody anything. Shadowdark counts hoards rather than coins: a fair haul is worth a point, a fabulous one more, and every delver receives the whole award rather than a divided share."]
@@ -2486,6 +2519,14 @@ function qClose(){document.getElementById("qOverlay").classList.remove("open");}
 document.getElementById("btnQuire").addEventListener("click",function(){if(!QS.opened)QS.step=0;qOpen();});
 document.getElementById("qOverlay").addEventListener("click",function(e){if(e.target.id==="qOverlay")qClose();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")qClose();});
+document.addEventListener("keydown",function(e){ /* Escape closes whatever is open */
+  if(e.key!=="Escape")return;
+  var x=document.getElementById("exportMenu"); if(x)x.classList.remove("open");
+  var c=document.getElementById("configOverlay"); if(c)c.classList.remove("open");
+  var t=document.getElementById("tblHelp"); if(t)t.classList.remove("open");
+  var m=document.getElementById("soundMenu"), b=document.getElementById("btnSound");
+  if(m&&m.classList.contains("open")&&!(typeof sndTalking==="function"&&sndTalking())){m.classList.remove("open"); if(b)b.setAttribute("aria-expanded","false");}
+});
 
 /* the folded note, pinned where it can be seen and ignored */
 function qDropNote(){
@@ -2720,8 +2761,8 @@ function gmRenderChat(){
 function gmSetupHTML(){
   const c=GM.cfg, p=GMP[c.provider];
   let h='<div class="klabel">Or play right here in this page</div><div class="card gmsetup">';
-  h+='<div class="tiny" style="margin-bottom:8px">The game master talks to you in this tab and lights rooms on the map itself. It needs a brain: an account key you already pay for, or a model running on this computer.</div>';
-  h+='<div class="frow"><label>Where the brain is</label><select id="gmProv">'+Object.keys(GMP).filter(k=>k!=="paste").map(k=>'<option value="'+k+'"'+(c.provider===k?" selected":"")+'>'+esc(GMP[k].label)+'</option>').join("")+'</select></div>';
+  h+='<div class="tiny" style="margin-bottom:8px">The game master talks to you in this tab and lights rooms on the map itself. It needs an AI to do the talking: an account key you already pay for, or a model running on this computer.</div>';
+  h+='<div class="frow"><label>Where the AI runs</label><select id="gmProv">'+Object.keys(GMP).filter(k=>k!=="paste").map(k=>'<option value="'+k+'"'+(c.provider===k?" selected":"")+'>'+esc(GMP[k].label)+'</option>').join("")+'</select></div>';
   if(p.kind!=="paste"){
     if(p.needsKey)h+='<div class="frow"><label>Your API key<span class="hint">From '+(c.provider==="anthropic"?"console.anthropic.com":c.provider==="openai"?"platform.openai.com":"aistudio.google.com")+'. Stays in this browser.</span></label><input id="gmKey" type="password" value="'+esc(c.key||"")+'" placeholder="paste it here" autocomplete="off"></div>';
     if(p.hosted)h+='<div class="frow"><label>Address<span class="hint">The web address you were given</span></label><input id="gmUrl" type="url" value="'+esc(c.url||"")+'" placeholder="https://…/v1"></div><div class="frow"><label>Access code<span class="hint">If you were given one</span></label><input id="gmKey" type="password" value="'+esc(c.key||"")+'" autocomplete="off"></div>';
@@ -2776,10 +2817,10 @@ function renderGM(el,m){
     +'<span class="out" id="diceOut">·</span><span class="outnote" id="diceNote">Tell your game master the number. It will trust you.</span></div>';
   h+='<div class="klabel">Good to know</div>';
   h+='<div class="tiny" style="margin-bottom:6px">Rules: <b>'+(S.sys==="5e"?"Dungeons &amp; Dragons 5th edition":"Shadowdark RPG")+'</b>. '+(S.sys==="5e"?"AI game masters know D&amp;D best, so it is the default here. Switch to Shadowdark at the top if that is your game.":"Switch to D&amp;D 5e at the top if you would rather play that; AI game masters know it best.")+'</div>';
-  h+='<div class="tiny" style="margin-bottom:6px">Coming back tomorrow: bookmark this page (it remembers which rooms are lit) and go back to the same chat.</div>';
+  h+='<div class="tiny" style="margin-bottom:6px">Coming back tomorrow: bookmark this page (it remembers which rooms are lit and where your torch stood) and go back to the same chat.</div>';
   h+='<div class="tiny" style="margin-bottom:6px">'+(location.protocol==="file:"
-      ?'No internet needed: you are playing the copy saved on your computer. With a model running on this computer (choose it under <b>Where the brain is</b>), the game master works offline too.'
-      :'No internet? Use <b>save it to play offline</b> at the bottom of the page. Opened from your computer, the game plays without internet, and with a model running on this computer (choose it under <b>Where the brain is</b>) so does the game master.')+'</div>';
+      ?'No internet needed: you are playing the copy saved on your computer. With a model running on this computer (choose it under <b>Where the AI runs</b>), the game master works offline too.'
+      :'No internet? Use <b>save it to play offline</b> at the bottom of the page. Opened from your computer, the game plays without internet, and with a model running on this computer (choose it under <b>Where the AI runs</b>) so does the game master.')+'</div>';
   h+='<div class="tiny" style="margin-bottom:6px">The dungeon is about 3,000 words. If one AI refuses a paste that long, try another of the three.</div>';
   h+='<div class="tiny" style="margin-bottom:6px">The <b>Be the game master</b> button at the top shows every secret in this place. It is more fun not to know.</div>';
   h+='<div class="tiny">Want a different dungeon? Press <b>New dungeon</b>. <b>Share</b> copies a link that opens this exact dungeon.</div>';
@@ -2819,16 +2860,28 @@ function setRole(role,opts){
   try{localStorage.setItem("ac.role",role);}catch(e){}
   if(S.model){renderTabs();renderMap(true);renderPanel();renderFoot();syncHash();}
 }
+/* sound is offered, never sprung: once at the door, and once more the first time a torch is lit */
+function sndTurnOn(){SND.cfg.room=true;SND.cfg.cues=true;sndSave();try{sndCtx();sndTick();}catch(e){}}
+function sndOfferOnce(){
+  if(TBL.isTable||SND.cfg.room||SND.cfg.cues||SND.cfg.voice||document.getElementById("sndOffer"))return;
+  try{if(localStorage.getItem("ac.sndOffered"))return;localStorage.setItem("ac.sndOffered","1");}catch(e){return;}
+  const row=document.querySelector(".torchbtns"); if(!row)return;
+  const b=document.createElement("button"); b.id="sndOffer"; b.textContent="♪ Hear the dungeon?"; b.title="Turns on room sounds and small cues. Nothing downloads.";
+  b.addEventListener("click",()=>{sndTurnOn();b.remove();toast("Sound is on. The Sound button at the top has voices and levels.",4200);});
+  row.appendChild(b); setTimeout(()=>{if(b.isConnected)b.remove();},90000);
+}
 function roleDoor(){
   const pane=$("#mapPane"); if(!pane||document.getElementById("roleDoor"))return;
   const d=document.createElement("div"); d.className="door"; d.id="roleDoor";
   document.body.classList.add("choosing");
-  d.innerHTML='<h3>Are you playing, or running the game?</h3><div class="sub">A dungeon is already drawn behind this card. Your choice decides how much of it you get to see.</div>'
+  d.innerHTML='<div class="doorlede">One click builds a whole dungeon adventure. This one is already drawn, behind this card.</div><h3>Are you playing, or running the game?</h3><div class="sub">Your choice decides how much of it you get to see.</div>'
     +'<button class="primary" id="doorPlayer">I want to play<small>An AI will be your game master. You explore, it tells the story, and nothing on your screen spoils the surprise.</small></button>'
-    +'<button id="doorDM">I am running it for friends<small>You hold the map and every secret: the full game master’s screen.</small></button>';
-  pane.appendChild(d);
-  $("#doorPlayer").addEventListener("click",()=>{d.remove();setRole("player",{sys:"5e"});});
-  $("#doorDM").addEventListener("click",()=>{d.remove();setRole("dm");setTimeout(qDropNote,600);});
+    +'<button id="doorDM">I am running it for friends<small>You hold the map and every secret: the full game master’s screen.</small></button>'
+    +'<label class="doorsound"><input type="checkbox" id="doorSound"><span>With sound: dripping water, doors, footsteps and your torch. Nothing to download. The Sound button has voices too.</span></label>';
+  pane.appendChild(d); setTimeout(()=>{const b=$("#doorPlayer");if(b)b.focus();},60);
+  const wantSound=()=>{const c=$("#doorSound"); if(c&&c.checked)sndTurnOn(); try{localStorage.setItem("ac.sndOffered","1");}catch(e){}};
+  $("#doorPlayer").addEventListener("click",()=>{wantSound();d.remove();setRole("player",{sys:"5e"});});
+  $("#doorDM").addEventListener("click",()=>{wantSound();d.remove();setRole("dm");setTimeout(qDropNote,600);});
 }
 $("#btnRole").addEventListener("click",()=>setRole(S.role==="player"?"dm":"player"));
 $("#btnNewP").addEventListener("click",()=>{$("#seedInput").value=AC.randomSeed();newDungeon(currentCfg());eggLedger();});

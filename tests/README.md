@@ -12,6 +12,7 @@ node tests/save.test.js           AbyssalCartographer.html out/   # the save-for
 node tests/local-model.test.js    AbyssalCartographer.html out/   # a local model reached from the https address and the saved copy: Chrome's permission, labels, hints, errors
 node tests/sound.test.js          AbyssalCartographer.html out/ [kokoro]   # sound: voice, room sounds, torch, cues, read-aloud; add 'kokoro' to download and run the real voice model (needs internet)
 node tests/truth-and-clock.test.js AbyssalCartographer.html out/   # v3.4: the key agrees with the map (door walls, shared doorways, barred doors, passages), the torch by the clock, reload and Load, print weight
+node tests/reading-and-reach.test.js AbyssalCartographer.html out/   # v3.5: type sizes, text size control, keyboard, Escape, announcements, the sound offer, order of play, phone touch sizes
 (cd hosted && node test_hosted.mjs ../AbyssalCartographer.html)        # the hosted game master against a fake Claude
 ```
 

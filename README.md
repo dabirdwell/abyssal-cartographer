@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v3.4 (Current)
+### v3.5 (Current)
+Reading and reach. The text you read aloud is large and upright, small type is raised across the game, and Settings has a text size control. Rooms, exits and doorways can be chosen from the keyboard, Escape closes whatever is open, and the small messages are announced to screen readers. The first screen says what this is and offers sound once. The Overview follows the order of play, with the town first, and gives a rough guide to how long the dungeon takes. A player's screen no longer names a room's creatures before the game master has. "Dungeon code" replaces "seed", and Settings is headed Settings. The dungeon generator is untouched.
+
+### v3.4
 The key now agrees with the map. Every exit names the wall its door is drawn in, two doors in one wall are told apart, and passages with no room in common no longer cross (where the stone leaves no other way, the key says they meet). A barred door has a side and a rule. The lantern burns one hour, as its label says. The torch burns by the clock, so a hidden tab or a reload no longer slows, stops or resets it. Ticked treasure and banked gold are kept, and Export can load a saved game. The printed guide and handout draw their hatching as strokes, so a two-page handout prints to well under a megabyte instead of 24. The same code still builds the same rooms, doors, creatures and treasure; only the line of some passages moved.
 
 ### v3.3
