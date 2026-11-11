@@ -2,7 +2,7 @@
 
 One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same code always rebuilds the same dungeon, so the address is the save file and the share link.
 
-Light old-school rules, with a 5e conversion toggle. Run it for your friends, or play it yourself with an AI as game master.
+Dungeons & Dragons 5th edition. Run it for your friends, or play it yourself with an AI as game master.
 
 *Started as a Christmas gift for tabletop nerds* 🎁
 
@@ -16,7 +16,7 @@ Light old-school rules, with a 5e conversion toggle. Run it for your friends, or
 
 The first visit asks one question: **I want to play**, or **I am running it for friends**.
 
-- **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and a game master that is an AI. Two ways to get one. The quick way: one button copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini, and you play in two tabs. The other way: play right here in the page, with your own API key (Claude, OpenAI or Gemini), a model running on your own computer (LM Studio or Ollama), or a hosted address you were given; the chat sits beside the map, rooms light themselves when the game master names them, and the conversation is kept per dungeon in your browser. Either way the dungeon stays fixed, so the AI cannot drift, and your screen never shows a secret. 5e rules by default on this path, because AI game masters know fifth edition best.
+- **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and a game master that is an AI. Two ways to get one. The quick way: one button copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini, and you play in two tabs. The other way: play right here in the page, with your own API key (Claude, OpenAI or Gemini), a model running on your own computer (LM Studio or Ollama), or a hosted address you were given; the chat sits beside the map, rooms light themselves when the game master names them, and the conversation is kept per dungeon in your browser. Either way the dungeon stays fixed, so the AI cannot drift, and your screen never shows a secret. 5e rules by default on this path, because AI game masters know D&D best.
 - **Running it** opens the full game master's screen. From there, Export → *Link for a player* copies an address that drops anyone straight onto the player's table, first room lit, nothing spoiled.
 
 ## 🔌 Playing without internet
@@ -49,7 +49,7 @@ v2 is a ground-up rewrite. There are no frameworks, no CDN loads, no build step,
 - **A coherent dungeon**, not random rooms: a genome of origin and doom colors names, descriptions, creatures, and treasure throughout
 - **Factions**: two or three competing groups with goals, and a boss who leads one of them
 - **Solvable by construction**: every locked door has a reachable key, and secrets can always be found
-- **Old-school stat blocks** with a plain-language reading under each; the 5e toggle converts stats between systems
+- **Fifth edition stat lines** for every creature, with a plain-language reading under each
 - **Real-time light**: a torch burns one real hour, a lantern one hour per flask of oil, a candle one hour at close range only; the screen goes cold and dark when the light burns out
 - **Treasure as XP**, counted in hoard tiers, full award to every delver
 - **The Margins**: an optional guidance layer for first-time GMs. A letter from Quire, a retired Guild cartographer, opens into a nine-step first game built from your own generated dungeon. One checkbox turns all of it off
@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v4.4 (Current)
+### v5.0 (Current)
+Fifth edition only. The game has one set of rules now, D&D 5e, and says so. The rules switch is gone, and with it the second stat-line format, the summary of other rules handed to an AI game master, experience counted by treasure, and the glossary entries that explained those terms. Every creature already had fifth edition numbers; they are now the only numbers, with ranges in feet. A lantern burns six hours on a flask. A link that asked for the other rules opens in fifth edition. The reading face is EB Garamond. No dungeon changes: the same code builds the same rooms, doors, creatures and treasure.
+
+### v4.4
 The game names no publisher. Its light native rules are called Old-school, the second rules button says 5e, and the license line is gone from the page. The button that opens the letter and the first-game steps is now called Help. No dungeon changes.
 
 ### v4.3
@@ -138,11 +141,11 @@ Initial release.
 
 The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](LICENSE).
 
-This is an independent work. It is not affiliated with, licensed by or endorsed by the publisher of any game.
+This is an independent work. It is not affiliated with, licensed by or endorsed by Wizards of the Coast or any other publisher. Its rules content comes from the fifth-edition rules document credited below.
 
 ### Typefaces
 
-The game carries Alegreya and Alegreya Sans inside its one file. Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) and Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans), under the SIL Open Font License 1.1 (`fonts/OFL-Alegreya.txt`). The faces are cut down to the letters the game uses; `tools/embed_fonts.py` rebuilds them.
+The game carries EB Garamond and Alegreya Sans inside its one file. Copyright 2017 The EB Garamond Project Authors (https://github.com/octaviopardo/EBGaramond12) and Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans), under the SIL Open Font License 1.1 (`fonts/OFL-EBGaramond.txt`, `fonts/OFL-Alegreya.txt`). The faces are cut down to the letters the game uses; `tools/embed_fonts.py` rebuilds them.
 
 ### Ready-made characters
 

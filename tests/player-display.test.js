@@ -54,7 +54,7 @@ const dmName = async p => { await p.click('.tabs button[data-tab="over"]'); awai
   await dm.click('#exportMenu button[data-x="table"]'); await dm.waitForTimeout(250);
   ok(await dm.isVisible('#tblHelp'), 'choosing it opens the sheet');
   const link = await dm.$eval('#tblOpenLink', a => ({ href: a.href, target: a.target, rel: a.rel, text: a.textContent }));
-  ok(/#table:grim-gate-63\|1\|4\|1\|m\|oneshot\|on\|\|\|sd\|player\|0100\|p$/.test(link.href) && link.target === '_blank' && /noopener/.test(link.rel), 'the link is a plain anchor to #table: plus the thirteen fields (reveal bits 0100 = room 1 of 16): ' + link.href.slice(link.href.indexOf('#')));
+  ok(/#table:grim-gate-63\|1\|4\|1\|m\|oneshot\|on\|\|\|5e\|player\|0100\|p$/.test(link.href) && link.target === '_blank' && /noopener/.test(link.rel), 'the link is a plain anchor to #table: plus the thirteen fields (reveal bits 0100 = room 1 of 16): ' + link.href.slice(link.href.indexOf('#')));
   ok(link.href.split('#')[0] === SRC, 'the link points at this same file');
   ok(link.text === 'Open the player display', 'link text');
   ok(/No player display is open yet/.test(await dm.textContent('#tblStatus')), 'sheet says no display is open yet');

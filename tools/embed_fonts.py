@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """Make the typefaces the game carries inside its one file.
 
-Alegreya and Alegreya Sans (Juan Pablo del Peral, Huerta Tipografica) are under the SIL Open Font License 1.1,
-with no reserved font name. This script cuts each weight down to the letters the game uses, keeps true small
+EB Garamond (Georg Duffner and Octavio Pardo) and Alegreya Sans (Juan Pablo del Peral, Huerta Tipografica)
+are under the SIL Open Font License 1.1. This script cuts each weight down to the letters the game uses, keeps true small
 caps and the lining and tabular figures, and writes:
   fonts/*.woff2      the cut-down faces
   fonts/faces.css    the same faces as @font-face rules with the font data inside, ready to sit in index.html
   fonts/OFL-*.txt    the license, which must travel with the faces
 
 Run:  /opt/homebrew/bin/python3 tools/embed_fonts.py
-Needs fontTools and brotli. The source files come with TeX Live; any copy of Alegreya 2.008 and
-Alegreya Sans 2.007 in .otf will do (set SRC below).
+Needs fontTools and brotli. The source files come with TeX Live; any copy of EB Garamond and
+Alegreya Sans 2.007 in .otf will do (set EB and AL below).
 """
 import base64, os, shutil, sys
 from fontTools import subset
@@ -19,17 +19,18 @@ from fontTools.ttLib import TTFont
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, 'fonts')
-SRC = '/usr/local/texlive/2025/texmf-dist/fonts/opentype/huerta/alegreya/'
-DOC = '/usr/local/texlive/2025/texmf-dist/doc/fonts/alegreya/'
+EB = '/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/ebgaramond/'
+AL = '/usr/local/texlive/2025/texmf-dist/fonts/opentype/huerta/alegreya/'
+DOCS = [('/usr/local/texlive/2025/texmf-dist/doc/fonts/ebgaramond/', 'OFL-EBGaramond.txt'), ('/usr/local/texlive/2025/texmf-dist/doc/fonts/alegreya/', 'OFL-Alegreya.txt')]
 
 # family, weight, style, source file, output name
 FACES = [
-    ('Alegreya', 400, 'normal', 'Alegreya-Regular.otf', 'alegreya-400'),
-    ('Alegreya', 500, 'normal', 'Alegreya-Medium.otf', 'alegreya-500'),
-    ('Alegreya', 700, 'normal', 'Alegreya-Bold.otf', 'alegreya-700'),
-    ('Alegreya', 400, 'italic', 'Alegreya-Italic.otf', 'alegreya-400i'),
-    ('Alegreya Sans', 500, 'normal', 'AlegreyaSans-Medium.otf', 'alegreyasans-500'),
-    ('Alegreya Sans', 700, 'normal', 'AlegreyaSans-Bold.otf', 'alegreyasans-700'),
+    ('EB Garamond', 400, 'normal', EB + 'EBGaramond-Regular.otf', 'ebgaramond-400'),
+    ('EB Garamond', 500, 'normal', EB + 'EBGaramond-Medium.otf', 'ebgaramond-500'),
+    ('EB Garamond', 700, 'normal', EB + 'EBGaramond-Bold.otf', 'ebgaramond-700'),
+    ('EB Garamond', 400, 'italic', EB + 'EBGaramond-Italic.otf', 'ebgaramond-400i'),
+    ('Alegreya Sans', 500, 'normal', AL + 'AlegreyaSans-Medium.otf', 'alegreyasans-500'),
+    ('Alegreya Sans', 700, 'normal', AL + 'AlegreyaSans-Bold.otf', 'alegreyasans-700'),
 ]
 # Basic Latin, Latin-1, and the punctuation and signs the game's own text uses.
 UNICODES = (list(range(0x20, 0x7F)) + list(range(0xA0, 0x100)) +
@@ -47,7 +48,7 @@ def main():
         opts.name_IDs = [0, 1, 2, 3, 4, 5, 6, 13, 14]
         opts.notdef_outline = True
         opts.hinting = False
-        font = TTFont(os.path.join(SRC, src))
+        font = TTFont(src)
         sub = subset.Subsetter(opts)
         sub.populate(unicodes=UNICODES)
         sub.subset(font)
@@ -59,10 +60,12 @@ def main():
         b64 = base64.b64encode(data).decode('ascii')
         css.append('@font-face{font-family:"%s";font-weight:%d;font-style:%s;font-display:swap;src:url(data:font/woff2;base64,%s) format("woff2")}' % (family, weight, style, b64))
         print('%-18s %4d %-6s %6d bytes' % (family, weight, style, len(data)))
-    head = '/* Alegreya and Alegreya Sans, Copyright 2011 and 2013 The Alegreya Project Authors, SIL Open Font License 1.1. Cut down to the letters this game uses. */\n'
+    head = '/* EB Garamond, Copyright 2017 The EB Garamond Project Authors, and Alegreya Sans, Copyright 2013 The Alegreya Sans Project Authors. SIL Open Font License 1.1. Cut down to the letters this game uses. */\n'
     open(os.path.join(OUT, 'faces.css'), 'w', encoding='utf-8').write(head + '\n'.join(css) + '\n')
-    if os.path.exists(os.path.join(DOC, 'OFL.txt')):
-        shutil.copy(os.path.join(DOC, 'OFL.txt'), os.path.join(OUT, 'OFL-Alegreya.txt'))
+    for d, name in DOCS:
+        for cand in ('OFL.txt', 'OFL', 'LICENSE', 'COPYING'):
+            if os.path.exists(os.path.join(d, cand)):
+                shutil.copy(os.path.join(d, cand), os.path.join(OUT, name)); break
     print('total font bytes', total, '| faces.css', os.path.getsize(os.path.join(OUT, 'faces.css')))
 
 

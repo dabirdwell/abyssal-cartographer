@@ -21,17 +21,17 @@ const AMBER = /rgb\(24[0-9], 16[0-9], 6[0-9]\)|rgb\(255, 207, 110\)/;   // --tor
 
   // ---------- the faces travel inside the file ----------
   { const main = src.slice(src.indexOf('<style>\n:root{'), src.indexOf('</style>', src.indexOf('<style>\n:root{')));
-    ok(!/monospace|Iowan/.test(main) || /--serif:"Alegreya","Iowan Old Style"/.test(main) && !/monospace/.test(main), 'the stylesheet names no monospace face, and the old serif only as a fallback');
+    ok(!/monospace|Iowan/.test(main) || /--serif:"EB Garamond","Iowan Old Style"/.test(main) && !/monospace/.test(main), 'the stylesheet names no monospace face, and the old serif only as a fallback');
     const sizes = [...new Set((main.match(/font-size:\d+(?:\.\d+)?px/g) || []))];
     ok(sizes.length <= 8, 'the stylesheet uses ' + sizes.length + ' type sizes (it used 21): ' + sizes.map(z => z.slice(10)).sort((a, b) => parseFloat(a) - parseFloat(b)).join(' '));
     ok((src.match(/@font-face/g) || []).length === 6 && /SIL Open Font License/.test(src), 'six faces are carried in the file, with their license named');
     ok(!/fonts\.googleapis|fonts\.gstatic/.test(src), 'no face is fetched from anywhere');
     // v4.4: no publisher is named, and the help button says Help
-    ok(!/Shadowdark|Arcane Library|D&amp;D|D&D|Dungeons &amp; Dragons|Dungeons & Dragons/.test(src), 'the page names no publisher of any game (the credit line for the fifth-edition rules document names its owner, as that document requires)');
+    ok(!/Shadowdark|Arcane Library|[Oo]ld-school|sysToggle|hoardXP|darksight/.test(src) && />D&amp;D 5e<\/span>/.test(src), 'the page is fifth edition only: no other game is named, no other rules are in it, and it says D&D 5e');
     ok(/>Help<\/button>/.test(src) && !/>Margins<\/button>/.test(src), 'the button that opens the letter and the first game says Help'); }
 
   { const { ctx, p } = await open(DM, null, true);
-    const loaded = await p.evaluate(async () => { await document.fonts.ready; return ['500 16px Alegreya', '700 16px Alegreya', 'italic 400 16px Alegreya', '500 16px "Alegreya Sans"', '700 16px "Alegreya Sans"'].map(f => document.fonts.check(f)); });
+    const loaded = await p.evaluate(async () => { await document.fonts.ready; return ['500 16px "EB Garamond"', '700 16px "EB Garamond"', 'italic 400 16px "EB Garamond"', '500 16px "Alegreya Sans"', '700 16px "Alegreya Sans"'].map(f => document.fonts.check(f)); });
     ok(loaded.every(Boolean), 'the faces load from inside the file ' + JSON.stringify(loaded));
     await p.click('#btnRevealAll'); await p.waitForTimeout(300);
 
@@ -60,7 +60,7 @@ const AMBER = /rgb\(24[0-9], 16[0-9], 6[0-9]\)|rgb\(255, 207, 110\)/;   // --tor
     // ---------- amber is rationed ----------
     await p.click('#tabs button[data-tab="loot"]'); await p.waitForTimeout(250);
     const amber = await p.evaluate(re => { const R = new RegExp(re); const hit = []; const pick = sel => document.querySelectorAll(sel).forEach(e => { if (!e.offsetParent) return; const s = getComputedStyle(e); if (R.test(s.color) || R.test(s.borderTopColor) || R.test(s.backgroundColor)) hit.push(sel); });
-      ['#btnGenerate', '#btnRandom', '#btnExport', '#btnShare', '#btnConfig', '#btnRole', '#tabBody .gp', '#tabBody a', '#tabBody .klabel', '#sysToggle button.on', '#viewToggle button.on', 'footer .xp b', '.rnum'].forEach(pick); return [...new Set(hit)]; }, AMBER.source);
+      ['#btnGenerate', '#btnRandom', '#btnExport', '#btnShare', '#btnConfig', '#btnRole', '#tabBody .gp', '#tabBody a', '#tabBody .klabel', '#viewToggle button.on', 'footer .xp b', '.rnum'].forEach(pick); return [...new Set(hit)]; }, AMBER.source);
     ok(amber.length === 0, 'nothing but the light is amber: buttons, coin, links and heads are not' + (amber.length ? ' (still amber: ' + amber.join(', ') + ')' : ''));
     const light = await p.evaluate(() => getComputedStyle(document.querySelector('#btnLight')).color);
     ok(AMBER.test(light), 'the one amber button is the one that lights the torch');
@@ -115,8 +115,8 @@ const AMBER = /rgb\(24[0-9], 16[0-9], 6[0-9]\)|rgb\(255, 207, 110\)/;   // --tor
     for (const [x, name] of [['dm', 'guide'], ['player', 'handout'], ['chars', 'characters']]) {
       const dl = p.waitForEvent('download'); await p.click('#btnExport'); await p.click('#exportMenu button[data-x="' + x + '"]'); const d = await dl; const f = path.join(OUT, 'b_' + name + '.html'); await d.saveAs(f);
       const doc = fs.readFileSync(f, 'utf8'); const pg = await ctx.newPage(); await pg.goto('file://' + f); await pg.waitForTimeout(500);
-      const fam = await pg.evaluate(async () => { await document.fonts.ready; return { body: getComputedStyle(document.body).fontFamily.split(',')[0], ok: document.fonts.check('400 14px Alegreya') }; });
-      ok((doc.match(/@font-face/g) || []).length === 6 && /Alegreya/.test(fam.body) && fam.ok, 'the printed ' + name + ' carries the faces and is set in them');
+      const fam = await pg.evaluate(async () => { await document.fonts.ready; return { body: getComputedStyle(document.body).fontFamily.split(',')[0], ok: document.fonts.check('400 14px "EB Garamond"') }; });
+      ok((doc.match(/@font-face/g) || []).length === 6 && /EB Garamond/.test(fam.body) && fam.ok, 'the printed ' + name + ' carries the faces and is set in them');
       if (x === 'player') { const pdf = await pg.pdf({ format: 'Letter' }); ok(pdf.length < 1.5e6, 'and the handout still prints small (' + (pdf.length / 1e6).toFixed(2) + ' MB)'); }
       await pg.close(); }
     await ctx.close(); }

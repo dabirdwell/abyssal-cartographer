@@ -21,7 +21,7 @@ const vis = (p, sel) => p.isVisible(sel);
   await p.click('#doorPlayer'); await p.waitForTimeout(500);
   ok(!(await p.$('#roleDoor')), 'door closes');
   ok(await p.evaluate(() => document.body.classList.contains('role-player')), 'player role set');
-  ok((await p.getAttribute('#sysToggle button[data-sys="5e"]', 'class') || '').includes('on'), 'player path defaults to 5e');
+  ok((await p.textContent('header .rules')).trim() === 'D&D 5e' && !(await p.$('#sysToggle')), 'the page says which rules it uses, and there is no switch to any other');
   ok(!(await vis(p, '.seedbox')) && !(await vis(p, '#viewToggle')) && !(await vis(p, '#btnExport')) && !(await vis(p, '#btnQuire')), 'DM controls hidden');
   ok(await vis(p, '#btnNewP') && await vis(p, '#btnRole'), 'New dungeon and role switch visible');
   ok(!(await vis(p, '.tabs button[data-tab="best"]')) && !(await vis(p, '.tabs button[data-tab="loot"]')) && await vis(p, '.tabs button[data-tab="gm"]'), 'tabs: gm shown, bestiary and treasure hidden');
@@ -40,7 +40,7 @@ const vis = (p, sel) => p.isVisible(sel);
   await p.click('#btnCopyGM'); await p.waitForTimeout(400);
   const clip = await p.evaluate(() => navigator.clipboard.readText());
   fs.writeFileSync(path.join(OUT, 'prompt_player_5e.txt'), clip);
-  ok(/\[Map: room 4\]/.test(clip) && /official stat block/.test(clip) && /close = 5 feet/.test(clip), 'prompt: map tag rule, SRD monsters, ranges');
+  ok(/\[Map: room 4\]/.test(clip) && /official stat block/.test(clip) && !/close = 5 feet|\bMV\b|, LV \d/.test(clip) && /Speed \d+ ft/.test(clip), 'prompt: map tag rule, SRD monsters, and every distance in feet');
   ok(!/the the|the The/.test(clip) && !/undefined/.test(clip), 'prompt: no doubled articles, no undefined');
   const lines = clip.split('\n').filter(l => l.startsWith('READ-ALOUD: ')).map(l => l.slice(12));
   const sentences = lines.flatMap(l => l.match(/[^.!?]+[.!?]+/g) || [l]).map(s => s.trim());
@@ -104,10 +104,10 @@ const vis = (p, sel) => p.isVisible(sel);
   ok(!!(await p.$('#qNote')), 'old link: folded note drops');
   const svg26 = await p.innerHTML('#mapSvg');
   fs.writeFileSync(path.join(OUT, 'map26.svg.txt'), svg26);
-  // the old-school prompt has the primer
+  // the prompt names fifth edition and carries no other game's rules
   await p.click('#btnExport'); await p.click('#exportMenu button[data-x="ai"]'); await p.waitForTimeout(300);
   const sd = await p.evaluate(() => navigator.clipboard.readText());
-  ok(/a light old-school dungeon game, and these are all of its rules/.test(sd) && /10 points is a level/.test(sd) && !/Shadowdark|Arcane Library/.test(sd), 'the old-school prompt carries its rules and names no publisher');
+  ok(/Dungeons & Dragons 5th edition, the SRD rules you know/.test(sd) && !/old-school|difficulty of 9|10 points is a level|Shadowdark|Arcane Library/.test(sd), 'a link that asks for the old rules still gets a fifth-edition prompt, with no other game in it');
   fs.writeFileSync(path.join(OUT, 'prompt_dm_sd.txt'), sd);
   await ctx.close();
 

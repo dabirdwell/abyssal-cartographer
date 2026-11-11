@@ -50,7 +50,7 @@ const wallOf = (d, o) => o[1] < d[1] ? 'north' : o[1] > d[1] ? 'south' : o[0] > 
   { const T0 = '2026-11-09T20:00:00';
     let { ctx, p } = await open(link('drowned-beacon-78'), null, T0);
     await p.selectOption('#lightSource', 'lantern'); await p.click('#btnLight'); await p.clock.runFor(1000);
-    const lan = await secs(p); ok(lan <= 3600 && lan >= 3595, 'a lantern burns one hour, as its label says (reads ' + await p.textContent('#torchTime') + ')');
+    const lan = await secs(p); ok(lan <= 21600 && lan >= 21595, 'a lantern burns six hours on a flask, as its label and the fifth-edition rules say (reads ' + await p.textContent('#torchTime') + ')');
     await p.selectOption('#lightSource', 'torch'); await p.click('#btnLight'); await p.clock.runFor(1000);
     const a = await secs(p);
     // a tab nobody is looking at: twenty minutes pass, and its timers fire once at most
