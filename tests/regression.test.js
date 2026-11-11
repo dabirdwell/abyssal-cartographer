@@ -104,10 +104,10 @@ const vis = (p, sel) => p.isVisible(sel);
   ok(!!(await p.$('#qNote')), 'old link: folded note drops');
   const svg26 = await p.innerHTML('#mapSvg');
   fs.writeFileSync(path.join(OUT, 'map26.svg.txt'), svg26);
-  // Shadowdark prompt has the primer
+  // the old-school prompt has the primer
   await p.click('#btnExport'); await p.click('#exportMenu button[data-x="ai"]'); await p.waitForTimeout(300);
   const sd = await p.evaluate(() => navigator.clipboard.readText());
-  ok(/Shadowdark RPG\. A short reminder/.test(sd) && /Luck tokens/.test(sd), 'Shadowdark prompt carries the rules reminder');
+  ok(/a light old-school dungeon game, and these are all of its rules/.test(sd) && /10 points is a level/.test(sd) && !/Shadowdark|Arcane Library/.test(sd), 'the old-school prompt carries its rules and names no publisher');
   fs.writeFileSync(path.join(OUT, 'prompt_dm_sd.txt'), sd);
   await ctx.close();
 

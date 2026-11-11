@@ -74,7 +74,7 @@ test_table.js, one Chromium browser, the display opened from the href of the DM'
 test26.js against table/AbyssalCartographer-table.html, last five lines:
 
 ```
-PASS Shadowdark prompt carries the rules reminder
+PASS the old-school prompt carries the rules reminder
 PASS phone: no horizontal overflow {"sw":390,"cw":390}
 PASS phone: door fits {"l":14,"r":376,"cw":390}
 

@@ -14,7 +14,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abyssal Cartographer</title>
-<meta name="description" content="A single-file, truly zero-dependency dungeon crawl generator. One click builds a coherent dungeon: origin, doom, factions, keyed rooms, locked doors with reachable keys, treasure worth XP, and a real-time torch. Compatible with Shadowdark RPG, with classic 5e stats included. Works offline. Share any dungeon as a link.">
+<meta name="description" content="A single-file, truly zero-dependency dungeon crawl generator. One click builds a coherent dungeon: origin, doom, factions, keyed rooms, locked doors with reachable keys, treasure worth XP, and a real-time torch. Old-school stats for rules-light dungeon games, with classic 5e stats included. Works offline. Share any dungeon as a link.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f0d0b'/><path d='M16 4l3.2 8.8L28 16l-8.8 3.2L16 28l-3.2-8.8L4 16l8.8-3.2z' fill='%23f2a33c'/></svg>">
 <style id="faces">
 /* Alegreya and Alegreya Sans, Copyright 2011 and 2013 The Alegreya Project Authors, SIL Open Font License 1.1. Cut down to the letters this game uses. */
@@ -611,7 +611,7 @@ footer .xp b{color:var(--parch)}
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star"><svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M10 0 12.3 7.7 20 10 12.3 12.3 10 20 7.7 12.3 0 10 7.7 7.7Z" fill="currentColor"/></svg></span><h1>Abyssal Cartographer</h1><span class="ver">v4.3</span></div>
+  <div class="brand"><span class="star"><svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M10 0 12.3 7.7 20 10 12.3 12.3 10 20 7.7 12.3 0 10 7.7 7.7Z" fill="currentColor"/></svg></span><h1>Abyssal Cartographer</h1><span class="ver">v4.4</span></div>
   <div class="seedbox">
     <span class="seedlab qterm" data-q="seed" id="seedLabel">dungeon code</span>
     <input id="seedInput" spellcheck="false" aria-label="Dungeon code">
@@ -622,7 +622,7 @@ footer .xp b{color:var(--parch)}
   <button id="btnNewP" title="Roll a new dungeon">New dungeon</button>
   <div class="hgroup">
     <div class="toggle" id="sysToggle" role="group" aria-label="Rules system">
-      <button data-sys="sd" class="on" title="Shadowdark RPG, a fantasy game built for exactly this kind of dungeon crawl">Shadowdark</button><button data-sys="5e" title="Dungeons &amp; Dragons 5th edition. The creature numbers are a close conversion from Shadowdark, not the official books.">D&amp;D 5e</button>
+      <button data-sys="sd" class="on" title="Light old-school rules: one twenty-sided die, six abilities, a torch that burns a real hour. They suit most rules-light dungeon games.">Old-school</button><button data-sys="5e" title="Fifth edition rules. The creature numbers are a close conversion from the old-school numbers, not the official books.">5e</button>
     </div>
   </div>
   <div class="spacer"></div>
@@ -642,7 +642,7 @@ footer .xp b{color:var(--parch)}
       <button data-x="load">Load a saved game from a file</button>
     </div>
   </div>
-  <button id="btnQuire" class="qping" title="Notes from the Guild of Careful Maps">Margins</button>
+  <button id="btnQuire" class="qping" title="A letter, a step-by-step first game, and the notes in the margins, from the Guild of Careful Maps">Help</button>
   <button id="btnConfig">Settings</button>
   <button id="btnRole" title="Switch between running the game and playing it">Be a player</button>
 </header>
@@ -696,11 +696,10 @@ footer .xp b{color:var(--parch)}
 <footer>
   <span class="xp" id="xpFoot"></span>
   <span class="spacer"></span>
-  <span>This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.</span>
   <span>Began as a Christmas gift. Pass it on.</span>
   <span>MIT license</span>
   <a id="saveOffline" href="#" download="AbyssalCartographer.html" title="Download this one file. Opened from your computer, it plays without internet.">Save it to play offline</a>
-  <span>v4.3, built 2026-11-10</span>
+  <span>v4.4, built 2026-11-10</span>
   <span id="footSeed"></span>
 </footer>
 
@@ -710,7 +709,7 @@ footer .xp b{color:var(--parch)}
     <div class="frow"><label>Text size<span class="hint">Changes at once. It does not rebuild the dungeon.</span></label><div class="toggle" id="textSize" role="group" aria-label="Text size"><button data-tz="1" class="on">Regular</button><button data-tz="1.15">Large</button><button data-tz="1.3">Larger</button></div></div>
     <div class="klabel">The next dungeon: the terms of the expedition</div>
     <div class="frow"><label>Party size</label><select id="cfgParty"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
-    <div class="frow"><label>Party level<span class="hint">Shadowdark levels 0 to 9</span></label><select id="cfgLevel"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
+    <div class="frow"><label>Party level<span class="hint">Levels 0 to 9</span></label><select id="cfgLevel"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
     <div class="frow"><label>Dungeon size</label><select id="cfgSize"><option value="s">Small (7 to 11 rooms)</option><option value="m" selected>Medium (12 to 17 rooms)</option><option value="l">Large (19 to 27 rooms)</option></select></div>
     <div class="frow"><label>Mode<span class="hint">One-shot adds a town with rumors and a patron. Campaign adds stairs that descend forever.</span></label><select id="cfgMode"><option value="oneshot" selected>One-shot (town + dungeon)</option><option value="delve">Delve (dungeon only)</option><option value="campaign">Campaign (endless depth)</option></select></div>
     <div class="frow"><label>Origin<span class="hint">What this place was built as</span></label><select id="cfgOrigin"><option value="">Let fate decide</option></select></div>
@@ -862,7 +861,7 @@ const DOOMS={
 };
 /*ENGINE-DATA-CONT*/
 
-/* ============ bestiary (Shadowdark native, original text) ============ */
+/* ============ bestiary (old-school native, original text) ============ */
 /* m:[S,D,C,I,W,Ch]  ab: at most one special ability  tg: matching tags */
 const MONSTERS=[
 {id:"rat",name:"Giant Rat",fl:"Dog-sized and bold in numbers, cowardly alone.",ac:11,hp:2,atk:[{n:"bite",b:1,d:"1d4"}],mv:"near",m:[-1,1,0,-3,0,-3],al:"N",lv:0,ab:[],tg:["vermin","beast"]},
@@ -1546,7 +1545,7 @@ function generate(cfg){
     rooms,edges,factions,boss,wander,town,stairsDown,grid:{w:GW,h:GH},lairId};
 }
 
-/* ============ stat text: Shadowdark native, 5e projection ============ */
+/* ============ stat text: old-school native, 5e projection ============ */
 const LV2CR={0:"1/8",1:"1/4",2:"1/2",3:"1",4:"2",5:"3",6:"5",7:"7",8:"9",9:"10"};
 const MV5={"close":"5 ft.","near":"30 ft.","near (slow)":"20 ft.","near (fast)":"40 ft.","double near":"60 ft."};
 function mv5e(mv){for(const k of Object.keys(MV5))if(mv.startsWith(k))return MV5[k]+mv.slice(k.length).replace("(climb)"," climb").replace("(fly)"," fly").replace("(swim)"," swim");return "30 ft.";}
@@ -2046,7 +2045,7 @@ function renderPanel(){
   else if(S.tab==="best"){
     const used=new Map();
     m.rooms.forEach(r=>{if(r.enc){const k=r.enc.mon.name;const u=used.get(k)||{mon:r.enc.mon,n:0,rooms:[]};u.n+=r.enc.count;u.rooms.push(r.id+1);used.set(k,u);}});
-    let h='<div class="klabel">Everything that lives here ('+(S.sys==="sd"?"Shadowdark":"5e")+' stats)</div>';
+    let h='<div class="klabel">Everything that lives here ('+(S.sys==="sd"?"old-school":"5e")+' stats)</div>';
     if(!dm)h='<div class="tiny">The bestiary is the game master\u2019s to know.</div>';
     else{used.forEach(u=>{h+=statHTML(u.mon)+'<div class="tiny" style="margin:-4px 0 10px">'+u.n+(u.rooms.length>1?' across rooms '+u.rooms.slice(0,-1).join(", ")+' and '+u.rooms[u.rooms.length-1]:' in room '+u.rooms[0])+'</div>';});
       if(!used.size)h+='<div class="tiny">The halls are empty. That is its own kind of warning.</div>';}
@@ -2063,7 +2062,7 @@ function renderPanel(){
     h+='<hr class="rule"><div class="xp">Recovered: <b>'+checked+' gp</b> of '+(dm?total+' gp placed':'?')+'</div>';
     h+='<button class="primary" id="btnBank" style="margin-top:8px">Return to town: bank '+checked+' gp</button>';
     if(S.sys==="sd"){var HB=hoardXP();
-      h+='<div class="tiny" style="margin-top:4px">'+HB.n+' scoring hoards, <b>'+HB.xp+' XP</b> to every delver, undivided. Ten XP carries a first level delver to second. Shadowdark rates a hoard Poor (0), Normal (1), Fabulous (3) or Legendary (10); the rating is yours to overrule.</div>';}
+      h+='<div class="tiny" style="margin-top:4px">'+HB.n+' scoring hoards, <b>'+HB.xp+' XP</b> to every delver, undivided. Ten XP carries a first level delver to second. A poor haul scores nothing, a fair one 1, a rich one 3 and a legendary one 10; the rating is yours to overrule.</div>';}
     h+='<div class="tiny" style="margin-top:6px">Banked this campaign: <b id="banked">'+(S.banked||0)+'</b> gp.'+(S.sys==="sd"?' Carouse to spend it and roll on your table of regrets.':'')+'</div>';
     el.innerHTML=h;
     $("#btnBank").addEventListener("click",()=>{S.banked=(S.banked||0)+checked;
@@ -2080,7 +2079,7 @@ function renderPanel(){
     if(!onOver)x.addEventListener("click",()=>select(+x.dataset.gotoRoom));
     x.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(+x.dataset.gotoRoom);}});});
 }
-/* Shadowdark awards XP by treasure hoard tier, not gold count, and every delver
+/* Experience is awarded by treasure hoard tier, not gold count, and every delver
    receives the full award rather than a divided share. Tier thresholds below are our
    reading of the published tiers and are the first thing a GM should sanity-check. */
 function sdTier(gp,kind){
@@ -2283,7 +2282,7 @@ function mapSVGString(view){
     +'<path d="M'+kx+' '+(ky-11)+'L'+(kx+2.4)+' '+ky+'L'+kx+' '+(ky+11)+'L'+(kx-2.4)+' '+ky+'Z" fill="var(--wallink)" fill-opacity="0.22"/><path d="M'+(kx-10)+' '+ky+'H'+(kx+10)+'"/>'
     +'<text x="'+kx+'" y="'+(ky-12.6)+'" text-anchor="middle" font-size="6.2" stroke="none" fill="var(--wallink)" font-family="Alegreya,Georgia,serif" font-weight="700">N</text></g>';
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+b.x+' '+b.y+' '+b.w+' '+b.h+'">'+body+rose+'</svg>';}
-const LICENSE_LINE='This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.';
+const LICENSE_LINE='';
 function expDM(){
   const m=S.model,g=m.genome;
   let h='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+esc(g.name)+' (Game Master’s Guide)</title><style>'+FACES()+PRINT_VARS+EXP_CSS+'</style></head><body>';
@@ -2300,7 +2299,7 @@ function expDM(){
       h+='<p class="tiny"><span class="k">Leader:</span> '+esc(f.leader.name)+'</p>'+expStat(f.leader);});}
   h+='<h2>Wandering the Halls</h2><p class="tiny">Roll 1d6 between crawling rounds; an encounter arrives on a 1. How often you roll is set by how dangerous the place is: unsafe, every third round. Risky, every second. Deadly, every round. Roll as well whenever the party makes a loud disturbance, whatever the count says.</p><table><tr><th>d6</th><th>What comes</th></tr>';
   m.wander.forEach(w=>h+='<tr><td>'+w.roll+'</td><td>'+esc(w.txt)+(w.mon?' ('+w.n+' × '+esc(w.mon.name)+')':'')+'</td></tr>');h+='</table>';
-  h+='<h2>Light, by the Real Clock'+(S.sys==="5e"?' (a Shadowdark house rule, optional in 5e)':'')+'</h2><table><tr><th>Source</th><th>Burns</th><th>Reach</th></tr><tr><td>Torch</td><td>1 hour, real time</td><td>near</td></tr><tr><td>Lantern</td><td>1 hour per flask of oil</td><td>near</td></tr><tr><td>Candle</td><td>1 hour</td><td>close</td></tr></table><p class="tiny">In darkness: disadvantage on tasks and attacks, and things with darksight hunt at advantage.</p>';
+  h+='<h2>Light, by the Real Clock'+(S.sys==="5e"?' (a house rule, optional in 5e)':'')+'</h2><table><tr><th>Source</th><th>Burns</th><th>Reach</th></tr><tr><td>Torch</td><td>1 hour, real time</td><td>near</td></tr><tr><td>Lantern</td><td>1 hour per flask of oil</td><td>near</td></tr><tr><td>Candle</td><td>1 hour</td><td>close</td></tr></table><p class="tiny">In darkness: disadvantage on tasks and attacks, and things with darksight hunt at advantage.</p>';
   h+='<h2>The Rooms</h2>';
   m.rooms.forEach(r=>{
     h+='<div class="room"><h3>'+(r.id+1)+'. '+esc(r.name)+(r.id===m.boss.roomId?' ♛':'')+(r.faction!=null&&m.factions[r.faction]?' <span class="tiny">('+esc(m.factions[r.faction].name)+')</span>':'')+'</h3>';
@@ -2322,7 +2321,7 @@ function expDM(){
     t.rumors.forEach(r=>h+='<p>“'+esc(r.txt)+'” <span class="truth">['+(r.truth==="t"?"true":r.truth==="f"?"false":"half-true")+']</span></p>');
     if(t.sign)h+='<p class="sec">'+esc(t.sign)+'</p>';
     h+='<p class="tiny">For sale: '+t.shop.map(s=>esc(s.n)+" ("+esc(s.c)+")").join(", ")+'.</p>';}
-  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v4.3. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(LICENSE_LINE)+' Generated by Abyssal Cartographer v4.4. Dungeon code: '+esc(m.seed)+'.</p></body></html>';
   dl(g.name.replace(/[^a-z0-9]+/gi,"_")+"_game_master.html","text/html",h);
 }
 /* ---------- hand the dungeon to an AI game master ----------
@@ -2332,8 +2331,8 @@ function aiGMText(){
   const m=S.model,g=m.genome,five=S.sys==="5e";
   const P=s=>{s=String(s||"").replace(/\s+/g," ").trim().replace(/\.+$/,"");return s?s+".":"";};
   const rules=five
-    ?"Dungeons & Dragons 5th edition, the SRD rules you know. Where a creature below matches a standard 5e monster (skeleton, zombie, giant rat, giant spider, giant centipede, acolyte, cult fanatic, wight, ooze and so on), use the official stat block and treat the numbers here only as a guide to its strength. Ranges in these notes: close = 5 feet, near = 30 feet, far = as far as you can see"
-    :"Shadowdark RPG. A short reminder, with the book as the authority: checks are d20 plus an ability modifier against a difficulty of 9 (easy), 12 (normal), 15 (hard) or 18 (extreme); attacks are d20 plus modifier against armor class; advantage and disadvantage work as in 5e; there are no skills, only ability checks. Casting a spell is a check against 10 plus the spell's tier, and a failed spell is lost until the caster rests. Ranges are close (5 feet), near (30 feet) and far (as far as you can see). In darkness, characters without darkvision have disadvantage on tasks and attacks, and wandering creatures come far more often. Hit points are few; at 0 a character is dying and has 1d4 plus Constitution rounds to be saved. Experience comes from treasure carried out, by hoard tier (a normal hoard 1 XP, a fabulous one 3, a legendary one 10), not from kills, and 10 XP is a level. Luck tokens let a player reroll once. Creatures check morale when their leader falls or half of them are down";
+    ?"fifth edition, the SRD rules you know. Where a creature below matches a standard 5e monster (skeleton, zombie, giant rat, giant spider, giant centipede, acolyte, cult fanatic, wight, ooze and so on), use the official stat block and treat the numbers here only as a guide to its strength. Ranges in these notes: close = 5 feet, near = 30 feet, far = as far as you can see"
+    :"a light old-school dungeon game, and these are all of its rules: checks are d20 plus an ability modifier against a difficulty of 9 (easy), 12 (normal), 15 (hard) or 18 (extreme); attacks are d20 plus modifier against armor class; advantage and disadvantage work as in 5e; there are no skills, only ability checks. Casting a spell is a check against 10 plus the spell's tier, and a failed spell is lost until the caster rests. Ranges are close (5 feet), near (30 feet) and far (as far as you can see). In darkness, characters without darkvision have disadvantage on tasks and attacks, and wandering creatures come far more often. Hit points are few; at 0 a character is dying and has 1d4 plus Constitution rounds to be saved. Experience comes from treasure carried out, not from kills: a fair haul is 1 point, a rich one 3, a legendary one 10, and 10 points is a level. Creatures check morale when their leader falls or half of them are down";
   const seenLines=new Set();
   const fresh=box=>{const parts=String(box).match(/[^.!?]+[.!?]+/g)||[String(box)];const out=[];
     parts.forEach((s,i)=>{const k=s.trim();if(i===0||!seenLines.has(k))out.push(k);seenLines.add(k);});return out.join(" ");};
@@ -2394,7 +2393,7 @@ function aiGMText(){
     if(r.stairsDown)L.push("A stair here descends to depth "+(m.depth+1)+".");
   });
   L.push("");
-  L.push("Made with Abyssal Cartographer v4.3. "+LICENSE_LINE);
+  L.push("Made with Abyssal Cartographer v4.4. "+LICENSE_LINE);
   L.push("");
   L.push("A NOTE FROM THE ONE WHO DREW THIS MAP, TO WHOEVER RUNS IT, HUMAN OR OTHERWISE");
   L.push("I drew this place carefully so that you would not have to invent it, only bring it to life. The person across the table chose to spend an evening with you. Be fair to them, be generous with what they can see and hear, and let their choices matter more than any plan. If some of it is a pleasure to run, that was meant too. Q., Guild of Careful Maps");
@@ -2486,7 +2485,7 @@ function expChars(){
       if(c.cast.book)h+='<p class="tiny">'+esc(c.cast.book)+'</p>';}
     h+='<h3>You carry</h3><p>'+esc(c.gear)+'</p>';
     h+='<div class="how"><span class="k">How to play this one.</span> '+esc(c.play)+'</div></div>';});
-  h+='<hr><p class="tiny">'+esc(SRD_LINE)+'</p><p class="tiny">5E compatible. Made with Abyssal Cartographer v4.3.</p></body></html>';
+  h+='<hr><p class="tiny">'+esc(SRD_LINE)+'</p><p class="tiny">5E compatible. Made with Abyssal Cartographer v4.4.</p></body></html>';
   dl("Four_ready_made_characters_5E.html","text/html",h);
 }
 function expPlayer(){
@@ -2770,7 +2769,7 @@ var QTERMS={
  seed:["The dungeon code","Each dungeon has a short code that is its true name. Put the same code in and you get the same dungeon back, room for room, which is how a shared link hands somebody else this exact place."],
  fog:["The unlit map","The map remembers only what has been lit. What is grey has not been seen by anyone still breathing."],
  torch:["The light","One hour of torch is one hour of your table's actual life. When it goes, the dark is a rule and not a mood."],
- xp:["Treasure as experience","What they carry out is what they learn from; treasure left in the dark teaches nobody anything. Shadowdark counts hoards rather than coins: a fair haul is worth a point, a fabulous one more, and every delver receives the whole award rather than a divided share."]
+ xp:["Treasure as experience","What they carry out is what they learn from; treasure left in the dark teaches nobody anything. This game counts hoards rather than coins: a fair haul is worth a point, a rich one more, and every delver receives the whole award rather than a divided share."]
 };
 
 function QW(s){ /* wrap stat tokens in margin terms; input is already escaped */
@@ -2829,7 +2828,7 @@ function QLETTER(){
    +'<p>You do not have to make anything up. The whole dungeon is already built: every room, every creature, every trap, every coin. The map is on your screen. Your friends cannot see it. They only know what you tell them.</p>'
    +'<p>Here is the game. Read a room\'s description (the text in the parchment box) out loud. Ask what their characters do. Check that room\'s notes and tell them what happens. Then on to the next room. Their goal is to find the treasure and get out alive. Your job is not to beat them. It is to show them the place honestly and let their choices count.</p>'
    +'<p>When they try something the notes do not cover, and they will, decide what seems most likely and keep going.</p>'
-   +'<p>I have drawn maps for the Guild of Careful Maps these thirty-one years. I drew this one for you, and left tips in its margins for your first time through: the dotted words you can tap, and the notes that appear as you go. The Margins button at the top turns them off whenever you like.</p>'
+   +'<p>I have drawn maps for the Guild of Careful Maps these thirty-one years. I drew this one for you, and left tips in its margins for your first time through: the dotted words you can tap, and the notes that appear as you go. The Help button at the top turns them off whenever you like.</p>'
    +'<p class="qsign">— Q.</p></div>';
 }
 
@@ -2861,7 +2860,7 @@ function QSTEPS(){
 
   steps.push({t:"Who sits at the table",h:
     '<p>Two to five friends. One twenty-sided die between you, or any dice roller on a telephone. An hour to three.</p>'
-    +'<p>Their characters are called <span class="qterm" data-q="delver">delvers</span>, because that is what people who go down into places like this on purpose are called. And the part the map does not tell you: <b>they need characters.</b> People to be, with names and a little arithmetic. In Shadowdark that is a short business, a few rolls and a name, and the publisher\'s own quickstart will walk anyone through it. Use whatever rules your table already knows if you have some. This map does not care which.</p>'
+    +'<p>Their characters are called <span class="qterm" data-q="delver">delvers</span>, because that is what people who go down into places like this on purpose are called. And the part the map does not tell you: <b>they need characters.</b> People to be, with names and a little arithmetic. In a rules-light game that is a short business, a few rolls and a name, and the free starter rules of whichever game your table picks will walk anyone through it. Use whatever rules your table already knows if you have some. This map does not care which.</p>'
     +'<div class="qaside">Do not skip the names. A delver without one dies without one, and nobody at the table minds.</div>'});
 
   steps.push({t:"The only rule you need tonight",h:
@@ -2892,7 +2891,7 @@ function QSTEPS(){
   }
 
   steps.push({t:"The light is the clock",h:
-    '<p>Press <b>Light torch</b> when they step inside, and let it run in real time. An hour of torch is an hour of your evening.'+(S.sys==="5e"?' In fifth edition this is a house rule borrowed from Shadowdark; keep it if you like the pressure.':'')+'</p>'
+    '<p>Press <b>Light torch</b> when they step inside, and let it run in real time. An hour of torch is an hour of your evening.'+(S.sys==="5e"?' In fifth edition this is a house rule; keep it if you like the pressure.':'')+'</p>'
     +'<p>When it goes out the screen goes cold and the <span class="qterm" data-q="torch">dark becomes a rule</span>, not a mood: everything is harder, and the things that live here can see perfectly well.</p>'
     +'<div class="qaside">Do not warn them about the time. Let them notice. The first time a party works out for themselves that they are forty minutes from the entrance with twenty minutes of fire, you will understand what this whole game is for.</div>'});
 
@@ -2901,7 +2900,7 @@ function QSTEPS(){
     +'<p>The treasure still matters. It is why anyone comes down here. Tick the boxes as they take it and the bottom of the window keeps the tally.</p>'
     +'<div class="qaside">This is why a party does something unwise around the end of the evening. It is also why the evening has an end. Both are features.</div>'}:{t:"Gold is how they grow",h:
     '<p>What they haul out is what they learn from. Treasure carried back to town becomes <span class="qterm" data-q="xp">experience</span>; treasure left in the dark becomes somebody else\'s inheritance.</p>'
-    +'<p>Shadowdark counts hoards, not coins. A fair haul is worth a point of experience, a spectacular one is worth several, and <b>every delver takes the full award</b>. Nobody divides anything. Ten points carry a new delver to second level, which means a good night is a tenth of the way to being someone.</p>'
+    +'<p>This game counts hoards, not coins. A fair haul is worth a point of experience, a spectacular one is worth several, and <b>every delver takes the full award</b>. Nobody divides anything. Ten points carry a new delver to second level, which means a good night is a tenth of the way to being someone.</p>'
     +'<p>Tick the boxes on the treasure as they take it. The bottom of the window keeps the tally, and the town will convert it when they surface.</p>'
     +'<div class="qaside">This is why a party does something unwise around the end of the evening. It is also why the evening has an end. Both are features.</div>'});
 
@@ -2914,12 +2913,12 @@ function QSTEPS(){
   if(S.sys==="5e")steps.forEach(function(s){s.t=sysWords(s.t);s.h=sysWords(s.h);});
   return steps;
 }
-/* In 5e mode, Shadowdark's words step aside. Text only. */
+/* In 5e mode, the old-school words step aside. Text only. */
 function sysWords(s){
   if(S.sys!=="5e")return s;
   return String(s).replace(/\bdelvers\b/g,"adventurers").replace(/\bDelvers\b/g,"Adventurers")
     .replace(/\bdelver\b/g,"adventurer").replace(/\bDelver\b/g,"Adventurer")
-    .replace("In Shadowdark that is a short business, a few rolls and a name, and the publisher\'s own quickstart will walk anyone through it.",
+    .replace("In a rules-light game that is a short business, a few rolls and a name, and the free starter rules of whichever game your table picks will walk anyone through it.",
              "In fifth edition the free basic rules will walk anyone through it, and so will any character builder online. Or open Export and print the four ready-made characters.");
 }
 
@@ -3261,7 +3260,7 @@ function renderGM(el,m){
     +'<span class="out" id="diceOut">·</span><span class="outnote" id="diceNote">Tell your game master the number. It will trust you.</span></div>';
   if(S.sys==="5e")h+='<div class="klabel">No character yet?</div><div class="card"><div style="line-height:1.5">Your game master will make one with you in a couple of minutes. Or take one that is ready: a fighter, a cleric, a rogue or a wizard, each on one printed page.</div><button id="btnChars" style="margin-top:8px">Open the four ready-made characters</button></div>';
   h+='<div class="klabel">Good to know</div>';
-  h+='<div class="tiny" style="margin-bottom:6px">Rules: <b>'+(S.sys==="5e"?"Dungeons &amp; Dragons 5th edition":"Shadowdark RPG")+'</b>. '+(S.sys==="5e"?"AI game masters know D&amp;D best, so it is the default here. Switch to Shadowdark at the top if that is your game.":"Switch to D&amp;D 5e at the top if you would rather play that; AI game masters know it best.")+'</div>';
+  h+='<div class="tiny" style="margin-bottom:6px">Rules: <b>'+(S.sys==="5e"?"Fifth edition":"Old-school rules")+'</b>. '+(S.sys==="5e"?"AI game masters know fifth edition best, so it is the default here. Switch to Old-school at the top if you play a rules-light dungeon game.":"Switch to 5e at the top if you would rather play that; AI game masters know it best.")+'</div>';
   h+='<div class="tiny" style="margin-bottom:6px">Coming back tomorrow: bookmark this page (it remembers which rooms are lit and where your torch stood) and go back to the same chat.</div>';
   h+='<div class="tiny" style="margin-bottom:6px">'+(location.protocol==="file:"
       ?'No internet needed: you are playing the copy saved on your computer. With a model running on this computer (choose it under <b>Where the AI runs</b>), the game master works offline too.'
@@ -3582,7 +3581,7 @@ function sndEnter(prev,next){const c=sndLive(); if(!c||prev===next)return;
 /* fire: a strike when a light is lit, a hiss when it dies */
 function sndFire(kind,fromFlame){const c=sndLive(); if(!c)return; const n=sndFxNode(0.3), t=c.currentTime+0.03;
   if(kind==="strike"&&S.torch.src==="spell"){sndBell(n.out,587.33,0.05,0.5);return;} if(kind==="strike"&&S.torch.src==="lantern"){const d=fromFlame?0:0.75; if(!fromFlame)FX.sparks(c,n.out,t,n.rng); FX.burst(c,n.out,t+d,n.rng,{f:2600,q:3,gain:0.1,a:0.002,dec:0.04}); FX.burst(c,n.out,t+d+0.1,n.rng,{type:"lowpass",f:500,f2:2000,sweep:0.3,gain:0.18,a:0.05,dec:0.4});return;}
-  /* lighting, by the rules: in D&D 5e a torch is lit with a tinderbox (flint, fire steel and tinder; it takes an action), which
+  /* lighting, by the rules: in fifth edition a torch is lit with a tinderbox (flint, fire steel and tinder; it takes an action), which
      is what you hear when you light up in the dark; a fresh torch lit from one still burning just catches */
   if(kind==="strike"){if(fromFlame)FX.whoomph(c,n.out,t,n.rng); else FX.flint(c,n.out,t,n.rng); return;}
   FX[kind](c,n.out,t,n.rng);}

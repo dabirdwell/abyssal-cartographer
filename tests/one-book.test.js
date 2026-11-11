@@ -25,7 +25,10 @@ const AMBER = /rgb\(24[0-9], 16[0-9], 6[0-9]\)|rgb\(255, 207, 110\)/;   // --tor
     const sizes = [...new Set((main.match(/font-size:\d+(?:\.\d+)?px/g) || []))];
     ok(sizes.length <= 8, 'the stylesheet uses ' + sizes.length + ' type sizes (it used 21): ' + sizes.map(z => z.slice(10)).sort((a, b) => parseFloat(a) - parseFloat(b)).join(' '));
     ok((src.match(/@font-face/g) || []).length === 6 && /SIL Open Font License/.test(src), 'six faces are carried in the file, with their license named');
-    ok(!/fonts\.googleapis|fonts\.gstatic/.test(src), 'no face is fetched from anywhere'); }
+    ok(!/fonts\.googleapis|fonts\.gstatic/.test(src), 'no face is fetched from anywhere');
+    // v4.4: no publisher is named, and the help button says Help
+    ok(!/Shadowdark|Arcane Library|D&amp;D|D&D|Dungeons &amp; Dragons|Dungeons & Dragons/.test(src), 'the page names no publisher of any game (the credit line for the fifth-edition rules document names its owner, as that document requires)');
+    ok(/>Help<\/button>/.test(src) && !/>Margins<\/button>/.test(src), 'the button that opens the letter and the first game says Help'); }
 
   { const { ctx, p } = await open(DM, null, true);
     const loaded = await p.evaluate(async () => { await document.fonts.ready; return ['500 16px Alegreya', '700 16px Alegreya', 'italic 400 16px Alegreya', '500 16px "Alegreya Sans"', '700 16px "Alegreya Sans"'].map(f => document.fonts.check(f)); });

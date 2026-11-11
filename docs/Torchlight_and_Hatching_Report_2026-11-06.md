@@ -41,7 +41,7 @@ All anchors are inside the map code, the torch code and the `<style>` block. Not
 - The torch was advanced with Playwright's `page.clock` (`clock.install` and `clock.runFor`), which fires the real `setInterval` ticks, so no test hook was added to the page and `S` stays private. CSS transitions run on real time, so the script waits in real time before reading opacities.
 - `node (this commit) test26.js art/AbyssalCartographer-art.html art/shots`, last five lines:
 ```
-PASS Shadowdark prompt carries the rules reminder
+PASS the old-school prompt carries the rules reminder
 PASS phone: no horizontal overflow {"sw":390,"cw":390}
 PASS phone: door fits {"l":14,"r":376,"cw":390}
 

@@ -2,7 +2,7 @@
 
 One HTML file that generates a complete dungeon crawl session. One seed produces a whole place: rooms with read-aloud text, an origin and doom that color everything, two or three factions with their own goals and a boss who leads one of them, locks and secrets that are always solvable, wandering tables, treasure worth XP, a town with rumors in one-shot mode, and endless descending levels in campaign mode. The same code always rebuilds the same dungeon, so the address is the save file and the share link.
 
-Shadowdark-native, with a 5e conversion toggle. Run it for your friends, or play it yourself with an AI as game master.
+Light old-school rules, with a 5e conversion toggle. Run it for your friends, or play it yourself with an AI as game master.
 
 *Started as a Christmas gift for tabletop nerds* 🎁
 
@@ -16,7 +16,7 @@ Shadowdark-native, with a 5e conversion toggle. Run it for your friends, or play
 
 The first visit asks one question: **I want to play**, or **I am running it for friends**.
 
-- **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and a game master that is an AI. Two ways to get one. The quick way: one button copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini, and you play in two tabs. The other way: play right here in the page, with your own API key (Claude, OpenAI or Gemini), a model running on your own computer (LM Studio or Ollama), or a hosted address you were given; the chat sits beside the map, rooms light themselves when the game master names them, and the conversation is kept per dungeon in your browser. Either way the dungeon stays fixed, so the AI cannot drift, and your screen never shows a secret. 5e rules by default on this path, because AI game masters know D&D best.
+- **Playing** opens the player's table: a map that lights up room by room as you explore, the real-time torch, dice, and a game master that is an AI. Two ways to get one. The quick way: one button copies the whole dungeon as a ready prompt for Claude, ChatGPT or Gemini, and you play in two tabs. The other way: play right here in the page, with your own API key (Claude, OpenAI or Gemini), a model running on your own computer (LM Studio or Ollama), or a hosted address you were given; the chat sits beside the map, rooms light themselves when the game master names them, and the conversation is kept per dungeon in your browser. Either way the dungeon stays fixed, so the AI cannot drift, and your screen never shows a secret. 5e rules by default on this path, because AI game masters know fifth edition best.
 - **Running it** opens the full game master's screen. From there, Export → *Link for a player* copies an address that drops anyone straight onto the player's table, first room lit, nothing spoiled.
 
 ## 🔌 Playing without internet
@@ -49,7 +49,7 @@ v2 is a ground-up rewrite. There are no frameworks, no CDN loads, no build step,
 - **A coherent dungeon**, not random rooms: a genome of origin and doom colors names, descriptions, creatures, and treasure throughout
 - **Factions**: two or three competing groups with goals, and a boss who leads one of them
 - **Solvable by construction**: every locked door has a reachable key, and secrets can always be found
-- **Shadowdark stat blocks** with a plain-language reading under each; the 5e toggle converts stats between systems
+- **Old-school stat blocks** with a plain-language reading under each; the 5e toggle converts stats between systems
 - **Real-time light**: a torch burns one real hour, a lantern one hour per flask of oil, a candle one hour at close range only; the screen goes cold and dark when the light burns out
 - **Treasure as XP**, counted in hoard tiers, full award to every delver
 - **The Margins**: an optional guidance layer for first-time GMs. A letter from Quire, a retired Guild cartographer, opens into a nine-step first game built from your own generated dungeon. One checkbox turns all of it off
@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v4.3 (Current)
+### v4.4 (Current)
+The game names no publisher. Its light native rules are called Old-school, the second rules button says 5e, and the license line is gone from the page. The button that opens the letter and the first-game steps is now called Help. No dungeon changes.
+
+### v4.3
 One book, read by torchlight. A design pass; no dungeon changes. The screen now uses the printed guide's language: one family of type carried inside the file (Alegreya for what the mapmaker wrote, Alegreya Sans for what you operate or count), so the game looks the same on every device; seven type sizes where there were twenty-one; section heads in true small capitals over a hairline; a room's entry opens with its number in the ring the map draws and its name as a title. Amber is now only the flame and what it lights. A burn line under the torch row, as wide as the page, shortens as the light is spent. The first card and the letter are paper. Repairs: on a phone the dungeon's name no longer covers the first card; the unlit clock no longer shows as an alarm; choosing a room from a list opens its entry at the top; a ranged attack's plain reading no longer runs its range into its damage.
 
 ### v4.2
@@ -108,16 +111,16 @@ The game master inside the page: your own key (Claude, OpenAI, Gemini), a local 
 The player display (The Table) returns, lifted from v3.2 onto the current line: Export → Player display for a TV or iPad. Map clicks now work in Chrome and Firefox (they only ever worked in Safari). Share links made below the first level now rebuild the dungeon on screen. Light as the picture: the map is lit by the torch and dims as the hour runs out. Hatched walls and stippled floors. A first-visit card that hides everything until you choose. Phones scroll again. Copy fixes from an outside read. Five small kindnesses hidden in the file.
 
 ### v2.6
-The player's table: a first-visit door (play, or run it), a secrets-free player mode with a fogged map that follows you, dice, and the AI game master hand-off front and centre. Export → Link for a player. In 5e mode the Shadowdark words step aside (adventurers, 5e experience rules) and the AI prompt tells the game master to use the official 5e monsters it already knows; in Shadowdark mode the prompt carries a short rules reminder. Pasting a different dungeon's link into the same tab now rebuilds the page. The same seed still builds the same dungeon.
+The player's table: a first-visit door (play, or run it), a secrets-free player mode with a fogged map that follows you, dice, and the AI game master hand-off front and centre. Export → Link for a player. In 5e mode the old-school words step aside (adventurers, 5e experience rules) and the AI prompt tells the game master to use the official 5e monsters it already knows; in old-school mode the prompt carries a short rules reminder. Pasting a different dungeon's link into the same tab now rebuilds the page. The same seed still builds the same dungeon.
 
 ### v2.5
-Play with an AI game master (Export menu). Welcome letter rewritten in plain words: the dungeon is built for you, and the letter says so. Phone layout fixed. 5e mode no longer mixes in Shadowdark's experience rules. Dead ambiance links replaced with YouTube searches. Small fixes to the DM guide, the torch controls and generated text. The same seed still builds the same dungeon.
+Play with an AI game master (Export menu). Welcome letter rewritten in plain words: the dungeon is built for you, and the letter says so. Phone layout fixed. 5e mode no longer mixes in the old-school experience rules. Dead ambiance links replaced with YouTube searches. Small fixes to the DM guide, the torch controls and generated text. The same seed still builds the same dungeon.
 
 ### v2.4
 Front-door rework: a plainer welcome letter, a labeled and explained seed box, and a note when Generate rebuilds the dungeon already on screen.
 
 ### v2.3
-Ground-up rewrite: Shadowdark-native generation, faction and boss system, guaranteed-solvable locks, real-time torch timer, hoard-tier treasure XP, The Margins guidance layer, seed-as-URL saves and sharing, dual exports, zero external dependencies. 5e available as a conversion toggle.
+Ground-up rewrite: old-school generation, faction and boss system, guaranteed-solvable locks, real-time torch timer, hoard-tier treasure XP, The Margins guidance layer, seed-as-URL saves and sharing, dual exports, zero external dependencies. 5e available as a conversion toggle.
 
 ### v1.3
 30 monsters, ambient sound links, furniture icons, 9 boss templates, 8 puzzles and 7 riddles.
@@ -135,7 +138,7 @@ Initial release.
 
 The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](LICENSE).
 
-This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.
+This is an independent work. It is not affiliated with, licensed by or endorsed by the publisher of any game.
 
 ### Typefaces
 
