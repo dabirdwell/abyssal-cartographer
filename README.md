@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v4.2 (Current)
+### v4.3 (Current)
+One book, read by torchlight. A design pass; no dungeon changes. The screen now uses the printed guide's language: one family of type carried inside the file (Alegreya for what the mapmaker wrote, Alegreya Sans for what you operate or count), so the game looks the same on every device; seven type sizes where there were twenty-one; section heads in true small capitals over a hairline; a room's entry opens with its number in the ring the map draws and its name as a title. Amber is now only the flame and what it lights. A burn line under the torch row, as wide as the page, shortens as the light is spent. The first card and the letter are paper. Repairs: on a phone the dungeon's name no longer covers the first card; the unlit clock no longer shows as an alarm; choosing a room from a list opens its entry at the top; a ranged attack's plain reading no longer runs its range into its damage.
+
+### v4.2
 Four ready-made characters, so the players have someone to be: a human fighter, a hill dwarf cleric, a lightfoot halfling rogue and a high elf wizard, fifth edition, first level, each on a printed card with a few lines on how to play it. Export → *Four ready-made characters (5e)*, or the button on the player's page. Every number on a card is worked out by the page from the character's scores, armor and training, and a test checks each against a table worked out by hand. The AI game master is told it may offer them.
 
 ### v4.1
@@ -133,6 +136,10 @@ Initial release.
 The code is MIT licensed, free for personal and commercial use. See [`LICENSE`](LICENSE).
 
 This is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © The Arcane Library, LLC.
+
+### Typefaces
+
+The game carries Alegreya and Alegreya Sans inside its one file. Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) and Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans), under the SIL Open Font License 1.1 (`fonts/OFL-Alegreya.txt`). The faces are cut down to the letters the game uses; `tools/embed_fonts.py` rebuilds them.
 
 ### Ready-made characters
 

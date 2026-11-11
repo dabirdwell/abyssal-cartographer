@@ -19,7 +19,7 @@ const srv = http.createServer((req, res) => {
   let p = await ctx.newPage(); p.on('pageerror', e => errs.push('web: ' + e.message));
   await p.goto(BASE + '#grim-gate-63|1|4|1|m|oneshot|on|||5e|dm|01'); await p.waitForTimeout(1000);
   const a = await p.evaluate(() => { const x = document.querySelector('#saveOffline'); return { text: x.textContent, href: x.href, dl: x.getAttribute('download') }; });
-  ok(a.text === 'save it to play offline' && a.dl === 'AbyssalCartographer.html' && a.href === BASE, 'footer link points at the page itself, no hash: ' + JSON.stringify(a));
+  ok(a.text === 'Save it to play offline' && a.dl === 'AbyssalCartographer.html' && a.href === BASE, 'footer link points at the page itself, no hash: ' + JSON.stringify(a));
   let [d] = await Promise.all([p.waitForEvent('download'), p.click('#saveOffline')]);
   let saved = path.join(OUT, 'saved_from_footer.html'); await d.saveAs(saved);
   ok(d.suggestedFilename() === 'AbyssalCartographer.html' && Buffer.compare(fs.readFileSync(saved), bytes) === 0, 'footer download is the exact game file (' + fs.statSync(saved).size + ' bytes)');
