@@ -68,7 +68,10 @@ Pages serves `index.html` at the repository URL. The original `AbyssalCartograph
 
 ## 📋 Version History
 
-### v5.0 (Current)
+### v5.0.1 (Current)
+The four ready-made characters were read against the text of the SRD 5.1: peoples, classes, armor and weapons, backgrounds, and all eighteen spells the cards name. Every number held. Six wordings moved closer to the document: all four now carry 15 gp, three spells give their range or how they end, and Mage Hand opens an unlocked door.
+
+### v5.0
 Fifth edition only. The game has one set of rules now, D&D 5e, and says so. The rules switch is gone, and with it the second stat-line format, the summary of other rules handed to an AI game master, experience counted by treasure, and the glossary entries that explained those terms. Every creature already had fifth edition numbers; they are now the only numbers, with ranges in feet. A lantern burns six hours on a flask. A link that asked for the other rules opens in fifth edition. The reading face is EB Garamond. No dungeon changes: the same code builds the same rooms, doors, creatures and treasure.
 
 ### v4.4

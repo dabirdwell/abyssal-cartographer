@@ -1,5 +1,7 @@
 /* v4.1 and v4.2: the map that draws itself, what stands in each room, the notes to whoever is reading,
    and four ready-made characters whose every number is checked against a table worked out by hand.
+   That table was itself read against the text of the SRD 5.1 on November 12, 2026 (peoples, classes, armor and
+   weapon tables, the passive check rule, backgrounds, and all eighteen spells the cards name). Every number held.
    node tests/wonder-and-characters.test.js /abs/path/index.html /abs/out/
    Prints PASS/FAIL lines and ends with FAILS: n. */
 const { chromium } = require('playwright');
@@ -73,6 +75,9 @@ const WANT = {
       ok(bad.length === 0, k + ': every number on the card matches the hand-worked table' + (bad.length ? ' — ' + bad.join('; ') : '')); }
     const pdf = await pg.pdf({ format: 'Letter' }); fs.writeFileSync(path.join(OUT, 'characters.pdf'), pdf); const pages = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
     ok(pages >= 2 && pages <= 5, 'the four characters print on ' + pages + ' pages');
+    { const txt = await pg.evaluate(() => document.body.innerText); const purses = txt.match(/\b\d+ gp\./g) || [];
+      ok(purses.length === 4 && purses.every(x => x === '15 gp.'), 'each of the four carries 15 gp, the purse of the rules document\'s sample background (' + purses.join(' ') + ')');
+      ok(/Up to three friends within 30 feet/.test(txt) && /open an unlocked door/.test(txt) && /It ends if the one you ward attacks/.test(txt), 'Bless, Mage Hand and Sanctuary are worded as the rules document has them'); }
     await ctx.close(); }
 
   await b.close(); srv.close();
